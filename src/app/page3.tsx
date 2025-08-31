@@ -88,8 +88,6 @@ export default function IdleGameInterface() {
     exercise: 0,
   });
 
-  // ... existing activityData and locations arrays ...
-
   const activityData = [
     {
       key: "sectDuties",
@@ -320,8 +318,6 @@ export default function IdleGameInterface() {
     },
   ];
 
-  // ... existing functions ...
-
   const updateActivity = (key: string, change: number) => {
     const activity = activityData.find((a) => a.key === key);
     if (!activity) return;
@@ -407,27 +403,25 @@ export default function IdleGameInterface() {
 
   const categories = categorizeActivities();
 
-  // ... existing renderTravelMap function ...
-
   const renderTravelMap = () => {
     const currentLoc = locations.find((loc) => loc.name === selectedLocation);
 
     return (
       <div className="space-y-6">
-        <div className="mb-4 p-3 bg-accent/10 rounded-lg border border-accent/40">
+        <div className="mb-2 p-2 bg-accent/10 rounded-lg border border-accent/20">
           <div className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-accent" />
-            <span className="font-semibold">Current Location:</span>
-            <span className="text-accent">{selectedLocation}</span>
+            <MapPin className="w-4 h-4 text-accent" />
+            <span className="font-semibold text-sm">Current Location:</span>
+            <span className="text-accent text-sm">{selectedLocation}</span>
           </div>
         </div>
 
-        <Card className="bg-card border-border">
-          <CardHeader>
-            <CardTitle>Cultivation World Map</CardTitle>
+        <Card className="bg-card border-border/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Cultivation World Map</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="relative w-full h-96 bg-background rounded-lg border border-border overflow-hidden">
+          <CardContent className="p-3">
+            <div className="relative w-full h-80 bg-background rounded-lg border border-border/30 overflow-hidden">
               <div className="absolute inset-0 opacity-5">
                 <div className="absolute top-8 left-12 text-6xl text-slate-400">
                   ☯
@@ -544,28 +538,27 @@ export default function IdleGameInterface() {
           </CardContent>
         </Card>
 
-        {/* ... existing location cards ... */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {locations
             .filter((loc) => loc.name !== selectedLocation)
             .map((location) => (
               <Card
                 key={location.name}
-                className="cursor-pointer transition-all hover:scale-105 bg-muted/30 border-border hover:border-accent/50"
+                className="cursor-pointer transition-all hover:scale-105 bg-muted/30 border-border/30 hover:border-accent/30"
                 onClick={() => setSelectedLocation(location.name)}
               >
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-2">
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between mb-1">
                     <h4 className="font-semibold text-sm">{location.name}</h4>
                     <Badge variant="outline" className="text-xs">
                       {location.travel}h
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground mb-3">
+                  <p className="text-xs text-muted-foreground mb-2">
                     {location.description}
                   </p>
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Clock className="w-3 h-3" />
+                    <Clock className="w-4 h-4" />
                     <span>Travel Time: {location.travel} hours</span>
                   </div>
                 </CardContent>
@@ -595,29 +588,31 @@ export default function IdleGameInterface() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="w-5 h-5 text-purple-400" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">
+          <Card className="bg-card border-border/50">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <User className="w-4 h-4 text-purple-400" />
                 Core Stats
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-2 p-3">
               <div className="flex justify-between items-center py-1">
                 <span className="text-sm text-slate-400 font-semibold">
                   Cultivation Progress
                 </span>
-                <span className="font-mono text-primary">2,847/3,000</span>
+                <span className="font-mono text-primary text-sm">
+                  2,847/3,000
+                </span>
               </div>
-              <div className="h-px bg-gradient-to-r from-transparent via-slate-600/50 to-transparent"></div>
+              <div className="h-px bg-gradient-to-r from-transparent via-slate-700/30 to-transparent"></div>
               <div className="flex justify-between items-center py-1">
                 <span className="text-sm text-slate-400 font-semibold">
                   Body Tempering
                 </span>
-                <span className="font-mono text-accent">78/100</span>
+                <span className="font-mono text-accent text-sm">78/100</span>
               </div>
-              <div className="h-px bg-gradient-to-r from-transparent via-slate-600/50 to-transparent"></div>
+              <div className="h-px bg-gradient-to-r from-transparent via-slate-700/30 to-transparent"></div>
               <div className="py-1">
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-slate-400 font-semibold">HP</span>
@@ -649,70 +644,72 @@ export default function IdleGameInterface() {
             </CardContent>
           </Card>
 
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Briefcase className="w-5 h-5 text-secondary" />
+          <Card className="bg-card border-border/50">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Briefcase className="w-4 h-4 text-secondary" />
                 Skills & Abilities
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-2 p-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">
                   Crafting Skill
                 </span>
-                <span className="font-mono text-primary">67/100</span>
+                <span className="font-mono text-primary text-sm">67/100</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">
                   Trading Skill
                 </span>
-                <span className="font-mono text-accent">34/100</span>
+                <span className="font-mono text-accent text-sm">34/100</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">
                   Cooking Skill
                 </span>
-                <span className="font-mono text-secondary">45/100</span>
+                <span className="font-mono text-secondary text-sm">45/100</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">
                   Musical Skill
                 </span>
-                <span className="font-mono text-destructive">12/100</span>
+                <span className="font-mono text-destructive text-sm">
+                  12/100
+                </span>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Heart className="w-5 h-5 text-accent" />
+          <Card className="bg-card border-border/50">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Heart className="w-4 h-4 text-accent" />
                 Social & Mental
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-2 p-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">
                   Relationship Points
                 </span>
-                <span className="font-mono text-primary">156</span>
+                <span className="font-mono text-primary text-sm">156</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Knowledge</span>
-                <span className="font-mono text-accent">89</span>
+                <span className="font-mono text-accent text-sm">89</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">
                   Strategic Thinking
                 </span>
-                <span className="font-mono text-secondary">43</span>
+                <span className="font-mono text-secondary text-sm">43</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">
                   Artistic Skill
                 </span>
-                <span className="font-mono text-destructive">28</span>
+                <span className="font-mono text-destructive text-sm">28</span>
               </div>
             </CardContent>
           </Card>
@@ -760,13 +757,13 @@ export default function IdleGameInterface() {
           </p>
         </div>
 
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-3 mb-4">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium">Year:</span>
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(Number(e.target.value))}
-              className="bg-black border border-slate-700 rounded px-3 py-1 text-sm"
+              className="bg-black border border-slate-700/50 rounded px-2 py-1 text-sm"
             >
               {years.map((year) => (
                 <option key={year} value={year}>
@@ -780,7 +777,7 @@ export default function IdleGameInterface() {
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(Number(e.target.value))}
-              className="bg-black border border-slate-700 rounded px-3 py-1 text-sm"
+              className="bg-black border border-slate-700/50 rounded px-2 py-1 text-sm"
             >
               {months.map((month) => (
                 <option key={month} value={month}>
@@ -791,25 +788,27 @@ export default function IdleGameInterface() {
           </div>
         </div>
 
-        <Card className="bg-card border-border">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-purple-400" />
+        <Card className="bg-card border-border/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Calendar className="w-4 h-4 text-purple-400" />
               Events - Year {selectedYear}, Month {selectedMonth}
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4 max-h-96 overflow-y-auto">
+          <CardContent className="p-3">
+            <div className="space-y-2 max-h-80 overflow-y-auto">
               {events.map((event, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-3 bg-muted/30 rounded border"
+                  className="flex items-center justify-between p-2 bg-muted/30 rounded border border-border/30"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-xs">
                       {event.day}
                     </Badge>
-                    <span className="font-medium">{event.activity}</span>
+                    <span className="font-medium text-sm">
+                      {event.activity}
+                    </span>
                   </div>
                   <span className="text-sm text-muted-foreground">
                     {event.result}
@@ -825,43 +824,43 @@ export default function IdleGameInterface() {
 
   return (
     <div className="min-h-screen bg-black flex flex-col text-foreground dark">
-      <header className="sticky top-0 z-50 h-24 bg-black/95 backdrop-blur-sm border-b border-slate-800 flex flex-col px-6">
-        <div className="flex items-center justify-between py-3">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent">
+      <header className="sticky top-0 z-50 h-20 bg-black/95 backdrop-blur-sm border-b border-slate-800/50 flex flex-col px-4">
+        <div className="flex items-center justify-between py-2">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent">
               Immortal Cultivation
             </h1>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <Badge
                 variant="secondary"
-                className="flex items-center gap-2 bg-slate-900 text-purple-300 border-purple-500/40"
+                className="flex items-center gap-1 bg-slate-900 text-purple-300 border-purple-500/30 text-xs"
               >
-                <Mountain className="w-4 h-4" />
+                <Mountain className="w-3 h-3" />
                 Human: Mortal
               </Badge>
               <Badge
                 variant="outline"
-                className="border-violet-500/40 text-violet-400"
+                className="border-violet-500/30 text-violet-400 text-xs"
               >
                 Qi Condensation 9th Layer
               </Badge>
             </div>
           </div>
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2 text-sm">
-              <Activity className="w-5 h-5 text-purple-400" />
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1 text-sm">
+              <Activity className="w-4 h-4 text-purple-400" />
               <span className="text-purple-200 font-semibold">
                 Current Task:
               </span>
               <span className="text-violet-300 font-bold">{currentTask}</span>
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Clock className="w-5 h-5 text-purple-400" />
+            <div className="flex items-center gap-1 text-sm">
+              <Clock className="w-4 h-4 text-purple-400" />
               <span className="text-purple-200 font-semibold">Free Time:</span>
               <span className="text-violet-300 font-bold">{freeTime}h</span>
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Smile className="w-5 h-5 text-violet-400" />
+            <div className="flex items-center gap-1 text-sm">
+              <Smile className="w-4 h-4 text-violet-400" />
               <span className="text-violet-200 font-semibold">Mood Bonus:</span>
               <span className="text-purple-300 font-bold">+{moodBonus}</span>
             </div>
@@ -870,17 +869,19 @@ export default function IdleGameInterface() {
               size="sm"
               className="text-muted-foreground hover:text-foreground"
             >
-              <Settings className="w-5 h-5" />
+              <Settings className="w-4 h-4" />
             </Button>
           </div>
         </div>
       </header>
 
-      <div className="sticky top-24 z-40 bg-black/90 backdrop-blur-sm border-b border-slate-800 px-6 py-3">
-        <div className="flex items-center justify-center gap-6">
-          <div className="flex items-center gap-4 bg-purple-500/10 px-4 py-2 rounded-lg border border-purple-500/40">
-            <Clock className="w-5 h-5 text-purple-400" />
-            <span className="font-semibold">Available Time Points:</span>
+      <div className="sticky top-20 z-40 bg-black/90 backdrop-blur-sm border-b border-slate-800/50 px-4 py-2">
+        <div className="flex items-center justify-center gap-4">
+          <div className="flex items-center gap-3 bg-purple-500/10 px-3 py-2 rounded-lg border border-purple-500/30">
+            <Clock className="w-4 h-4 text-purple-400" />
+            <span className="font-semibold text-sm">
+              Available Time Points:
+            </span>
             <span className="text-xl font-bold text-purple-400 font-mono">
               {timePoints}/{maxTimePoints}
             </span>
@@ -901,22 +902,22 @@ export default function IdleGameInterface() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 bg-slate-900/50 px-3 py-2 rounded-lg border border-slate-700">
-            <Calendar className="w-5 h-5 text-violet-400" />
-            <span className="text-violet-300 font-bold">Day 127</span>
+          <div className="flex items-center gap-2 bg-slate-900/50 px-2 py-1 rounded-lg border border-slate-700/50">
+            <Calendar className="w-4 h-4 text-violet-400" />
+            <span className="text-violet-300 font-bold text-sm">Day 127</span>
           </div>
 
-          <div className="flex items-center gap-2 bg-slate-900/50 px-3 py-2 rounded-lg border border-slate-700">
+          <div className="flex items-center gap-2 bg-slate-900/50 px-2 py-1 rounded-lg border border-slate-700/50">
             <Button
               size="sm"
               variant={isPlaying ? "default" : "outline"}
               onClick={() => setIsPlaying(!isPlaying)}
-              className="w-8 h-8 p-0"
+              className="w-7 h-7 p-0"
             >
               {isPlaying ? (
-                <Pause className="w-4 h-4" />
+                <Pause className="w-3 h-3" />
               ) : (
-                <Play className="w-4 h-4" />
+                <Play className="w-3 h-3" />
               )}
             </Button>
             <Button
@@ -925,9 +926,9 @@ export default function IdleGameInterface() {
               onClick={() =>
                 setGameSpeed(gameSpeed === 1 ? 2 : gameSpeed === 2 ? 4 : 1)
               }
-              className="w-8 h-8 p-0"
+              className="w-7 h-7 p-0"
             >
-              <FastForward className="w-4 h-4" />
+              <FastForward className="w-3 h-3" />
             </Button>
             {gameSpeed > 1 && (
               <span className="text-xs text-muted-foreground">
@@ -936,13 +937,13 @@ export default function IdleGameInterface() {
             )}
           </div>
 
-          <div className="flex items-center gap-2 bg-slate-900/50 px-3 py-2 rounded-lg border border-slate-700">
+          <div className="flex items-center gap-2 bg-slate-900/50 px-2 py-1 rounded-lg border border-slate-700/50">
             <span className="text-sm font-medium">Planning Scale:</span>
             <div className="relative">
               <select
                 value={timeScale}
                 onChange={(e) => handleTimeScaleChange(e.target.value)}
-                className="appearance-none bg-black border border-slate-700 rounded px-3 py-1 text-sm font-medium pr-8 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                className="appearance-none bg-black border border-slate-700/50 rounded px-2 py-1 text-sm font-medium pr-6 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               >
                 {Object.entries(timeScales).map(([key, scale]) => (
                   <option key={key} value={key}>
@@ -950,16 +951,16 @@ export default function IdleGameInterface() {
                   </option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+              <ChevronDown className="absolute right-1 top-1/2 transform -translate-y-1/2 w-3 h-3 text-muted-foreground pointer-events-none" />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 flex">
-        <aside className="sticky top-48 h-[calc(100vh-12rem)] overflow-y-auto w-64 backdrop-blur-sm border-slate-800 p-4 space-y-4 bg-black leading-7 border-r">
-          <Card className="border-slate-700 bg-black">
-            <CardHeader className="pb-2">
+      <div className="flex flex-1">
+        <aside className="sticky top-44 h-[calc(100vh-11rem)] overflow-y-auto w-60 backdrop-blur-sm border-slate-800/50 p-3 space-y-3 bg-black leading-6 border-r">
+          <Card className="border-slate-700/50 bg-black">
+            <CardHeader className="pb-1">
               <CardTitle className="text-sm flex items-center justify-between text-slate-200">
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4 text-purple-400" />
@@ -980,12 +981,12 @@ export default function IdleGameInterface() {
               </CardTitle>
             </CardHeader>
             {!statsCollapsed && (
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-2">
                 <div className="flex justify-between items-center py-1">
                   <span className="text-sm text-slate-400 font-semibold">
                     Age / Lifespan
                   </span>
-                  <span className="font-mono">
+                  <span className="font-mono text-sm">
                     <span className="text-purple-300 font-bold">23</span>
                     <span className="text-slate-500">/</span>
                     <span className="text-violet-400">150</span>
@@ -996,7 +997,7 @@ export default function IdleGameInterface() {
                   <span className="text-sm text-slate-400 font-semibold">
                     Mood
                   </span>
-                  <span className="font-mono text-purple-300 font-bold">
+                  <span className="font-mono text-purple-300 font-bold text-sm">
                     Content (+{moodBonus})
                   </span>
                 </div>
@@ -1010,7 +1011,7 @@ export default function IdleGameInterface() {
                       value={100}
                       className="h-2 bg-slate-800 [&>div]:bg-green-500"
                     />
-                    <div className="hidden group-hover:block absolute -top-8 right-0 bg-background/95 backdrop-blur-sm border border-border rounded px-2 py-1 text-xs whitespace-nowrap">
+                    <div className="hidden group-hover:block absolute -top-8 right-0 bg-background/95 backdrop-blur-sm border border-border/50 rounded px-2 py-1 text-xs whitespace-nowrap">
                       100/100 HP
                     </div>
                   </div>
@@ -1024,7 +1025,7 @@ export default function IdleGameInterface() {
                       value={85}
                       className="h-2 bg-slate-800 [&>div]:bg-orange-500"
                     />
-                    <div className="hidden group-hover:block absolute -top-8 right-0 bg-background/95 backdrop-blur-sm border border-border rounded px-2 py-1 text-xs whitespace-nowrap">
+                    <div className="hidden group-hover:block absolute -top-8 right-0 bg-background/95 backdrop-blur-sm border border-border/50 rounded px-2 py-1 text-xs whitespace-nowrap">
                       85/100 Hunger
                     </div>
                   </div>
@@ -1034,7 +1035,7 @@ export default function IdleGameInterface() {
           </Card>
         </aside>
 
-        <aside className="sticky top-48 h-[calc(100vh-12rem)] w-48 bg-black/40 backdrop-blur-sm border-r border-slate-800 p-4">
+        <aside className="sticky top-44 h-[calc(100vh-11rem)] w-48 bg-black/40 backdrop-blur-sm border-r border-slate-800/50 p-3">
           <nav className="space-y-1">
             <Button
               variant="ghost"
@@ -1107,148 +1108,146 @@ export default function IdleGameInterface() {
           </nav>
         </aside>
 
-        <main className="flex-1">
-          <div className="h-full bg-black p-6">
-            {activeTab === "Activities" && (
-              <>
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent mb-2">
-                    Time Currency Activities
-                  </h2>
-                  <p className="text-slate-400">
-                    Allocate your daily time points across various cultivation
-                    and life activities
-                  </p>
-                </div>
+        <main className="flex-1 p-4 overflow-y-auto">
+          {activeTab === "Activities" && (
+            <>
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent mb-2">
+                  Time Currency Activities
+                </h2>
+                <p className="text-slate-400">
+                  Allocate your daily time points across various cultivation and
+                  life activities
+                </p>
+              </div>
 
-                <div className="space-y-6">
-                  <Card className="border-slate-700 bg-black">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Coins className="w-5 h-5 text-purple-400" />
-                        Time Points Budget
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {Object.entries(categories).map(
-                          ([categoryName, categoryActivities]) => (
-                            <Card
-                              key={categoryName}
-                              className="bg-black/30 border-slate-700"
-                            >
-                              <CardHeader className="pb-3">
-                                <CardTitle className="text-lg capitalize flex items-center gap-2">
-                                  {categoryName === "work" && (
-                                    <Briefcase className="w-5 h-5 text-purple-400" />
-                                  )}
-                                  {categoryName === "training" && (
-                                    <Dumbbell className="w-5 h-5 text-pink-400" />
-                                  )}
-                                  {categoryName === "study" && (
-                                    <Book className="w-5 h-5 text-cyan-400" />
-                                  )}
-                                  {categoryName === "social" && (
-                                    <Heart className="w-5 h-5 text-red-400" />
-                                  )}
-                                  {categoryName === "life" && (
-                                    <Home className="w-5 h-5 text-purple-400" />
-                                  )}
-                                  {categoryName === "hobby" && (
-                                    <Music className="w-5 h-5 text-pink-400" />
-                                  )}
-                                  {categoryName === "adventure" && (
-                                    <Compass className="w-5 h-5 text-cyan-400" />
-                                  )}
-                                  {categoryName} Activities
-                                </CardTitle>
-                              </CardHeader>
-                              <CardContent className="space-y-3">
-                                {categoryActivities.map((activity) => (
-                                  <div
-                                    key={activity.key}
-                                    className="flex items-center justify-between p-3 bg-black rounded border border-purple-500/30 hover:border-purple-400/50 transition-colors"
-                                  >
-                                    <div className="flex items-center gap-2">
-                                      <activity.icon className="w-4 h-4 text-purple-400" />
-                                      <div>
-                                        <h4 className="font-bold text-sm text-purple-200">
-                                          {activity.name}
-                                        </h4>
-                                        <p className="text-xs text-slate-400">
-                                          <span className="font-semibold">
-                                            {activity.cost} points
-                                          </span>{" "}
-                                          • {activity.reward}
-                                        </p>
-                                      </div>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() =>
-                                          updateActivity(activity.key, -1)
-                                        }
-                                        disabled={
-                                          activities[
-                                            activity.key as keyof typeof activities
-                                          ] === 0
-                                        }
-                                        className="border-purple-600/50 hover:border-purple-500 text-purple-300 hover:text-purple-200"
-                                      >
-                                        <Minus className="w-4 h-4" />
-                                      </Button>
-                                      <span className="w-8 text-center font-mono text-sm">
-                                        {
-                                          activities[
-                                            activity.key as keyof typeof activities
-                                          ]
-                                        }
-                                      </span>
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() =>
-                                          updateActivity(activity.key, 1)
-                                        }
-                                        disabled={timePoints < activity.cost}
-                                        className="border-purple-600/50 hover:border-purple-500 text-purple-300 hover:text-purple-200"
-                                      >
-                                        <Plus className="w-4 h-4" />
-                                      </Button>
+              <div className="space-y-6">
+                <Card className="border-slate-700 bg-black">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Coins className="w-5 h-5 text-purple-400" />
+                      Time Points Budget
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                      {Object.entries(categories).map(
+                        ([categoryName, categoryActivities]) => (
+                          <Card
+                            key={categoryName}
+                            className="bg-black/30 border-slate-700"
+                          >
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-lg capitalize flex items-center gap-2">
+                                {categoryName === "work" && (
+                                  <Briefcase className="w-5 h-5 text-purple-400" />
+                                )}
+                                {categoryName === "training" && (
+                                  <Dumbbell className="w-5 h-5 text-pink-400" />
+                                )}
+                                {categoryName === "study" && (
+                                  <Book className="w-5 h-5 text-cyan-400" />
+                                )}
+                                {categoryName === "social" && (
+                                  <Heart className="w-5 h-5 text-red-400" />
+                                )}
+                                {categoryName === "life" && (
+                                  <Home className="w-5 h-5 text-purple-400" />
+                                )}
+                                {categoryName === "hobby" && (
+                                  <Music className="w-5 h-5 text-pink-400" />
+                                )}
+                                {categoryName === "adventure" && (
+                                  <Compass className="w-5 h-5 text-cyan-400" />
+                                )}
+                                {categoryName} Activities
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-3">
+                              {categoryActivities.map((activity) => (
+                                <div
+                                  key={activity.key}
+                                  className="flex items-center justify-between p-3 bg-black rounded border border-purple-500/30 hover:border-purple-400/50 transition-colors"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <activity.icon className="w-4 h-4 text-purple-400" />
+                                    <div>
+                                      <h4 className="font-bold text-sm text-purple-200">
+                                        {activity.name}
+                                      </h4>
+                                      <p className="text-xs text-slate-400">
+                                        <span className="font-semibold">
+                                          {activity.cost} points
+                                        </span>{" "}
+                                        • {activity.reward}
+                                      </p>
                                     </div>
                                   </div>
-                                ))}
-                              </CardContent>
-                            </Card>
-                          )
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </>
-            )}
+                                  <div className="flex items-center gap-2">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() =>
+                                        updateActivity(activity.key, -1)
+                                      }
+                                      disabled={
+                                        activities[
+                                          activity.key as keyof typeof activities
+                                        ] === 0
+                                      }
+                                      className="border-purple-600/50 hover:border-purple-500 text-purple-300 hover:text-purple-200"
+                                    >
+                                      <Minus className="w-4 h-4" />
+                                    </Button>
+                                    <span className="w-8 text-center font-mono text-sm">
+                                      {
+                                        activities[
+                                          activity.key as keyof typeof activities
+                                        ]
+                                      }
+                                    </span>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() =>
+                                        updateActivity(activity.key, 1)
+                                      }
+                                      disabled={timePoints < activity.cost}
+                                      className="border-purple-600/50 hover:border-purple-500 text-purple-300 hover:text-purple-200"
+                                    >
+                                      <Plus className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              ))}
+                            </CardContent>
+                          </Card>
+                        )
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </>
+          )}
 
-            {activeTab === "Stats" && renderStatsPage()}
-            {activeTab === "Recap" && renderCalendarPage()}
+          {activeTab === "Stats" && renderStatsPage()}
+          {activeTab === "Recap" && renderCalendarPage()}
 
-            {activeTab === "Travel" && (
-              <>
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent mb-2">
-                    Cultivation World Travel
-                  </h2>
-                  <p className="text-slate-400">
-                    Explore different realms and continents in your cultivation
-                    journey
-                  </p>
-                </div>
-                {renderTravelMap()}
-              </>
-            )}
-          </div>
+          {activeTab === "Travel" && (
+            <div className="space-y-6">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent mb-2">
+                  Cultivation World Travel
+                </h2>
+                <p className="text-slate-400">
+                  Explore different realms and continents in your cultivation
+                  journey
+                </p>
+              </div>
+              {renderTravelMap()}
+            </div>
+          )}
         </main>
       </div>
     </div>

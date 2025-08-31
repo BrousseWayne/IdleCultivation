@@ -9,7 +9,6 @@ import {
   Zap,
   Settings,
   User,
-  Star,
   Flame,
   Mountain,
   Wind,
@@ -36,11 +35,34 @@ import {
   TreePine,
   Fish,
   Bike,
+  ChevronDown,
+  Play,
+  Pause,
+  FastForward,
+  ChevronUp,
+  Smile,
+  BarChart3,
+  FileText,
 } from "lucide-react";
 import { useState } from "react";
 
-export default function IdleGameInterface4() {
-  const [timePoints, setTimePoints] = useState(24);
+export default function IdleGameInterface() {
+  const [timeScale, setTimeScale] = useState("day");
+  const [selectedYear, setSelectedYear] = useState(1);
+  const [selectedMonth, setSelectedMonth] = useState(1);
+  const timeScales = {
+    day: { label: "Day", multiplier: 1, unit: "day" },
+    week: { label: "Week", multiplier: 7, unit: "week" },
+    month: { label: "Month", multiplier: 30, unit: "month" },
+  };
+
+  const currentScale = timeScales[timeScale as keyof typeof timeScales];
+  const maxTimePoints = 24 * currentScale.multiplier;
+  const [timePoints, setTimePoints] = useState(maxTimePoints);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [gameSpeed, setGameSpeed] = useState(1);
+  const [statsCollapsed, setStatsCollapsed] = useState(false);
+
   const [activeTab, setActiveTab] = useState("Activities");
   const [selectedLocation, setSelectedLocation] = useState("Eastern Continent");
   const [activities, setActivities] = useState({
@@ -65,6 +87,8 @@ export default function IdleGameInterface4() {
     fishing: 0,
     exercise: 0,
   });
+
+  // ... existing activityData and locations arrays ...
 
   const activityData = [
     {
@@ -296,6 +320,8 @@ export default function IdleGameInterface4() {
     },
   ];
 
+  // ... existing functions ...
+
   const updateActivity = (key: string, change: number) => {
     const activity = activityData.find((a) => a.key === key);
     if (!activity) return;
@@ -317,16 +343,49 @@ export default function IdleGameInterface4() {
       0
     );
 
-    if (currentTotal <= 24) {
+    if (currentTotal <= maxTimePoints) {
       setActivities((prev) => ({ ...prev, [key]: newValue }));
-      setTimePoints(24 - currentTotal);
+      setTimePoints(maxTimePoints - currentTotal);
     }
+  };
+
+  const handleTimeScaleChange = (newScale: string) => {
+    setTimeScale(newScale);
+    const newMaxPoints =
+      24 * timeScales[newScale as keyof typeof timeScales].multiplier;
+    setTimePoints(newMaxPoints);
+    setActivities({
+      sectDuties: 0,
+      alchemyWork: 0,
+      martialArts: 0,
+      qiCultivation: 0,
+      beastHunting: 0,
+      herbGathering: 0,
+      meditation: 0,
+      socializing: 0,
+      reading: 0,
+      crafting: 0,
+      cooking: 0,
+      shopping: 0,
+      resting: 0,
+      studying: 0,
+      painting: 0,
+      music: 0,
+      gaming: 0,
+      exploring: 0,
+      fishing: 0,
+      exercise: 0,
+    });
   };
 
   const totalUsed = Object.entries(activities).reduce((sum, [key, value]) => {
     const activity = activityData.find((a) => a.key === key);
     return sum + value * (activity?.cost || 0);
   }, 0);
+
+  const freeTime = maxTimePoints - totalUsed - 8; // 8 hours for sleep/eating
+  const moodBonus = Math.floor(freeTime * 2); // 2 mood points per free hour
+  const currentTask = "Qi Cultivation";
 
   const categorizeActivities = () => {
     const categories = {
@@ -348,6 +407,8 @@ export default function IdleGameInterface4() {
 
   const categories = categorizeActivities();
 
+  // ... existing renderTravelMap function ...
+
   const renderTravelMap = () => {
     const currentLoc = locations.find((loc) => loc.name === selectedLocation);
 
@@ -366,7 +427,7 @@ export default function IdleGameInterface4() {
             <CardTitle>Cultivation World Map</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="relative w-full h-96 bg-background rounded-lg border border-border overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+            <div className="relative w-full h-96 bg-background rounded-lg border border-border overflow-hidden">
               <div className="absolute inset-0 opacity-5">
                 <div className="absolute top-8 left-12 text-6xl text-slate-400">
                   ☯
@@ -465,13 +526,7 @@ export default function IdleGameInterface4() {
                     )}
                   </div>
 
-                  <div
-                    className={`absolute top-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap ${
-                      location.name === selectedLocation
-                        ? "block"
-                        : "hidden group-hover:block"
-                    }`}
-                  >
+                  <div className="absolute top-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
                     <div className="bg-background/95 backdrop-blur-sm border border-border rounded px-2 py-1 text-xs shadow-lg">
                       <div className="font-semibold text-foreground">
                         {location.name}
@@ -489,6 +544,7 @@ export default function IdleGameInterface4() {
           </CardContent>
         </Card>
 
+        {/* ... existing location cards ... */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {locations
             .filter((loc) => loc.name !== selectedLocation)
@@ -527,193 +583,462 @@ export default function IdleGameInterface4() {
     );
   };
 
-  return (
-    <div className="min-h-screen bg-background flex flex-col text-foreground dark">
-      <header className="sticky top-0 z-50 h-20 bg-card/95 backdrop-blur-sm border-b border-border flex items-center justify-between px-6">
-        <div className="flex items-center gap-6">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Immortal Cultivation
-          </h1>
-          <Badge
-            variant="secondary"
-            className="flex items-center gap-2 bg-muted text-primary border-primary/40"
-          >
-            <Mountain className="w-4 h-4" />
-            Foundation Establishment
-          </Badge>
-          <Badge variant="outline" className="border-accent/40 text-accent">
-            Realm: Qi Condensation 9th Layer
-          </Badge>
+  const renderStatsPage = () => {
+    return (
+      <div className="space-y-6">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent mb-2">
+            Cultivator Statistics
+          </h2>
+          <p className="text-muted-foreground">
+            Comprehensive overview of your cultivation progress and abilities
+          </p>
         </div>
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 text-sm">
-            <Clock className="w-5 h-5 text-primary" />
-            <span className="font-mono text-primary/80">
-              {timePoints}/24 Time Points
-            </span>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          <Card className="bg-card border-border">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="w-5 h-5 text-purple-400" />
+                Core Stats
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-between items-center py-1">
+                <span className="text-sm text-slate-400 font-semibold">
+                  Cultivation Progress
+                </span>
+                <span className="font-mono text-primary">2,847/3,000</span>
+              </div>
+              <div className="h-px bg-gradient-to-r from-transparent via-slate-600/50 to-transparent"></div>
+              <div className="flex justify-between items-center py-1">
+                <span className="text-sm text-slate-400 font-semibold">
+                  Body Tempering
+                </span>
+                <span className="font-mono text-accent">78/100</span>
+              </div>
+              <div className="h-px bg-gradient-to-r from-transparent via-slate-600/50 to-transparent"></div>
+              <div className="py-1">
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-slate-400 font-semibold">HP</span>
+                </div>
+                <div className="relative group cursor-help">
+                  <Progress
+                    value={100}
+                    className="h-2 bg-slate-800 [&>div]:bg-green-500"
+                  />
+                  <div className="hidden group-hover:block absolute -top-8 right-0 bg-background/95 backdrop-blur-sm border border-border rounded px-2 py-1 text-xs whitespace-nowrap">
+                    100/100 HP
+                  </div>
+                </div>
+              </div>
+              <div className="py-1">
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-slate-400 font-semibold">Hunger</span>
+                </div>
+                <div className="relative group cursor-help">
+                  <Progress
+                    value={85}
+                    className="h-2 bg-slate-800 [&>div]:bg-orange-500"
+                  />
+                  <div className="hidden group-hover:block absolute -top-8 right-0 bg-background/95 backdrop-blur-sm border border-border rounded px-2 py-1 text-xs whitespace-nowrap">
+                    85/100 Hunger
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card border-border">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Briefcase className="w-5 h-5 text-secondary" />
+                Skills & Abilities
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">
+                  Crafting Skill
+                </span>
+                <span className="font-mono text-primary">67/100</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">
+                  Trading Skill
+                </span>
+                <span className="font-mono text-accent">34/100</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">
+                  Cooking Skill
+                </span>
+                <span className="font-mono text-secondary">45/100</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">
+                  Musical Skill
+                </span>
+                <span className="font-mono text-destructive">12/100</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card border-border">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Heart className="w-5 h-5 text-accent" />
+                Social & Mental
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">
+                  Relationship Points
+                </span>
+                <span className="font-mono text-primary">156</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Knowledge</span>
+                <span className="font-mono text-accent">89</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">
+                  Strategic Thinking
+                </span>
+                <span className="font-mono text-secondary">43</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">
+                  Artistic Skill
+                </span>
+                <span className="font-mono text-destructive">28</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  };
+
+  const renderCalendarPage = () => {
+    const years = Array.from({ length: 100 }, (_, i) => i + 1); // First 100 years
+    const months = Array.from({ length: 12 }, (_, i) => i + 1);
+
+    const events = [
+      {
+        day: "Day 1",
+        activity: "Qi Cultivation",
+        result: "Breakthrough to 8th layer",
+      },
+      {
+        day: "Day 2",
+        activity: "Beast Hunting",
+        result: "Defeated Iron Claw Bear",
+      },
+      {
+        day: "Day 3",
+        activity: "Alchemy Work",
+        result: "Crafted 5 Healing Pills",
+      },
+      {
+        day: "Day 4",
+        activity: "Sect Duties",
+        result: "Earned 960 Spirit Stones",
+      },
+      { day: "Day 5", activity: "Meditation", result: "Soul Strength +30" },
+    ];
+
+    return (
+      <div className="space-y-6">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent mb-2">
+            Cultivation Journal
+          </h2>
+          <p className="text-muted-foreground">
+            Record of your cultivation journey and daily activities
+          </p>
+        </div>
+
+        <div className="flex items-center gap-4 mb-6">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Year:</span>
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(Number(e.target.value))}
+              className="bg-black border border-slate-700 rounded px-3 py-1 text-sm"
+            >
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  Year {year}
+                </option>
+              ))}
+            </select>
           </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Coins className="w-5 h-5 text-primary" />
-            <span className="font-mono text-primary/80">
-              1,234,567 Spirit Stones
-            </span>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Month:</span>
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(Number(e.target.value))}
+              className="bg-black border border-slate-700 rounded px-3 py-1 text-sm"
+            >
+              {months.map((month) => (
+                <option key={month} value={month}>
+                  Month {month}
+                </option>
+              ))}
+            </select>
           </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Zap className="w-5 h-5 text-secondary" />
-            <span className="font-mono text-secondary/80">89/100 Qi</span>
+        </div>
+
+        <Card className="bg-card border-border">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-purple-400" />
+              Events - Year {selectedYear}, Month {selectedMonth}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {events.map((event, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 bg-muted/30 rounded border"
+                >
+                  <div className="flex items-center gap-3">
+                    <Badge variant="outline" className="text-xs">
+                      {event.day}
+                    </Badge>
+                    <span className="font-medium">{event.activity}</span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    {event.result}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-black flex flex-col text-foreground dark">
+      <header className="sticky top-0 z-50 h-24 bg-black/95 backdrop-blur-sm border-b border-slate-800 flex flex-col px-6">
+        <div className="flex items-center justify-between py-3">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent">
+              Immortal Cultivation
+            </h1>
+            <div className="flex items-center gap-3">
+              <Badge
+                variant="secondary"
+                className="flex items-center gap-2 bg-slate-900 text-purple-300 border-purple-500/40"
+              >
+                <Mountain className="w-4 h-4" />
+                Human: Mortal
+              </Badge>
+              <Badge
+                variant="outline"
+                className="border-violet-500/40 text-violet-400"
+              >
+                Qi Condensation 9th Layer
+              </Badge>
+            </div>
           </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Flame className="w-5 h-5 text-accent" />
-            <span className="font-mono text-accent/80">
-              45 Cultivation Points
-            </span>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2 text-sm">
+              <Activity className="w-5 h-5 text-purple-400" />
+              <span className="text-purple-200 font-semibold">
+                Current Task:
+              </span>
+              <span className="text-violet-300 font-bold">{currentTask}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Clock className="w-5 h-5 text-purple-400" />
+              <span className="text-purple-200 font-semibold">Free Time:</span>
+              <span className="text-violet-300 font-bold">{freeTime}h</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Smile className="w-5 h-5 text-violet-400" />
+              <span className="text-violet-200 font-semibold">Mood Bonus:</span>
+              <span className="text-purple-300 font-bold">+{moodBonus}</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <Settings className="w-5 h-5" />
+            </Button>
           </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Wind className="w-5 h-5 text-destructive" />
-            <span className="font-mono text-destructive/80">
-              12 Dao Insights
-            </span>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <Settings className="w-5 h-5" />
-          </Button>
         </div>
       </header>
 
-      <div className="sticky top-20 z-40 bg-card/90 backdrop-blur-sm border-b border-border px-6 py-2">
-        <div className="flex items-center justify-center">
-          <div className="flex items-center gap-4 bg-primary/10 px-4 py-2 rounded-lg border border-primary/40">
-            <Clock className="w-5 h-5 text-primary" />
+      <div className="sticky top-24 z-40 bg-black/90 backdrop-blur-sm border-b border-slate-800 px-6 py-3">
+        <div className="flex items-center justify-center gap-6">
+          <div className="flex items-center gap-4 bg-purple-500/10 px-4 py-2 rounded-lg border border-purple-500/40">
+            <Clock className="w-5 h-5 text-purple-400" />
             <span className="font-semibold">Available Time Points:</span>
-            <span className="text-xl font-bold text-primary font-mono">
-              {timePoints}/24
+            <span className="text-xl font-bold text-purple-400 font-mono">
+              {timePoints}/{maxTimePoints}
             </span>
-            <div className="w-32">
-              <Progress value={(timePoints / 24) * 100} className="h-2" />
+            <div className="w-32 relative">
+              <Progress
+                value={(timePoints / maxTimePoints) * 100}
+                className="h-2"
+              />
+              <div
+                className="absolute top-0 right-0 h-2 bg-slate-500/60 rounded-r group cursor-help border border-slate-400/40"
+                style={{ width: `${(8 / maxTimePoints) * 100}%` }}
+                title="Sleep: 7h, Eating: 1h"
+              >
+                <div className="hidden group-hover:block absolute -top-8 right-0 bg-background/95 backdrop-blur-sm border border-border rounded px-2 py-1 text-xs whitespace-nowrap">
+                  Sleep: 7h, Eating: 1h
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 bg-slate-900/50 px-3 py-2 rounded-lg border border-slate-700">
+            <Calendar className="w-5 h-5 text-violet-400" />
+            <span className="text-violet-300 font-bold">Day 127</span>
+          </div>
+
+          <div className="flex items-center gap-2 bg-slate-900/50 px-3 py-2 rounded-lg border border-slate-700">
+            <Button
+              size="sm"
+              variant={isPlaying ? "default" : "outline"}
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="w-8 h-8 p-0"
+            >
+              {isPlaying ? (
+                <Pause className="w-4 h-4" />
+              ) : (
+                <Play className="w-4 h-4" />
+              )}
+            </Button>
+            <Button
+              size="sm"
+              variant={gameSpeed > 1 ? "default" : "outline"}
+              onClick={() =>
+                setGameSpeed(gameSpeed === 1 ? 2 : gameSpeed === 2 ? 4 : 1)
+              }
+              className="w-8 h-8 p-0"
+            >
+              <FastForward className="w-4 h-4" />
+            </Button>
+            {gameSpeed > 1 && (
+              <span className="text-xs text-muted-foreground">
+                {gameSpeed}x
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 bg-slate-900/50 px-3 py-2 rounded-lg border border-slate-700">
+            <span className="text-sm font-medium">Planning Scale:</span>
+            <div className="relative">
+              <select
+                value={timeScale}
+                onChange={(e) => handleTimeScaleChange(e.target.value)}
+                className="appearance-none bg-black border border-slate-700 rounded px-3 py-1 text-sm font-medium pr-8 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+              >
+                {Object.entries(timeScales).map(([key, scale]) => (
+                  <option key={key} value={key}>
+                    {scale.label} ({24 * scale.multiplier}h)
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
             </div>
           </div>
         </div>
       </div>
 
       <div className="flex-1 flex">
-        <aside className="sticky top-40 h-[calc(100vh-10rem)] overflow-y-auto w-64 bg-sidebar backdrop-blur-sm border-r border-sidebar-border p-4 space-y-4">
-          <Card className="bg-card border-border">
+        <aside className="sticky top-48 h-[calc(100vh-12rem)] overflow-y-auto w-64 backdrop-blur-sm border-slate-800 p-4 space-y-4 bg-black leading-7 border-r">
+          <Card className="border-slate-700 bg-black">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm flex items-center gap-2 text-card-foreground">
-                <User className="w-4 h-4 text-primary" />
-                Cultivator Stats
+              <CardTitle className="text-sm flex items-center justify-between text-slate-200">
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-purple-400" />
+                  Cultivator Status
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setStatsCollapsed(!statsCollapsed)}
+                  className="w-6 h-6 p-0"
+                >
+                  {statsCollapsed ? (
+                    <ChevronDown className="w-4 h-4" />
+                  ) : (
+                    <ChevronUp className="w-4 h-4" />
+                  )}
+                </Button>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-muted-foreground">
-                    Cultivation Progress
+            {!statsCollapsed && (
+              <CardContent className="space-y-3">
+                <div className="flex justify-between items-center py-1">
+                  <span className="text-sm text-slate-400 font-semibold">
+                    Age / Lifespan
                   </span>
-                  <span className="font-mono text-primary">2,847/3,000</span>
+                  <span className="font-mono">
+                    <span className="text-purple-300 font-bold">23</span>
+                    <span className="text-slate-500">/</span>
+                    <span className="text-violet-400">150</span>
+                  </span>
                 </div>
-                <Progress value={94.9} className="h-2 bg-muted" />
-              </div>
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-muted-foreground">Body Tempering</span>
-                  <span className="font-mono text-accent">78/100</span>
+                <div className="h-px bg-gradient-to-r from-transparent via-slate-600/50 to-transparent"></div>
+                <div className="flex justify-between items-center py-1">
+                  <span className="text-sm text-slate-400 font-semibold">
+                    Mood
+                  </span>
+                  <span className="font-mono text-purple-300 font-bold">
+                    Content (+{moodBonus})
+                  </span>
                 </div>
-                <Progress value={78} className="h-2 bg-muted" />
-              </div>
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-muted-foreground">Soul Strength</span>
-                  <span className="font-mono text-secondary">45/80</span>
+                <div className="h-px bg-gradient-to-r from-transparent via-slate-600/50 to-transparent"></div>
+                <div className="py-1">
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-slate-400 font-semibold">HP</span>
+                  </div>
+                  <div className="relative group cursor-help">
+                    <Progress
+                      value={100}
+                      className="h-2 bg-slate-800 [&>div]:bg-green-500"
+                    />
+                    <div className="hidden group-hover:block absolute -top-8 right-0 bg-background/95 backdrop-blur-sm border border-border rounded px-2 py-1 text-xs whitespace-nowrap">
+                      100/100 HP
+                    </div>
+                  </div>
                 </div>
-                <Progress value={56.25} className="h-2 bg-muted" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-card border-border">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-card-foreground">
-                Spiritual Resources
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex justify-between items-center py-1">
-                <span className="text-sm text-muted-foreground">
-                  Spirit Stones
-                </span>
-                <span className="font-mono text-primary">1,234,567</span>
-              </div>
-              <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
-              <div className="flex justify-between items-center py-1">
-                <span className="text-sm text-muted-foreground">
-                  Immortal Crystals
-                </span>
-                <span className="font-mono text-secondary">2,847</span>
-              </div>
-              <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
-              <div className="flex justify-between items-center py-1">
-                <span className="text-sm text-muted-foreground">Qi Energy</span>
-                <span className="font-mono text-muted-foreground">89/100</span>
-              </div>
-              <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
-              <div className="flex justify-between items-center py-1">
-                <span className="text-sm text-muted-foreground">
-                  Spirit Herbs
-                </span>
-                <span className="font-mono text-accent">456</span>
-              </div>
-              <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
-              <div className="flex justify-between items-center py-1">
-                <span className="text-sm text-muted-foreground">
-                  Beast Cores
-                </span>
-                <span className="font-mono text-destructive">234</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-card border-border">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm flex items-center gap-2 text-card-foreground">
-                <Star className="w-4 h-4 text-primary" />
-                Dao Achievements
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Badge
-                  variant="outline"
-                  className="w-full justify-start border-primary/40 text-primary"
-                >
-                  First Breakthrough
-                </Badge>
-                <Badge
-                  variant="outline"
-                  className="w-full justify-start border-secondary/40 text-secondary"
-                >
-                  Spirit Stone Hoarder
-                </Badge>
-                <Badge
-                  variant="secondary"
-                  className="w-full justify-start bg-muted text-muted-foreground"
-                >
-                  Realm Ascender
-                </Badge>
-              </div>
-            </CardContent>
+                <div className="py-1">
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-slate-400 font-semibold">Hunger</span>
+                  </div>
+                  <div className="relative group cursor-help">
+                    <Progress
+                      value={85}
+                      className="h-2 bg-slate-800 [&>div]:bg-orange-500"
+                    />
+                    <div className="hidden group-hover:block absolute -top-8 right-0 bg-background/95 backdrop-blur-sm border border-border rounded px-2 py-1 text-xs whitespace-nowrap">
+                      85/100 Hunger
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            )}
           </Card>
         </aside>
 
-        <aside className="sticky top-40 h-[calc(100vh-10rem)] w-48 bg-sidebar/60 backdrop-blur-sm border-r border-sidebar-border p-4">
+        <aside className="sticky top-48 h-[calc(100vh-12rem)] w-48 bg-black/40 backdrop-blur-sm border-r border-slate-800 p-4">
           <nav className="space-y-1">
             <Button
               variant="ghost"
-              className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-muted"
+              className="w-full justify-start text-slate-400 hover:text-slate-200 hover:bg-slate-800"
               size="sm"
             >
               <Compass className="w-4 h-4 mr-2" />
@@ -721,7 +1046,7 @@ export default function IdleGameInterface4() {
             </Button>
             <Button
               variant="ghost"
-              className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-muted"
+              className="w-full justify-start text-slate-400 hover:text-slate-200 hover:bg-slate-800"
               size="sm"
             >
               <Package className="w-4 h-4 mr-2" />
@@ -731,8 +1056,8 @@ export default function IdleGameInterface4() {
               variant={activeTab === "Activities" ? "default" : "ghost"}
               className={
                 activeTab === "Activities"
-                  ? "w-full justify-start bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
-                  : "w-full justify-start text-muted-foreground hover:text-foreground hover:bg-muted"
+                  ? "w-full justify-start bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-500 hover:to-violet-500"
+                  : "w-full justify-start text-slate-400 hover:text-slate-200 hover:bg-slate-800"
               }
               size="sm"
               onClick={() => setActiveTab("Activities")}
@@ -741,19 +1066,37 @@ export default function IdleGameInterface4() {
               Activities
             </Button>
             <Button
-              variant="ghost"
-              className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-muted"
+              variant={activeTab === "Stats" ? "default" : "ghost"}
+              className={
+                activeTab === "Stats"
+                  ? "w-full justify-start bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-500 hover:to-violet-500"
+                  : "w-full justify-start text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+              }
               size="sm"
+              onClick={() => setActiveTab("Stats")}
             >
-              <Calendar className="w-4 h-4 mr-2" />
-              Calendar
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Stats
+            </Button>
+            <Button
+              variant={activeTab === "Recap" ? "default" : "ghost"}
+              className={
+                activeTab === "Recap"
+                  ? "w-full justify-start bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-500 hover:to-violet-500"
+                  : "w-full justify-start text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+              }
+              size="sm"
+              onClick={() => setActiveTab("Recap")}
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Recap/Calendar
             </Button>
             <Button
               variant={activeTab === "Travel" ? "default" : "ghost"}
               className={
                 activeTab === "Travel"
-                  ? "w-full justify-start bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
-                  : "w-full justify-start text-muted-foreground hover:text-foreground hover:bg-muted"
+                  ? "w-full justify-start bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-500 hover:to-violet-500"
+                  : "w-full justify-start text-slate-400 hover:text-slate-200 hover:bg-slate-800"
               }
               size="sm"
               onClick={() => setActiveTab("Travel")}
@@ -765,24 +1108,24 @@ export default function IdleGameInterface4() {
         </aside>
 
         <main className="flex-1">
-          <div className="h-full bg-background p-6">
+          <div className="h-full bg-black p-6">
             {activeTab === "Activities" && (
               <>
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent mb-2">
                     Time Currency Activities
                   </h2>
-                  <p className="text-muted-foreground">
+                  <p className="text-slate-400">
                     Allocate your daily time points across various cultivation
                     and life activities
                   </p>
                 </div>
 
                 <div className="space-y-6">
-                  <Card className="bg-card border-border">
+                  <Card className="border-slate-700 bg-black">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <Coins className="w-5 h-5 text-primary" />
+                        <Coins className="w-5 h-5 text-purple-400" />
                         Time Points Budget
                       </CardTitle>
                     </CardHeader>
@@ -792,30 +1135,30 @@ export default function IdleGameInterface4() {
                           ([categoryName, categoryActivities]) => (
                             <Card
                               key={categoryName}
-                              className="bg-muted/30 border-border"
+                              className="bg-black/30 border-slate-700"
                             >
                               <CardHeader className="pb-3">
                                 <CardTitle className="text-lg capitalize flex items-center gap-2">
                                   {categoryName === "work" && (
-                                    <Briefcase className="w-5 h-5 text-primary" />
+                                    <Briefcase className="w-5 h-5 text-purple-400" />
                                   )}
                                   {categoryName === "training" && (
-                                    <Dumbbell className="w-5 h-5 text-secondary" />
+                                    <Dumbbell className="w-5 h-5 text-pink-400" />
                                   )}
                                   {categoryName === "study" && (
-                                    <Book className="w-5 h-5 text-accent" />
+                                    <Book className="w-5 h-5 text-cyan-400" />
                                   )}
                                   {categoryName === "social" && (
-                                    <Heart className="w-5 h-5 text-destructive" />
+                                    <Heart className="w-5 h-5 text-red-400" />
                                   )}
                                   {categoryName === "life" && (
-                                    <Home className="w-5 h-5 text-primary" />
+                                    <Home className="w-5 h-5 text-purple-400" />
                                   )}
                                   {categoryName === "hobby" && (
-                                    <Music className="w-5 h-5 text-secondary" />
+                                    <Music className="w-5 h-5 text-pink-400" />
                                   )}
                                   {categoryName === "adventure" && (
-                                    <Compass className="w-5 h-5 text-accent" />
+                                    <Compass className="w-5 h-5 text-cyan-400" />
                                   )}
                                   {categoryName} Activities
                                 </CardTitle>
@@ -824,17 +1167,19 @@ export default function IdleGameInterface4() {
                                 {categoryActivities.map((activity) => (
                                   <div
                                     key={activity.key}
-                                    className="flex items-center justify-between p-3 bg-background rounded border"
+                                    className="flex items-center justify-between p-3 bg-black rounded border border-purple-500/30 hover:border-purple-400/50 transition-colors"
                                   >
                                     <div className="flex items-center gap-2">
-                                      <activity.icon className="w-4 h-4 text-muted-foreground" />
+                                      <activity.icon className="w-4 h-4 text-purple-400" />
                                       <div>
-                                        <h4 className="font-semibold text-sm">
+                                        <h4 className="font-bold text-sm text-purple-200">
                                           {activity.name}
                                         </h4>
-                                        <p className="text-xs text-muted-foreground">
-                                          {activity.cost} points •{" "}
-                                          {activity.reward}
+                                        <p className="text-xs text-slate-400">
+                                          <span className="font-semibold">
+                                            {activity.cost} points
+                                          </span>{" "}
+                                          • {activity.reward}
                                         </p>
                                       </div>
                                     </div>
@@ -850,6 +1195,7 @@ export default function IdleGameInterface4() {
                                             activity.key as keyof typeof activities
                                           ] === 0
                                         }
+                                        className="border-purple-600/50 hover:border-purple-500 text-purple-300 hover:text-purple-200"
                                       >
                                         <Minus className="w-4 h-4" />
                                       </Button>
@@ -867,6 +1213,7 @@ export default function IdleGameInterface4() {
                                           updateActivity(activity.key, 1)
                                         }
                                         disabled={timePoints < activity.cost}
+                                        className="border-purple-600/50 hover:border-purple-500 text-purple-300 hover:text-purple-200"
                                       >
                                         <Plus className="w-4 h-4" />
                                       </Button>
@@ -884,13 +1231,16 @@ export default function IdleGameInterface4() {
               </>
             )}
 
+            {activeTab === "Stats" && renderStatsPage()}
+            {activeTab === "Recap" && renderCalendarPage()}
+
             {activeTab === "Travel" && (
               <>
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent mb-2">
                     Cultivation World Travel
                   </h2>
-                  <p className="text-muted-foreground">
+                  <p className="text-slate-400">
                     Explore different realms and continents in your cultivation
                     journey
                   </p>

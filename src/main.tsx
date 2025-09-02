@@ -8,6 +8,10 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import IdleGameInterface3 from "./app/Layout/idleGameInterface";
 import IdleGameInterface4 from "./app/page3";
 import IdleCultivationGame5 from "./app/page4";
+import IdleCultivationGame2 from "./app/page5";
+import IdleCultivationGame7 from "./app/page6";
+import IdleCultivationGameWithExploreBroken from "./app/page7";
+import IdleCultivationGameWithOtherExplore from "./app/page8";
 // import App from './App.tsx'
 
 createRoot(document.getElementById("root")!).render(
@@ -19,6 +23,10 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/3" element={<IdleGameInterface3 />} />
         <Route path="/4" element={<IdleGameInterface4 />} />
         <Route path="/5" element={<IdleCultivationGame5 />} />
+        <Route path="/6" element={<IdleCultivationGame2 />} />
+        <Route path="/7" element={<IdleCultivationGame7 />} />
+        <Route path="/8" element={<IdleCultivationGameWithExploreBroken />} />
+        <Route path="/9" element={<IdleCultivationGameWithOtherExplore />} />
       </Routes>
     </BrowserRouter>
     {/* <App /> */}

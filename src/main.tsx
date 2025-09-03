@@ -12,6 +12,7 @@ import IdleCultivationGame2 from "./app/page5";
 import IdleCultivationGame7 from "./app/page6";
 import IdleCultivationGameWithExploreBroken from "./app/page7";
 import IdleCultivationGameWithOtherExplore from "./app/page8";
+import IdleCultivationGame10 from "./app/page9";
 // import App from './App.tsx'
 
 createRoot(document.getElementById("root")!).render(
@@ -27,9 +28,8 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/7" element={<IdleCultivationGame7 />} />
         <Route path="/8" element={<IdleCultivationGameWithExploreBroken />} />
         <Route path="/9" element={<IdleCultivationGameWithOtherExplore />} />
+        <Route path="/10" element={<IdleCultivationGame10 />} />
       </Routes>
     </BrowserRouter>
-    {/* <App /> */}
-    {/* <IdleGameInterface2 /> */}
   </StrictMode>
 );

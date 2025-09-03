@@ -330,6 +330,14 @@ export const storyEntries = [
 
 export const currentLocation = "Azure Mountain Sect";
 
+export const currentTask = "Qi Cultivation";
+// const totalUsed = Object.entries(activities).reduce((sum, [key, value]) => {
+//   const activity = activityData.find((a) => a.key === key);
+//   return sum + value * (activity?.cost || 0);
+// }, 0);
+export const freeTime = 24; // 8 hours for sleep/eating
+export const moodBonus = Math.floor(freeTime * 2); // 2 mood points per free hour
+
 import { useState, useMemo } from "react";
 
 type ActivityKeys =

@@ -16,7 +16,41 @@ const categorizeActivities = () => {
   return categories;
 };
 
+const toggleCategory = (categoryName: string) => {
+  setCollapsedCategories((prev) => ({
+    ...prev,
+    [categoryName]: !prev[categoryName],
+  }));
+};
+
 const categories = categorizeActivities();
+
+const updateActivity = (key: string, change: number) => {
+  const activity = activityData.find((a) => a.key === key);
+  if (!activity) return;
+
+  const newValue = Math.max(
+    0,
+    activities[key as keyof typeof activities] + change
+  );
+  const currentTotal = Object.entries(activities).reduce(
+    (sum, [actKey, value]) => {
+      const actData = activityData.find((a) => a.key === actKey);
+      return (
+        sum +
+        (actKey === key
+          ? newValue * activity.cost
+          : value * (actData?.cost || 0))
+      );
+    },
+    0
+  );
+
+  if (currentTotal <= maxTimePoints) {
+    setActivities((prev) => ({ ...prev, [key]: newValue }));
+    setTimePoints(maxTimePoints - currentTotal);
+  }
+};
 
 const renderActivitiesPage = () => {
   return (

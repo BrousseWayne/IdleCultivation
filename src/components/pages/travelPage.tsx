@@ -170,3 +170,20 @@ const renderTravelMap = () => {
     </div>
   );
 };
+
+const renderTravelPage = () => {
+  return (
+    <div className="space-y-6">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent mb-2">
+          Travel the World
+        </h2>
+        <p className="text-muted-foreground">
+          Explore different locations and unlock new opportunities
+        </p>
+      </div>
+
+      {renderTravelMap()}
+    </div>
+  );
+};

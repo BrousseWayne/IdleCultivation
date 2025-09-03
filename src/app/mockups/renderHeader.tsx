@@ -1,12 +1,18 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Activity, Clock, MapPin, Mountain, Smile } from "lucide-react";
+import {
+  Activity,
+  Clock,
+  MapPin,
+  Mountain,
+  Settings,
+  Smile,
+} from "lucide-react";
 import {
   currentLocation,
   currentTask,
   freeTime,
   moodBonus,
-  useGameState,
 } from "./dataForPage9";
 
 export function Header() {

@@ -1,6 +1,6 @@
 // components/sidebar/SidebarNav.tsx
 import { Button } from "@/components/ui/button";
-import type { NavItem } from "@/types/props";
+import type { NavItem } from "@/types-3/props";
 
 const navItems: NavItem[] = [
   { label: "Explore", variant: "default" },

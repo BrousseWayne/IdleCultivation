@@ -53,197 +53,179 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { useState } from "react";
+import {
+  activeQuests,
+  activityData,
+  completedQuests,
+  currentLocation,
+  events,
+  locations,
+  useGameState,
+} from "./dataForPage9";
 
 export default function IdleCultivationGame10() {
-  const [activeTab, setActiveTab] = useState("Activities");
-  const [selectedTimeScale, setSelectedTimeScale] = useState("Day");
-  const [selectedYear, setSelectedYear] = useState(1);
-  const [selectedMonth, setSelectedMonth] = useState(1);
-  const [selectedEra, setSelectedEra] = useState(1); // 1 era = 1000 years
-  const [selectedDecade, setSelectedDecade] = useState(1);
-  const [calendarView, setCalendarView] = useState("month"); // month, year, decade, era
+  // const [activeTab, setActiveTab] = useState("Activities");
+  // const [selectedTimeScale, setSelectedTimeScale] = useState("Day");
+  // const [selectedYear, setSelectedYear] = useState(1);
+  // const [selectedMonth, setSelectedMonth] = useState(1);
+  // const [selectedEra, setSelectedEra] = useState(1); // 1 era = 1000 years
+  // const [selectedDecade, setSelectedDecade] = useState(1);
+  // const [calendarView, setCalendarView] = useState("month"); // month, year, decade, era
 
-  const [timeScale, setTimeScale] = useState("day");
-  const timeScales = {
-    day: { label: "Day", multiplier: 1, unit: "day" },
-    week: { label: "Week", multiplier: 7, unit: "week" },
-    month: { label: "Month", multiplier: 30, unit: "month" },
-  };
+  // const [timeScale, setTimeScale] = useState("day");
+  // const timeScales = {
+  //   day: { label: "Day", multiplier: 1, unit: "day" },
+  //   week: { label: "Week", multiplier: 7, unit: "week" },
+  //   month: { label: "Month", multiplier: 30, unit: "month" },
+  // };
 
-  const currentScale = timeScales[timeScale as keyof typeof timeScales];
-  const maxTimePoints = 24 * currentScale.multiplier;
-  const [timePoints, setTimePoints] = useState(maxTimePoints);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [gameSpeed, setGameSpeed] = useState(1);
-  const [statsCollapsed, setStatsCollapsed] = useState(false);
-  const [resourcesCollapsed, setResourcesCollapsed] = useState(false);
-  const [livingCollapsed, setLivingCollapsed] = useState(false);
+  // const currentScale = timeScales[timeScale as keyof typeof timeScales];
+  // const maxTimePoints = 24 * currentScale.multiplier;
+  // const [timePoints, setTimePoints] = useState(maxTimePoints);
+  // const [isPlaying, setIsPlaying] = useState(false);
+  // const [gameSpeed, setGameSpeed] = useState(1);
+  // const [statsCollapsed, setStatsCollapsed] = useState(false);
+  // const [resourcesCollapsed, setResourcesCollapsed] = useState(false);
+  // const [livingCollapsed, setLivingCollapsed] = useState(false);
 
-  const [selectedLocation, setSelectedLocation] = useState("Eastern Continent");
-  const [activities, setActivities] = useState({
-    sectDuties: 0,
-    alchemyWork: 0,
-    martialArts: 0,
-    qiCultivation: 0,
-    beastHunting: 0,
-    herbGathering: 0,
-    meditation: 0,
-    socializing: 0,
-    reading: 0,
-    crafting: 0,
-    cooking: 0,
-    shopping: 0,
-    resting: 0,
-    studying: 0,
-    painting: 0,
-    music: 0,
-    gaming: 0,
-    exploring: 0,
-    fishing: 0,
-    exercise: 0,
-  });
+  // const [selectedLocation, setSelectedLocation] = useState("Eastern Continent");
+  // const [activities, setActivities] = useState({
+  //   sectDuties: 0,
+  //   alchemyWork: 0,
+  //   martialArts: 0,
+  //   qiCultivation: 0,
+  //   beastHunting: 0,
+  //   herbGathering: 0,
+  //   meditation: 0,
+  //   socializing: 0,
+  //   reading: 0,
+  //   crafting: 0,
+  //   cooking: 0,
+  //   shopping: 0,
+  //   resting: 0,
+  //   studying: 0,
+  //   painting: 0,
+  //   music: 0,
+  //   gaming: 0,
+  //   exploring: 0,
+  //   fishing: 0,
+  //   exercise: 0,
+  // });
 
-  const [showDetailedView, setShowDetailedView] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<number | null>(null);
+  // const [showDetailedView, setShowDetailedView] = useState(false);
+  // const [selectedDate, setSelectedDate] = useState<number | null>(null);
 
-  const [collapsedCategories, setCollapsedCategories] = useState<
-    Record<string, boolean>
-  >({});
+  // const [collapsedCategories, setCollapsedCategories] = useState<
+  //   Record<string, boolean>
+  // >({});
 
-  const [exploreView, setExploreView] = useState("main");
-  const [eventLog, setEventLog] = useState([
-    "You arrive at the Whispering Forest. The ancient trees seem to watch your every move.",
-    "A gentle breeze carries the scent of medicinal herbs through the air.",
-  ]);
-  const [currentExploreLocation, setCurrentExploreLocation] =
-    useState("Whispering Forest");
+  // const [exploreView, setExploreView] = useState("main");
+  // const [eventLog, setEventLog] = useState([
+  //   "You arrive at the Whispering Forest. The ancient trees seem to watch your every move.",
+  //   "A gentle breeze carries the scent of medicinal herbs through the air.",
+  // ]);
+  // const [currentExploreLocation, setCurrentExploreLocation] =
+  //   useState("Whispering Forest");
 
-  const [inventoryItems, setInventoryItems] = useState([
-    {
-      id: 1,
-      name: "Iron Sword",
-      type: "weapon",
-      rarity: "common",
-      equipped: true,
-    },
-    {
-      id: 2,
-      name: "Leather Armor",
-      type: "armor",
-      rarity: "common",
-      equipped: true,
-    },
-    {
-      id: 3,
-      name: "Health Potion",
-      type: "consumable",
-      rarity: "common",
-      equipped: false,
-    },
-    {
-      id: 4,
-      name: "Spirit Ring",
-      type: "ring",
-      rarity: "rare",
-      equipped: false,
-    },
-    {
-      id: 5,
-      name: "Cultivation Manual",
-      type: "book",
-      rarity: "epic",
-      equipped: false,
-    },
-  ]);
+  // const [inventoryItems, setInventoryItems] = useState([
+  //   {
+  //     id: 1,
+  //     name: "Iron Sword",
+  //     type: "weapon",
+  //     rarity: "common",
+  //     equipped: true,
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Leather Armor",
+  //     type: "armor",
+  //     rarity: "common",
+  //     equipped: true,
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Health Potion",
+  //     type: "consumable",
+  //     rarity: "common",
+  //     equipped: false,
+  //   },
+  //   {
+  //     id: 4,
+  //     name: "Spirit Ring",
+  //     type: "ring",
+  //     rarity: "rare",
+  //     equipped: false,
+  //   },
+  //   {
+  //     id: 5,
+  //     name: "Cultivation Manual",
+  //     type: "book",
+  //     rarity: "epic",
+  //     equipped: false,
+  //   },
+  // ]);
 
-  const [equippedItems, setEquippedItems] = useState({
-    weapon: { id: 1, name: "Iron Sword", rarity: "common" },
-    armor: { id: 2, name: "Leather Armor", rarity: "common" },
-    helmet: null,
-    boots: null,
-    ring: null,
-    amulet: null,
-  });
-
-  const [quests, setQuests] = useState({
-    active: [
-      {
-        id: 1,
-        title: "First Steps",
-        description: "Complete your first cultivation session",
-        progress: 1,
-        maxProgress: 1,
-        reward: "10 Spirit Stones",
-      },
-      {
-        id: 2,
-        title: "Forest Explorer",
-        description: "Explore the Whispering Forest",
-        progress: 0,
-        maxProgress: 3,
-        reward: "Beast Core",
-      },
-    ],
-    completed: [
-      {
-        id: 0,
-        title: "Awakening",
-        description: "Begin your cultivation journey",
-        reward: "Basic Cultivation Manual",
-      },
-    ],
-  });
-
-  const activeQuests = [
-    {
-      id: 1,
-      title: "Clear the Forest",
-      description: "Eliminate the wild beasts in the Whispering Forest.",
-      progress: 60,
-      reward: "150 Spirit Stones",
-      timeLeft: "2 days",
-    },
-    {
-      id: 2,
-      title: "Gather Rare Herbs",
-      description: "Collect 10 rare herbs for the village alchemist.",
-      progress: 35,
-      reward: "Elixir of Minor Healing",
-      timeLeft: "4 days",
-    },
-  ];
-
-  const completedQuests = [
-    {
-      id: 3,
-      title: "Protect the Village",
-      description: "Defend the village from a bandit raid.",
-      reward: "Reputation with the villagers",
-      completedDate: "2024-01-15",
-    },
-    {
-      id: 4,
-      title: "Find Lost Artifact",
-      description: "Recover an ancient artifact from the ruins.",
-      reward: "Mysterious Amulet",
-      completedDate: "2024-01-10",
-    },
-  ];
-
-  const storyEntries = [
-    {
-      text: "You arrived in the village and started your new life.",
-      timestamp: "2024-01-20 10:30",
-    },
-    {
-      text: "You completed your first quest and earned the villagers' trust.",
-      timestamp: "2024-01-22 14:45",
-    },
-    {
-      text: "You discovered a hidden path in the forest.",
-      timestamp: "2024-01-25 08:12",
-    },
-  ];
+  // const [equippedItems, setEquippedItems] = useState({
+  //   weapon: { id: 1, name: "Iron Sword", rarity: "common" },
+  //   armor: { id: 2, name: "Leather Armor", rarity: "common" },
+  //   helmet: null,
+  //   boots: null,
+  //   ring: null,
+  //   amulet: null,
+  // });
+  const {
+    activeTab,
+    setActiveTab,
+    selectedTimeScale,
+    setSelectedTimeScale,
+    selectedYear,
+    setSelectedYear,
+    selectedMonth,
+    setSelectedMonth,
+    selectedEra,
+    setSelectedEra,
+    selectedDecade,
+    setSelectedDecade,
+    calendarView,
+    setCalendarView,
+    timeScale,
+    setTimeScale,
+    timeScales,
+    currentScale,
+    maxTimePoints,
+    timePoints,
+    setTimePoints,
+    isPlaying,
+    setIsPlaying,
+    gameSpeed,
+    setGameSpeed,
+    statsCollapsed,
+    setStatsCollapsed,
+    resourcesCollapsed,
+    setResourcesCollapsed,
+    livingCollapsed,
+    setLivingCollapsed,
+    selectedLocation,
+    setSelectedLocation,
+    activities,
+    setActivities,
+    showDetailedView,
+    setShowDetailedView,
+    selectedDate,
+    setSelectedDate,
+    collapsedCategories,
+    setCollapsedCategories,
+    exploreView,
+    setExploreView,
+    eventLog,
+    setEventLog,
+    currentExploreLocation,
+    setCurrentExploreLocation,
+    inventoryItems,
+    setInventoryItems,
+    equippedItems,
+    setEquippedItems,
+  } = useGameState();
 
   const toggleCategory = (categoryName: string) => {
     setCollapsedCategories((prev) => ({
@@ -251,246 +233,6 @@ export default function IdleCultivationGame10() {
       [categoryName]: !prev[categoryName],
     }));
   };
-
-  const activityData = [
-    {
-      key: "sectDuties",
-      name: "Sect Duties",
-      icon: Briefcase,
-      cost: 8,
-      reward: "+960 Spirit Stones",
-      category: "work",
-    },
-    {
-      key: "alchemyWork",
-      name: "Alchemy Work",
-      icon: Flame,
-      cost: 6,
-      reward: "+5 Alchemy Skill",
-      category: "work",
-    },
-    {
-      key: "martialArts",
-      name: "Martial Arts",
-      icon: Dumbbell,
-      cost: 4,
-      reward: "+60 Body Tempering",
-      category: "training",
-    },
-    {
-      key: "qiCultivation",
-      name: "Qi Cultivation",
-      icon: Mountain,
-      cost: 6,
-      reward: "+90 Cultivation Progress",
-      category: "training",
-    },
-    {
-      key: "beastHunting",
-      name: "Beast Hunting",
-      icon: Zap,
-      cost: 8,
-      reward: "+200 Beast Cores",
-      category: "training",
-    },
-    {
-      key: "herbGathering",
-      name: "Herb Gathering",
-      icon: TreePine,
-      cost: 4,
-      reward: "+50 Spirit Herbs",
-      category: "work",
-    },
-    {
-      key: "meditation",
-      name: "Meditation",
-      icon: Wind,
-      cost: 2,
-      reward: "+30 Soul Strength",
-      category: "training",
-    },
-    {
-      key: "socializing",
-      name: "Socializing",
-      icon: Heart,
-      cost: 3,
-      reward: "+20 Relationship Points",
-      category: "social",
-    },
-    {
-      key: "reading",
-      name: "Reading Scrolls",
-      icon: Book,
-      cost: 2,
-      reward: "+15 Knowledge",
-      category: "study",
-    },
-    {
-      key: "crafting",
-      name: "Weapon Crafting",
-      icon: Hammer,
-      cost: 5,
-      reward: "+40 Crafting Skill",
-      category: "work",
-    },
-    {
-      key: "cooking",
-      name: "Spiritual Cooking",
-      icon: Utensils,
-      cost: 2,
-      reward: "+25 Cooking Skill",
-      category: "life",
-    },
-    {
-      key: "shopping",
-      name: "Market Trading",
-      icon: ShoppingCart,
-      cost: 1,
-      reward: "+10 Trading Skill",
-      category: "life",
-    },
-    {
-      key: "resting",
-      name: "Resting",
-      icon: Home,
-      cost: 1,
-      reward: "+5 Health Recovery",
-      category: "life",
-    },
-    {
-      key: "studying",
-      name: "Technique Study",
-      icon: GraduationCap,
-      cost: 3,
-      reward: "+35 Technique Mastery",
-      category: "study",
-    },
-    {
-      key: "painting",
-      name: "Spirit Painting",
-      icon: Palette,
-      cost: 2,
-      reward: "+20 Artistic Skill",
-      category: "hobby",
-    },
-    {
-      key: "music",
-      name: "Cultivation Music",
-      icon: Music,
-      cost: 2,
-      reward: "+15 Musical Skill",
-      category: "hobby",
-    },
-    {
-      key: "gaming",
-      name: "Strategy Games",
-      icon: Gamepad2,
-      cost: 1,
-      reward: "+10 Strategic Thinking",
-      category: "hobby",
-    },
-    {
-      key: "exploring",
-      name: "Local Exploration",
-      icon: Compass,
-      cost: 3,
-      reward: "+25 Discovery Points",
-      category: "adventure",
-    },
-    {
-      key: "fishing",
-      name: "Spirit Fishing",
-      icon: Fish,
-      cost: 2,
-      reward: "+30 Spirit Fish",
-      category: "hobby",
-    },
-    {
-      key: "exercise",
-      name: "Physical Exercise",
-      icon: Bike,
-      cost: 2,
-      reward: "+20 Stamina",
-      category: "training",
-    },
-  ];
-
-  const locations = [
-    {
-      name: "Eastern Continent",
-      travel: 0,
-      description: "Current Location - Peaceful cultivation lands",
-      x: 50,
-      y: 40,
-      connections: ["Central Plains", "Northern Mountains"],
-    },
-    {
-      name: "Western Desert",
-      travel: 12,
-      description: "Harsh desert with ancient ruins",
-      x: 15,
-      y: 60,
-      connections: ["Central Plains", "Forbidden Valley"],
-    },
-    {
-      name: "Northern Mountains",
-      travel: 8,
-      description: "Dangerous peaks with rare herbs",
-      x: 50,
-      y: 15,
-      connections: ["Eastern Continent", "Sky Realm"],
-    },
-    {
-      name: "Southern Seas",
-      travel: 16,
-      description: "Mysterious islands and sea beasts",
-      x: 40,
-      y: 85,
-      connections: ["Central Plains", "Underworld Gates"],
-    },
-    {
-      name: "Central Plains",
-      travel: 6,
-      description: "Bustling trade hub and sects",
-      x: 35,
-      y: 50,
-      connections: ["Eastern Continent", "Western Desert", "Southern Seas"],
-    },
-    {
-      name: "Forbidden Valley",
-      travel: 24,
-      description: "Legendary cultivation ground",
-      x: 20,
-      y: 30,
-      connections: ["Western Desert", "Sky Realm"],
-    },
-    {
-      name: "Sky Realm",
-      travel: 48,
-      description: "Floating islands in the clouds",
-      x: 70,
-      y: 20,
-      connections: ["Northern Mountains", "Forbidden Valley"],
-    },
-    {
-      name: "Underworld Gates",
-      travel: 36,
-      description: "Dark realm of shadows",
-      x: 80,
-      y: 75,
-      connections: ["Southern Seas"],
-    },
-  ];
-
-  const resources = {
-    money: 15420,
-    gems: 847,
-    spiritStones: 2340,
-    pills: 156,
-    artifacts: 23,
-  };
-
-  const currentLocation = "Azure Mountain Sect";
 
   const updateActivity = (key: string, change: number) => {
     const activity = activityData.find((a) => a.key === key);
@@ -577,321 +319,6 @@ export default function IdleCultivationGame10() {
 
   const categories = categorizeActivities();
 
-  const renderTravelMap = () => {
-    const currentLoc = locations.find((loc) => loc.name === selectedLocation);
-
-    return (
-      <div className="space-y-6">
-        <div className="mb-2 p-2 bg-accent/10 rounded-lg border border-accent/20">
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-accent" />
-            <span className="font-semibold text-sm">Current Location:</span>
-            <span className="text-accent text-sm">{selectedLocation}</span>
-          </div>
-        </div>
-
-        <Card className="bg-card border-border/50">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Cultivation World Map</CardTitle>
-          </CardHeader>
-          <CardContent className="p-3">
-            <div className="relative w-full h-80 bg-background rounded-lg border border-border/30 overflow-hidden">
-              <div className="absolute inset-0 opacity-5">
-                <div className="absolute top-8 left-12 text-6xl text-slate-400">
-                  ☯
-                </div>
-                <div className="absolute top-20 right-16 text-4xl text-slate-400">
-                  ⚡
-                </div>
-                <div className="absolute bottom-16 left-20 text-5xl text-slate-400">
-                  🏔
-                </div>
-                <div className="absolute bottom-12 right-12 text-4xl text-slate-400">
-                  🌊
-                </div>
-                <div className="absolute top-1/2 left-1/4 text-3xl text-slate-400">
-                  🔥
-                </div>
-                <div className="absolute top-1/3 right-1/3 text-3xl text-slate-400">
-                  💨
-                </div>
-              </div>
-
-              <div className="absolute inset-0 opacity-10">
-                <svg className="w-full h-full">
-                  <defs>
-                    <pattern
-                      id="energy-grid"
-                      width="40"
-                      height="40"
-                      patternUnits="userSpaceOnUse"
-                    >
-                      <path
-                        d="M 40 0 L 0 0 0 40"
-                        fill="none"
-                        stroke="rgb(148 163 184)"
-                        strokeWidth="0.5"
-                        opacity="0.3"
-                      />
-                    </pattern>
-                  </defs>
-                  <rect width="100%" height="100%" fill="url(#energy-grid)" />
-                </svg>
-              </div>
-
-              <svg
-                className="absolute inset-0 w-full h-full"
-                style={{ zIndex: 1 }}
-              >
-                {locations.map((location) =>
-                  location.connections.map((connectedName) => {
-                    const connected = locations.find(
-                      (loc) => loc.name === connectedName
-                    );
-                    if (!connected) return null;
-
-                    return (
-                      <line
-                        key={`${location.name}-${connectedName}`}
-                        x1={`${location.x}%`}
-                        y1={`${location.y}%`}
-                        x2={`${connected.x}%`}
-                        y2={`${connected.y}%`}
-                        stroke="rgb(148 163 184 / 0.4)"
-                        strokeWidth="2"
-                        strokeDasharray="5,5"
-                      />
-                    );
-                  })
-                )}
-              </svg>
-
-              {locations.map((location) => (
-                <div
-                  key={location.name}
-                  className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all hover:scale-110 group ${
-                    location.name === selectedLocation ? "z-20" : "z-10"
-                  }`}
-                  style={{ left: `${location.x}%`, top: `${location.y}%` }}
-                  onClick={() => setSelectedLocation(location.name)}
-                >
-                  <div
-                    className={`relative ${
-                      location.name === selectedLocation ? "animate-pulse" : ""
-                    }`}
-                  >
-                    <div
-                      className={`w-4 h-4 rounded-full border-2 ${
-                        location.name === selectedLocation
-                          ? "bg-accent border-accent shadow-lg shadow-accent/50"
-                          : location.travel === 0
-                          ? "bg-primary border-primary"
-                          : "bg-slate-600 border-slate-400 hover:bg-slate-500"
-                      }`}
-                    />
-                    {location.name === selectedLocation && (
-                      <div className="absolute -inset-2 rounded-full border-2 border-accent/50 animate-ping" />
-                    )}
-                  </div>
-
-                  <div className="absolute top-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="bg-background/95 backdrop-blur-sm border border-border rounded px-2 py-1 text-xs shadow-lg">
-                      <div className="font-semibold text-foreground">
-                        {location.name}
-                      </div>
-                      {location.travel > 0 && (
-                        <div className="text-muted-foreground">
-                          {location.travel}h travel
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          {locations
-            .filter((loc) => loc.name !== selectedLocation)
-            .map((location) => (
-              <Card
-                key={location.name}
-                className="cursor-pointer transition-all hover:scale-105 bg-muted/30 border-border/30 hover:border-accent/30"
-                onClick={() => setSelectedLocation(location.name)}
-              >
-                <CardContent className="p-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <h4 className="font-semibold text-sm">{location.name}</h4>
-                    <Badge variant="outline" className="text-xs">
-                      {location.travel}h
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground mb-2">
-                    {location.description}
-                  </p>
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Clock className="w-4 h-4" />
-                    <span>Travel Time: {location.travel} hours</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-        </div>
-
-        <div className="p-3 bg-muted rounded-lg">
-          <p className="text-sm text-muted-foreground text-center">
-            Travel consumes time points and may unlock new activities and
-            opportunities
-          </p>
-        </div>
-      </div>
-    );
-  };
-
-  const renderStatsPage = () => {
-    return (
-      <div className="space-y-6">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent mb-2">
-            Cultivator Statistics
-          </h2>
-          <p className="text-muted-foreground">
-            Comprehensive overview of your cultivation progress and abilities
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">
-          <Card className="bg-card border-border/50">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <User className="w-4 h-4 text-purple-400" />
-                Core Stats
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 p-3">
-              <div className="flex justify-between items-center py-1">
-                <span className="text-sm text-slate-400 font-semibold">
-                  Cultivation Progress
-                </span>
-                <span className="font-mono text-primary text-sm">
-                  2,847/3,000
-                </span>
-              </div>
-              <div className="h-px bg-gradient-to-r from-transparent via-slate-700/30 to-transparent"></div>
-              <div className="flex justify-between items-center py-1">
-                <span className="text-sm text-slate-400 font-semibold">
-                  Body Tempering
-                </span>
-                <span className="font-mono text-accent text-sm">78/100</span>
-              </div>
-              <div className="h-px bg-gradient-to-r from-transparent via-slate-700/30 to-transparent"></div>
-              <div className="py-1">
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-slate-400 font-semibold">HP</span>
-                </div>
-                <div className="relative group cursor-help">
-                  <Progress
-                    value={100}
-                    className="h-2 bg-slate-800 [&>div]:bg-green-500"
-                  />
-                  <div className="hidden group-hover:block absolute -top-8 right-0 bg-background/95 backdrop-blur-sm border border-border rounded px-2 py-1 text-xs whitespace-nowrap">
-                    100/100 HP
-                  </div>
-                </div>
-              </div>
-              <div className="py-1">
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-slate-400 font-semibold">Hunger</span>
-                </div>
-                <div className="relative group cursor-help">
-                  <Progress
-                    value={85}
-                    className="h-2 bg-slate-800 [&>div]:bg-orange-500"
-                  />
-                  <div className="hidden group-hover:block absolute -top-8 right-0 bg-background/95 backdrop-blur-sm border border-border rounded px-2 py-1 text-xs whitespace-nowrap">
-                    85/100 Hunger
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-card border-border/50">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Briefcase className="w-4 h-4 text-secondary" />
-                Skills & Abilities
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 p-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">
-                  Crafting Skill
-                </span>
-                <span className="font-mono text-primary text-sm">67/100</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">
-                  Trading Skill
-                </span>
-                <span className="font-mono text-accent text-sm">34/100</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">
-                  Cooking Skill
-                </span>
-                <span className="font-mono text-secondary text-sm">45/100</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">
-                  Musical Skill
-                </span>
-                <span className="font-mono text-destructive text-sm">
-                  12/100
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-card border-border/50">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Heart className="w-4 h-4 text-accent" />
-                Social & Mental
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 p-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">
-                  Relationship Points
-                </span>
-                <span className="font-mono text-primary text-sm">156</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Knowledge</span>
-                <span className="font-mono text-accent text-sm">89</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">
-                  Strategic Thinking
-                </span>
-                <span className="font-mono text-secondary text-sm">43</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">
-                  Artistic Skill
-                </span>
-                <span className="font-mono text-destructive text-sm">28</span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  };
-
   const getCalendarTitle = () => {
     switch (calendarView) {
       case "era":
@@ -914,47 +341,6 @@ export default function IdleCultivationGame10() {
         return "Calendar";
     }
   };
-
-  const events = [
-    {
-      date: 15,
-      type: "past",
-      activity: "Qi Cultivation",
-      result: "Breakthrough to 8th layer",
-      category: "cultivation",
-    },
-    {
-      date: 18,
-      type: "past",
-      activity: "Beast Hunting",
-      result: "Defeated Iron Claw Bear",
-      category: "combat",
-    },
-    {
-      date: 22,
-      type: "future",
-      activity: "Sect Tournament",
-      result: "Preliminary rounds begin",
-      category: "event",
-    },
-    {
-      date: 25,
-      type: "future",
-      activity: "Auction House",
-      result: "Rare pill auction",
-      category: "event",
-    },
-    {
-      date: 28,
-      type: "past",
-      activity: "Alchemy Work",
-      result: "Crafted 5 Healing Pills",
-      category: "crafting",
-    },
-  ];
-
-  const currentDay = 20; // Current day in the month
-  const daysInMonth = 30;
 
   const renderCalendarPage = () => {
     if (showDetailedView && selectedDate) {

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Flame, Mountain } from "lucide-react";
-import type { Opponent } from "@/types/props";
+import type { Opponent } from "@/types-3/props";
 
 export function CultivationGrounds({ opponent }: { opponent: Opponent }) {
   return (

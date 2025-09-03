@@ -1,7 +1,7 @@
 // components/layout/Header.tsx
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { HeaderProps, ResourceDisplayProps } from "@/types/props";
+import type { HeaderProps, ResourceDisplayProps } from "@/types-3/props";
 import { Coins, Zap, Settings, Flame, Wind, Mountain } from "lucide-react";
 
 export function Header({ title, realm, stage, resources }: HeaderProps) {

@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star } from "lucide-react";
-import type { DaoAchievementsProps } from "@/types/props";
+import type { DaoAchievementsProps } from "@/types-3/props";
 
 export function DaoAchievements({ achievements }: DaoAchievementsProps) {
   return (

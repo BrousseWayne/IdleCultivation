@@ -1,7 +1,7 @@
 // components/sidebar/CultivatorStats.tsx
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import type { Stat } from "@/types/props";
+import type { Stat } from "@/types-3/props";
 import { User } from "lucide-react";
 
 export function CultivatorStats({ stats }: { stats: Stat[] }) {

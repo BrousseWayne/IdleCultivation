@@ -1,6 +1,6 @@
 // components/sidebar/SpiritualResources.tsx
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { SpiritualResourcesProps } from "@/types/props";
+import type { SpiritualResourcesProps } from "@/types-3/props";
 
 export function SpiritualResources({ resources }: SpiritualResourcesProps) {
   return (

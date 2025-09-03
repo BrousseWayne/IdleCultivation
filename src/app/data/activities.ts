@@ -1,4 +1,4 @@
-import type { Activity } from "@/types/activities";
+import type { Activity } from "@/types-3/activities";
 import {
   Briefcase,
   Dumbbell,

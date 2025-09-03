@@ -3,7 +3,7 @@ import type {
   Opponent,
   SpiritualResource,
   Stat,
-} from "@/types/props";
+} from "@/types-3/props";
 import { CultivationGrounds } from "./cultivationGrounds";
 import { CultivatorStats } from "./cultivatorStats";
 import { DaoAchievements } from "./daoAchievements";

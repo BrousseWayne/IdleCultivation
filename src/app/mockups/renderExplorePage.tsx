@@ -1,4 +1,26 @@
-function renderExplorePage() {
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Activity,
+  ArrowLeft,
+  Compass,
+  Heart,
+  Leaf,
+  MapPin,
+  ScrollText,
+  ShoppingBag,
+  Sword,
+  Users,
+} from "lucide-react";
+import { useGameState } from "./dataForPage9";
+
+export function RenderExplorePage() {
+  const {
+    exploreView,
+    setExploreView,
+    eventLog,
+    setEventLog,
+    currentExploreLocation,
+  } = useGameState();
   if (exploreView === "shop") {
     return (
       <div className="space-y-4">

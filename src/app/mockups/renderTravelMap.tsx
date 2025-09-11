@@ -1,4 +1,8 @@
-const renderTravelMap = () => {
+import { MapPin } from "lucide-react";
+import { locations } from "./dataForPage9";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+export const renderTravelMap = () => {
   const currentLoc = locations.find((loc) => loc.name === selectedLocation);
 
   return (
@@ -171,7 +175,7 @@ const renderTravelMap = () => {
   );
 };
 
-const renderTravelPage = () => {
+export const renderTravelPage = () => {
   return (
     <div className="space-y-6">
       <div className="mb-6">

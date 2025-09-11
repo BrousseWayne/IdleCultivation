@@ -1,4 +1,7 @@
-const renderStoryPage = () => {
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+
+export const renderStoryPage = () => {
   const storyEntries = [
     {
       time: "Day 1, Morning",

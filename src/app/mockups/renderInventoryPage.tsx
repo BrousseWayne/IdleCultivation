@@ -1,4 +1,7 @@
-function renderInventoryPage() {
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Package } from "lucide-react";
+
+export function renderInventoryPage() {
   const equipItem = (item) => {
     if (item.type in equippedItems) {
       setEquippedItems((prev) => ({ ...prev, [item.type]: item }));

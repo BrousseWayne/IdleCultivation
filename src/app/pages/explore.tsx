@@ -1,4 +1,26 @@
-function renderExplorePage() {
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Activity,
+  ArrowLeft,
+  Compass,
+  Heart,
+  Leaf,
+  MapPin,
+  ScrollText,
+  ShoppingBag,
+  Sword,
+  Users,
+} from "lucide-react";
+import { useGameState } from "../contexts/gameStateContext";
+
+export function RenderExplorePage() {
+  const {
+    exploreView,
+    setExploreView,
+    eventLog,
+    setEventLog,
+    currentExploreLocation,
+  } = useGameState();
   if (exploreView === "shop") {
     return (
       <div className="space-y-4">
@@ -200,7 +222,6 @@ function renderExplorePage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Player */}
           <Card className="bg-black border-slate-700/50">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg text-green-400">You</CardTitle>
@@ -275,7 +296,6 @@ function renderExplorePage() {
           </Card>
         </div>
 
-        {/* Combat Actions */}
         <Card className="bg-black border-slate-700/50">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg text-slate-200">Actions</CardTitle>
@@ -301,7 +321,6 @@ function renderExplorePage() {
     );
   }
 
-  // Main explore view
   const locationData = {
     "Whispering Forest": {
       description:
@@ -465,7 +484,6 @@ function renderExplorePage() {
         </Card>
       </div>
 
-      {/* Event Log */}
       <Card className="bg-black border-slate-700/50">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2 text-slate-200">

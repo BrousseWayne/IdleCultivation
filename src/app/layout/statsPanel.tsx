@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronDown, Coins, Home, User } from "lucide-react";
-import { useGameState } from "./gameStateContext";
+import { useGameState } from "../contexts/gameStateContext";
 
 export function StatsPanel() {
   const {

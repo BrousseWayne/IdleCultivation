@@ -1,4 +1,10 @@
-function renderInventoryPage() {
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Package } from "lucide-react";
+import { useGameState } from "../contexts/gameStateContext";
+
+export function RenderInventoryPage() {
+  const { setEquippedItems, setInventoryItems, equippedItems, inventoryItems } =
+    useGameState();
   const equipItem = (item) => {
     if (item.type in equippedItems) {
       setEquippedItems((prev) => ({ ...prev, [item.type]: item }));

@@ -1,13 +1,13 @@
-import { useGameState } from "./gameStateContext";
-import { RenderActivitiesPage } from "./renderActivitiesPage";
-import { RenderCalendarPage } from "./renderCalendarPage";
-import { RenderExplorePage } from "./renderExplorePage";
-import { RenderInventoryPage } from "./renderInventoryPage";
-import { RenderLifestylePage } from "./renderLifestylePage";
-import { RenderQuestsPage } from "./renderQuestPAge";
-import { RenderStatsPage } from "./renderStatsPage";
-import { RenderStoryPage } from "./renderStoryPage";
-import { RenderTravelPage } from "./renderTravelMap";
+import { useGameState } from "../contexts/gameStateContext";
+import { RenderActivitiesPage } from "../pages/activities";
+import { RenderCalendarPage } from "../pages/calendar";
+import { RenderExplorePage } from "../pages/explore";
+import { RenderInventoryPage } from "../pages/inventory";
+import { RenderLifestylePage } from "../pages/lifestyle";
+import { RenderQuestsPage } from "../pages/quests";
+import { RenderStatsPage } from "../pages/stats";
+import { RenderStoryPage } from "../pages/story";
+import { RenderTravelPage } from "../pages/travel";
 
 export function GameZone() {
   const { activeTab } = useGameState();

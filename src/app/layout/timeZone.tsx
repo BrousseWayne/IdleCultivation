@@ -8,7 +8,7 @@ import {
   Pause,
   Play,
 } from "lucide-react";
-import { useGameState } from "./gameStateContext";
+import { useGameState } from "../contexts/gameStateContext";
 
 export function RenderTimeZone() {
   const {

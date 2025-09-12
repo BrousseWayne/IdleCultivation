@@ -1,24 +1,71 @@
-const categorizeActivities = () => {
-  const categories = {
-    work: [] as typeof activityData,
-    training: [] as typeof activityData,
-    study: [] as typeof activityData,
-    social: [] as typeof activityData,
-    life: [] as typeof activityData,
-    hobby: [] as typeof activityData,
-    adventure: [] as typeof activityData,
+import { ChevronDown, Minus, Plus } from "lucide-react";
+import { activityData } from "../data/data";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useGameState } from "../contexts/gameStateContext";
+
+export const RenderActivitiesPage = () => {
+  const {
+    maxTimePoints,
+    setTimePoints,
+    activities,
+    setActivities,
+    collapsedCategories,
+    setCollapsedCategories,
+  } = useGameState();
+  const categorizeActivities = () => {
+    const categories = {
+      work: [] as typeof activityData,
+      training: [] as typeof activityData,
+      study: [] as typeof activityData,
+      social: [] as typeof activityData,
+      life: [] as typeof activityData,
+      hobby: [] as typeof activityData,
+      adventure: [] as typeof activityData,
+    };
+
+    activityData.forEach((activity) => {
+      categories[activity.category as keyof typeof categories].push(activity);
+    });
+
+    return categories;
   };
 
-  activityData.forEach((activity) => {
-    categories[activity.category as keyof typeof categories].push(activity);
-  });
+  const toggleCategory = (categoryName: string) => {
+    setCollapsedCategories((prev) => ({
+      ...prev,
+      [categoryName]: !prev[categoryName],
+    }));
+  };
 
-  return categories;
-};
+  const categories = categorizeActivities();
 
-const categories = categorizeActivities();
+  const updateActivity = (key: string, change: number) => {
+    const activity = activityData.find((a) => a.key === key);
+    if (!activity) return;
 
-const renderActivitiesPage = () => {
+    const newValue = Math.max(
+      0,
+      activities[key as keyof typeof activities] + change
+    );
+    const currentTotal = Object.entries(activities).reduce(
+      (sum, [actKey, value]) => {
+        const actData = activityData.find((a) => a.key === actKey);
+        return (
+          sum +
+          (actKey === key
+            ? newValue * activity.cost
+            : value * (actData?.cost || 0))
+        );
+      },
+      0
+    );
+
+    if (currentTotal <= maxTimePoints) {
+      setActivities((prev) => ({ ...prev, [key]: newValue }));
+      setTimePoints(maxTimePoints - currentTotal);
+    }
+  };
   return (
     <div className="space-y-4">
       <div className="mb-4">
@@ -44,7 +91,6 @@ const renderActivitiesPage = () => {
             />
             {categoryName}
           </button>
-          {/* Added conditional rendering for collapsible categories */}
           {!collapsedCategories[categoryName] && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
               {categoryActivities.map((activity) => (

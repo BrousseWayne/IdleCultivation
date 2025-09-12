@@ -1,4 +1,16 @@
-const getCalendarTitle = () => {
+import { Button } from "@/components/ui/button";
+import { currentDay, daysInMonth, events } from "../data/data";
+import { Badge, Calendar, ChevronLeft } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useGameState } from "../contexts/gameStateContext";
+
+const getCalendarTitle = (
+  calendarView,
+  selectedDecade,
+  selectedEra,
+  selectedMonth,
+  selectedYear
+) => {
   switch (calendarView) {
     case "era":
       return `Era ${selectedEra} (Years ${(selectedEra - 1) * 1000 + 1}-${
@@ -21,7 +33,23 @@ const getCalendarTitle = () => {
   }
 };
 
-const renderCalendarPage = () => {
+export const RenderCalendarPage = () => {
+  const {
+    calendarView,
+    selectedDecade,
+    selectedEra,
+    selectedMonth,
+    selectedYear,
+    showDetailedView,
+    selectedDate,
+    setShowDetailedView,
+    setSelectedEra,
+    setSelectedDecade,
+    setSelectedYear,
+    setSelectedMonth,
+    setCalendarView,
+    setSelectedDate,
+  } = useGameState();
   if (showDetailedView && selectedDate) {
     const dayEvents = events.filter((e) => e.date === selectedDate);
     return (
@@ -187,7 +215,13 @@ const renderCalendarPage = () => {
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-base">
             <Calendar className="w-4 h-4 text-purple-400" />
-            {getCalendarTitle()}
+            {getCalendarTitle(
+              calendarView,
+              selectedDecade,
+              selectedEra,
+              selectedMonth,
+              selectedYear
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-3">

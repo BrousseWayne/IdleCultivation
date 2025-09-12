@@ -13,7 +13,7 @@ import {
   currentTask,
   freeTime,
   moodBonus,
-} from "./dataForPage9";
+} from "../data/data";
 
 export function Header() {
   return (

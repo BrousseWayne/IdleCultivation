@@ -9,9 +9,9 @@ import {
   Package,
   Target,
 } from "lucide-react";
-import { useGameState } from "./gameStateContext";
+import { useGameState } from "../contexts/gameStateContext";
 
-export function RenderSidenav() {
+export function SideNavigationBar() {
   const { activeTab, setActiveTab } = useGameState();
   console.log(activeTab);
   return (

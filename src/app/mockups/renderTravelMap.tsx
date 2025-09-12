@@ -1,8 +1,10 @@
-import { MapPin } from "lucide-react";
-import { locations } from "./dataForPage9";
+import { Clock, MapPin } from "lucide-react";
+import { locations, useGameState } from "./dataForPage9";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
-export const renderTravelMap = () => {
+export const RenderTravelMap = () => {
+  const { selectedLocation, setSelectedLocation } = useGameState();
   const currentLoc = locations.find((loc) => loc.name === selectedLocation);
 
   return (
@@ -175,7 +177,7 @@ export const renderTravelMap = () => {
   );
 };
 
-export const renderTravelPage = () => {
+export const RenderTravelPage = () => {
   return (
     <div className="space-y-6">
       <div className="mb-6">
@@ -187,7 +189,7 @@ export const renderTravelPage = () => {
         </p>
       </div>
 
-      {renderTravelMap()}
+      {RenderTravelMap()}
     </div>
   );
 };

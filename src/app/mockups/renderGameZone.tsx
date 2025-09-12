@@ -1,24 +1,27 @@
 import { useGameState } from "./dataForPage9";
 import { RenderActivitiesPage } from "./renderActivitiesPage";
-import { renderInventoryPage } from "./renderInventoryPage";
+import { RenderCalendarPage } from "./renderCalendarPage";
+import { RenderExplorePage } from "./renderExplorePage";
+import { RenderInventoryPage } from "./renderInventoryPage";
+import { RenderLifestylePage } from "./renderLifestylePage";
 import { renderQuestsPage } from "./renderQuestPAge";
 import { renderStatsPage } from "./renderStatsPage";
-import { renderStoryPage } from "./renderStoryPage";
-import { renderTravelPage } from "./renderTravelMap";
+import { RenderStoryPage } from "./renderStoryPage";
+import { RenderTravelPage } from "./renderTravelMap";
 
 export function GameZone() {
   const { activeTab } = useGameState();
   return (
     <div className="flex-1 p-4 overflow-y-auto" style={{ marginLeft: "28rem" }}>
-      {activeTab === "Explore" && renderExplorePage()}
-      {activeTab === "Inventory" && renderInventoryPage()}
+      {activeTab === "Explore" && RenderExplorePage()}
+      {activeTab === "Inventory" && RenderInventoryPage()}
       {activeTab === "Activities" && RenderActivitiesPage()}
       {activeTab === "Quests" && renderQuestsPage()}
-      {activeTab === "Lifestyle" && renderLifestylePage()}
-      {activeTab === "Travel" && renderTravelPage()}
+      {activeTab === "Lifestyle" && RenderLifestylePage()}
+      {activeTab === "Travel" && RenderTravelPage()}
       {activeTab === "Stats" && renderStatsPage()}
-      {activeTab === "Recap" && renderCalendarPage()}
-      {activeTab === "Story" && renderStoryPage()}
+      {activeTab === "Recap" && RenderCalendarPage()}
+      {activeTab === "Story" && RenderStoryPage()}
     </div>
   );
 }

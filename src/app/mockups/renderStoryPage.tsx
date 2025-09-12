@@ -1,40 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { storyEntries } from "./dataForPage9";
 
-export const renderStoryPage = () => {
-  const storyEntries = [
-    {
-      time: "Day 1, Morning",
-      entry:
-        "You awakened as a humble farmer in the Azure Mountain region. At 23 years old, your mortal body yearns for something greater than tilling fields.",
-      type: "narrative",
-    },
-    {
-      time: "Day 1, Afternoon",
-      entry:
-        "While working in the fields, you discovered a strange glowing stone. Upon touching it, visions of immortal cultivators filled your mind.",
-      type: "discovery",
-    },
-    {
-      time: "Day 2, Dawn",
-      entry:
-        "You traveled to the Azure Mountain Sect and begged the outer disciples for a chance to join. After demonstrating your determination, Elder Chen agreed to test your spiritual roots.",
-      type: "journey",
-    },
-    {
-      time: "Day 3, Evening",
-      entry:
-        "Your spiritual roots were deemed 'acceptable' - not genius level, but sufficient for cultivation. You were accepted as an outer disciple.",
-      type: "achievement",
-    },
-    {
-      time: "Day 5, Night",
-      entry:
-        "You ventured into the Whispering Forest and hunted 47 Spirit Rabbits, earning your first combat experience and 340 Spirit Stones.",
-      type: "combat",
-    },
-  ];
-
+export const RenderStoryPage = () => {
   return (
     <div className="space-y-4">
       <div className="mb-4">
@@ -46,11 +14,9 @@ export const renderStoryPage = () => {
         </p>
       </div>
 
-      {/* Reduced spacing between story entries from space-y-3 to space-y-2 */}
       <div className="space-y-2 max-h-96 overflow-y-auto">
         {storyEntries.map((entry, index) => (
           <Card key={index} className="bg-card border-border/50 py-0">
-            {/* Reduced card padding from p-3 to p-2 */}
             <CardContent className="p-2">
               <div className="flex items-start gap-2">
                 <div className="flex-shrink-0">

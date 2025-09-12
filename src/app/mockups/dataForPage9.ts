@@ -313,21 +313,6 @@ export const completedQuests = [
   },
 ];
 
-export const storyEntries = [
-  {
-    text: "You arrived in the village and started your new life.",
-    timestamp: "2024-01-20 10:30",
-  },
-  {
-    text: "You completed your first quest and earned the villagers' trust.",
-    timestamp: "2024-01-22 14:45",
-  },
-  {
-    text: "You discovered a hidden path in the forest.",
-    timestamp: "2024-01-25 08:12",
-  },
-];
-
 export const currentLocation = "Azure Mountain Sect";
 
 export const currentTask = "Qi Cultivation";
@@ -591,6 +576,40 @@ export function useGameState() {
   );
 }
 
+//timestamp wasnt stupid as a field in story entries
+export const storyEntries = [
+  {
+    time: "Day 1, Morning",
+    entry:
+      "You awakened as a humble farmer in the Azure Mountain region. At 23 years old, your mortal body yearns for something greater than tilling fields.",
+    type: "narrative",
+  },
+  {
+    time: "Day 1, Afternoon",
+    entry:
+      "While working in the fields, you discovered a strange glowing stone. Upon touching it, visions of immortal cultivators filled your mind.",
+    type: "discovery",
+  },
+  {
+    time: "Day 2, Dawn",
+    entry:
+      "You traveled to the Azure Mountain Sect and begged the outer disciples for a chance to join. After demonstrating your determination, Elder Chen agreed to test your spiritual roots.",
+    type: "journey",
+  },
+  {
+    time: "Day 3, Evening",
+    entry:
+      "Your spiritual roots were deemed 'acceptable' - not genius level, but sufficient for cultivation. You were accepted as an outer disciple.",
+    type: "achievement",
+  },
+  {
+    time: "Day 5, Night",
+    entry:
+      "You ventured into the Whispering Forest and hunted 47 Spirit Rabbits, earning your first combat experience and 340 Spirit Stones.",
+    type: "combat",
+  },
+];
+
 export const events = [
   {
     date: 15,
@@ -631,3 +650,93 @@ export const events = [
 
 export const currentDay = 20; // Current day in the month
 export const daysInMonth = 30;
+
+export const lifestyleOptions = [
+  {
+    category: "Housing",
+    options: [
+      {
+        name: "Shabby Hut",
+        cost: 0,
+        current: false,
+        description: "Basic shelter, no comfort bonus",
+      },
+      {
+        name: "Small Cottage",
+        cost: 500,
+        current: true,
+        description: "Modest living, +10% XP bonus",
+      },
+      {
+        name: "Comfortable House",
+        cost: 2000,
+        current: false,
+        description: "Good living, +25% XP bonus",
+      },
+      {
+        name: "Luxurious Manor",
+        cost: 10000,
+        current: false,
+        description: "Excellent living, +50% XP bonus",
+      },
+    ],
+  },
+  {
+    category: "Meals",
+    options: [
+      {
+        name: "Bread & Water",
+        cost: 5,
+        current: false,
+        description: "Survival rations, no bonus",
+      },
+      {
+        name: "Simple Meals",
+        cost: 15,
+        current: true,
+        description: "Basic nutrition, +5% XP bonus",
+      },
+      {
+        name: "Quality Cuisine",
+        cost: 50,
+        current: false,
+        description: "Good food, +15% XP bonus",
+      },
+      {
+        name: "Gourmet Delicacies",
+        cost: 200,
+        current: false,
+        description: "Finest meals, +30% XP bonus",
+      },
+    ],
+  },
+  {
+    category: "Transportation",
+    options: [
+      {
+        name: "Walking",
+        cost: 0,
+        current: true,
+        description: "Free but slow travel",
+      },
+      {
+        name: "Horse",
+        cost: 300,
+        current: false,
+        description: "Faster travel, -25% travel time",
+      },
+      {
+        name: "Carriage",
+        cost: 1500,
+        current: false,
+        description: "Comfortable travel, -50% travel time",
+      },
+      {
+        name: "Flying Sword",
+        cost: 5000,
+        current: false,
+        description: "Instant travel between known locations",
+      },
+    ],
+  },
+];

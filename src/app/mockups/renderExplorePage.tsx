@@ -222,7 +222,6 @@ export function RenderExplorePage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Player */}
           <Card className="bg-black border-slate-700/50">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg text-green-400">You</CardTitle>
@@ -297,7 +296,6 @@ export function RenderExplorePage() {
           </Card>
         </div>
 
-        {/* Combat Actions */}
         <Card className="bg-black border-slate-700/50">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg text-slate-200">Actions</CardTitle>
@@ -323,7 +321,6 @@ export function RenderExplorePage() {
     );
   }
 
-  // Main explore view
   const locationData = {
     "Whispering Forest": {
       description:
@@ -487,7 +484,6 @@ export function RenderExplorePage() {
         </Card>
       </div>
 
-      {/* Event Log */}
       <Card className="bg-black border-slate-700/50">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2 text-slate-200">

@@ -90,7 +90,6 @@ export const RenderActivitiesPage = () => {
             />
             {categoryName}
           </button>
-          {/* Added conditional rendering for collapsible categories */}
           {!collapsedCategories[categoryName] && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
               {categoryActivities.map((activity) => (

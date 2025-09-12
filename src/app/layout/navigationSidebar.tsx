@@ -10,6 +10,19 @@ import {
   Target,
 } from "lucide-react";
 import { useGameState } from "../contexts/gameStateContext";
+import { Link } from "react-router";
+
+const sidebarData = [
+  { name: "Explore", icon: Compass, url: "/Explore" },
+  { name: "Inventory", icon: Package, url: "/Inventory" },
+  { name: "Activities", icon: Activity, url: "/Activities" },
+  { name: "Quests", icon: Target, url: "/Quests" },
+  { name: "Lifestyle", icon: Home, url: "/Lifestyle" },
+  { name: "Travel", icon: MapPin, url: "/Travel" },
+  { name: "Stats", icon: BarChart3, url: "/Stats" },
+  { name: "Recap", icon: Calendar, url: "/Recap" },
+  { name: "Story", icon: BookOpen, url: "/Story" },
+];
 
 export function SideNavigationBar() {
   const { activeTab, setActiveTab } = useGameState();
@@ -17,18 +30,9 @@ export function SideNavigationBar() {
   return (
     <div className="w-48 bg-black border-r border-slate-800/50 p-3 fixed left-64 top-32 h-[calc(100vh-8rem)] overflow-hidden px-3 py-6">
       <nav className="space-y-1">
-        {[
-          { name: "Explore", icon: Compass },
-          { name: "Inventory", icon: Package },
-          { name: "Activities", icon: Activity },
-          { name: "Quests", icon: Target },
-          { name: "Lifestyle", icon: Home },
-          { name: "Travel", icon: MapPin },
-          { name: "Stats", icon: BarChart3 },
-          { name: "Recap", icon: Calendar },
-          { name: "Story", icon: BookOpen },
-        ].map((item) => (
-          <button
+        {sidebarData.map((item) => (
+          <Link
+            to={item.url}
             key={item.name}
             onClick={() => setActiveTab(item.name)}
             className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-all ${
@@ -39,7 +43,7 @@ export function SideNavigationBar() {
           >
             <item.icon className="w-4 h-4" />
             {item.name}
-          </button>
+          </Link>
         ))}
       </nav>
     </div>

@@ -461,3 +461,30 @@ export const lifestyleOptions = [
     ],
   },
 ];
+
+export type StoryEntry = {
+  time: string;
+  entry: string;
+  type: "narrative" | "discovery" | "journey" | "achievement" | "combat";
+};
+
+export const storyEntryColors: Record<StoryEntry["type"], string> = {
+  narrative: "border-purple-500/50 text-purple-400",
+  discovery: "border-yellow-500/50 text-yellow-400",
+  journey: "border-blue-500/50 text-blue-400",
+  achievement: "border-green-500/50 text-green-400",
+  combat: "border-red-500/50 text-red-400",
+};
+
+export type NavigationItem =
+  | "Explore"
+  | "Inventory"
+  | "Activities"
+  | "Quests"
+  | "Lifestyle"
+  | "Travel"
+  | "Stats"
+  | "Recap"
+  | "Story";
+
+// export type Navigation

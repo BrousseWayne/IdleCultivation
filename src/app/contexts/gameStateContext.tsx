@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createContext, useContext } from "react";
 import type { ReactNode, Dispatch, SetStateAction } from "react";
+import type { NavigationItem } from "../data/data copy";
 
 type ActivityKeys =
   | "sectDuties"
@@ -98,6 +99,7 @@ type GameStateContextType = {
   setInventoryItems: Dispatch<SetStateAction<InventoryItem[]>>;
   equippedItems: EquippedItems;
   setEquippedItems: Dispatch<SetStateAction<EquippedItems>>;
+  unlockedTabs: 
 };
 
 const GameStateContext = createContext<GameStateContextType | undefined>(
@@ -179,6 +181,20 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
   const [currentExploreLocation, setCurrentExploreLocation] =
     useState("Whispering Forest");
 
+  const [unlockedTabs, setUnlockedTabs] = useState<
+    Record<NavigationItem, boolean>
+  >({
+    Explore: false,
+    Inventory: false,
+    Activities: true,
+    Quests: false,
+    Lifestyle: false,
+    Travel: false,
+    Stats: false,
+    Recap: false,
+    Story: true,
+  });
+
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([
     {
       id: 1,
@@ -252,6 +268,8 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
         selectedEra,
         setSelectedEra,
         selectedDecade,
+        unlockedTabs,
+        setUnlockedTabs,
         setSelectedDecade,
         calendarView,
         setCalendarView,

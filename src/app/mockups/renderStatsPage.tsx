@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Briefcase, Heart, User } from "lucide-react";
 
-export const renderStatsPage = () => {
+export const RenderStatsPage = () => {
   return (
     <div className="space-y-6">
       <div className="mb-6">

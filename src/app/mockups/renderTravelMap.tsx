@@ -1,7 +1,8 @@
 import { Clock, MapPin } from "lucide-react";
-import { locations, useGameState } from "./dataForPage9";
+import { locations } from "./dataForPage9";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useGameState } from "./gameStateContext";
 
 export const RenderTravelMap = () => {
   const { selectedLocation, setSelectedLocation } = useGameState();

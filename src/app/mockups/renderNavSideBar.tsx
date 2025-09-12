@@ -9,10 +9,11 @@ import {
   Package,
   Target,
 } from "lucide-react";
-import { useGameState } from "./dataForPage9";
+import { useGameState } from "./gameStateContext";
 
-export function Sidenav() {
+export function RenderSidenav() {
   const { activeTab, setActiveTab } = useGameState();
+  console.log(activeTab);
   return (
     <div className="w-48 bg-black border-r border-slate-800/50 p-3 fixed left-64 top-32 h-[calc(100vh-8rem)] overflow-hidden px-3 py-6">
       <nav className="space-y-1">

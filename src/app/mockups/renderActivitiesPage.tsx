@@ -1,7 +1,8 @@
 import { ChevronDown, Minus, Plus } from "lucide-react";
-import { activityData, useGameState } from "./dataForPage9";
+import { activityData } from "./dataForPage9";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useGameState } from "./gameStateContext";
 
 export const RenderActivitiesPage = () => {
   const {

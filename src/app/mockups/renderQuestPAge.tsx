@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Clock, Target } from "lucide-react";
 import { activeQuests, completedQuests } from "./dataForPage9";
 
-export function renderQuestsPage() {
+export function RenderQuestsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">

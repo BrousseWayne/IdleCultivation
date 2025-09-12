@@ -11,7 +11,7 @@ import {
   Sword,
   Users,
 } from "lucide-react";
-import { useGameState } from "./dataForPage9";
+import { useGameState } from "./gameStateContext";
 
 export function RenderExplorePage() {
   const {

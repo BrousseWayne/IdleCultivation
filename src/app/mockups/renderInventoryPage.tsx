@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package } from "lucide-react";
-import { useGameState } from "./dataForPage9";
+import { useGameState } from "./gameStateContext";
 
 export function RenderInventoryPage() {
   const { setEquippedItems, setInventoryItems, equippedItems, inventoryItems } =

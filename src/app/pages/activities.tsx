@@ -3,16 +3,14 @@ import { activityData } from "../data/data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useGameState } from "../contexts/gameStateContext";
+import { useState } from "react";
 
 export const RenderActivitiesPage = () => {
-  const {
-    maxTimePoints,
-    setTimePoints,
-    activities,
-    setActivities,
-    collapsedCategories,
-    setCollapsedCategories,
-  } = useGameState();
+  const [collapsedCategories, setCollapsedCategories] = useState<
+    Record<string, boolean>
+  >({});
+  const { maxTimePoints, setTimePoints, activities, setActivities } =
+    useGameState();
   const categorizeActivities = () => {
     const categories = {
       work: [] as typeof activityData,

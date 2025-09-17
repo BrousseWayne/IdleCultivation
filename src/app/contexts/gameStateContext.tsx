@@ -47,8 +47,6 @@ type EquippedItems = {
 };
 
 type GameStateContextType = {
-  activeTab: string;
-  setActiveTab: Dispatch<SetStateAction<string>>;
   selectedTimeScale: string;
   setSelectedTimeScale: Dispatch<SetStateAction<string>>;
   selectedYear: number;
@@ -86,8 +84,6 @@ type GameStateContextType = {
   setShowDetailedView: Dispatch<SetStateAction<boolean>>;
   selectedDate: number | null;
   setSelectedDate: Dispatch<SetStateAction<number | null>>;
-  collapsedCategories: Record<string, boolean>;
-  setCollapsedCategories: Dispatch<SetStateAction<Record<string, boolean>>>;
   exploreView: string;
   setExploreView: Dispatch<SetStateAction<string>>;
   eventLog: string[];
@@ -115,7 +111,6 @@ export function useGameState() {
 }
 
 export const GameStateProvider = ({ children }: { children: ReactNode }) => {
-  const [activeTab, setActiveTab] = useState("Activities");
   const [selectedTimeScale, setSelectedTimeScale] = useState("Day");
   const [selectedYear, setSelectedYear] = useState(1);
   const [selectedMonth, setSelectedMonth] = useState(1);
@@ -182,9 +177,6 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
   const [showDetailedView, setShowDetailedView] = useState(false);
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
 
-  const [collapsedCategories, setCollapsedCategories] = useState<
-    Record<string, boolean>
-  >({});
   const [exploreView, setExploreView] = useState("main");
 
   const [eventLog, setEventLog] = useState<string[]>([
@@ -256,8 +248,6 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
   return (
     <GameStateContext.Provider
       value={{
-        activeTab,
-        setActiveTab,
         selectedTimeScale,
         setSelectedTimeScale,
         selectedYear,
@@ -283,7 +273,6 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
         setIsPlaying,
         gameSpeed,
         setGameSpeed,
-
         selectedLocation,
         setSelectedLocation,
         activities,
@@ -292,8 +281,6 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
         setShowDetailedView,
         selectedDate,
         setSelectedDate,
-        collapsedCategories,
-        setCollapsedCategories,
         exploreView,
         setExploreView,
         eventLog,

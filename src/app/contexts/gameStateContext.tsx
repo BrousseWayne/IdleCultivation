@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { createContext, useContext } from "react";
 import type { ReactNode, Dispatch, SetStateAction } from "react";
-import type { NavigationItem } from "../data/data copy";
+import {
+  initialNavigationUnlockState,
+  type NavigationItem,
+  type NavigationUnlockState,
+} from "../data/data copy";
 
 type ActivityKeys =
   | "sectDuties"
@@ -73,12 +77,7 @@ type GameStateContextType = {
   setIsPlaying: Dispatch<SetStateAction<boolean>>;
   gameSpeed: number;
   setGameSpeed: Dispatch<SetStateAction<number>>;
-  statsCollapsed: boolean;
-  setStatsCollapsed: Dispatch<SetStateAction<boolean>>;
-  resourcesCollapsed: boolean;
-  setResourcesCollapsed: Dispatch<SetStateAction<boolean>>;
-  livingCollapsed: boolean;
-  setLivingCollapsed: Dispatch<SetStateAction<boolean>>;
+
   selectedLocation: string;
   setSelectedLocation: Dispatch<SetStateAction<string>>;
   activities: Record<ActivityKeys, number>;
@@ -99,7 +98,8 @@ type GameStateContextType = {
   setInventoryItems: Dispatch<SetStateAction<InventoryItem[]>>;
   equippedItems: EquippedItems;
   setEquippedItems: Dispatch<SetStateAction<EquippedItems>>;
-  unlockedTabs: 
+  navigationUnlockState: NavigationUnlockState;
+  unlockNavigationTab: (tab: NavigationItem) => void;
 };
 
 const GameStateContext = createContext<GameStateContextType | undefined>(
@@ -137,9 +137,22 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [gameSpeed, setGameSpeed] = useState(1);
-  const [statsCollapsed, setStatsCollapsed] = useState(false);
-  const [resourcesCollapsed, setResourcesCollapsed] = useState(false);
-  const [livingCollapsed, setLivingCollapsed] = useState(false);
+
+  const [initialAge, setInitalAge] = useState(12);
+  const [initialLifespan, setInitalLifespan] = useState(60);
+  const [age, setAge] = useState(initialAge);
+  const [lifespan, setLifespan] = useState(initialLifespan);
+
+  const [navigationUnlockState, setNavigationUnlockState] =
+    useState<NavigationUnlockState>(initialNavigationUnlockState);
+
+  // unlock a single tab
+  const unlockNavigationTab = (tab: NavigationItem) => {
+    setNavigationUnlockState((prev) => ({
+      ...prev,
+      [tab]: true,
+    }));
+  };
 
   const [selectedLocation, setSelectedLocation] = useState("Eastern Continent");
 
@@ -180,20 +193,6 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
   ]);
   const [currentExploreLocation, setCurrentExploreLocation] =
     useState("Whispering Forest");
-
-  const [unlockedTabs, setUnlockedTabs] = useState<
-    Record<NavigationItem, boolean>
-  >({
-    Explore: false,
-    Inventory: false,
-    Activities: true,
-    Quests: false,
-    Lifestyle: false,
-    Travel: false,
-    Stats: false,
-    Recap: false,
-    Story: true,
-  });
 
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([
     {
@@ -268,8 +267,8 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
         selectedEra,
         setSelectedEra,
         selectedDecade,
-        unlockedTabs,
-        setUnlockedTabs,
+        navigationUnlockState,
+        unlockNavigationTab,
         setSelectedDecade,
         calendarView,
         setCalendarView,
@@ -284,12 +283,7 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
         setIsPlaying,
         gameSpeed,
         setGameSpeed,
-        statsCollapsed,
-        setStatsCollapsed,
-        resourcesCollapsed,
-        setResourcesCollapsed,
-        livingCollapsed,
-        setLivingCollapsed,
+
         selectedLocation,
         setSelectedLocation,
         activities,

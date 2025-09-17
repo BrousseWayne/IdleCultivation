@@ -1,17 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronDown, Coins, Home, User } from "lucide-react";
-import { useGameState } from "../contexts/gameStateContext";
+import { useState } from "react";
 
 export function StatsPanel() {
-  const {
-    statsCollapsed,
-    setStatsCollapsed,
-    resourcesCollapsed,
-    setResourcesCollapsed,
-    livingCollapsed,
-    setLivingCollapsed,
-  } = useGameState();
+  const [statsCollapsed, setStatsCollapsed] = useState(false);
+  const [resourcesCollapsed, setResourcesCollapsed] = useState(false);
+  const [livingCollapsed, setLivingCollapsed] = useState(false);
+
   return (
     <div className="w-64 bg-black border-r border-slate-800/50 p-3 space-y-3 fixed left-0 top-32 h-[calc(100vh-8rem)] overflow-hidden py-6 flex-col leading-7">
       <Card className="border-slate-700/50 bg-black py-3.5">

@@ -19,6 +19,7 @@ import {
   TreePine,
   Fish,
   Bike,
+  type LucideIcon,
 } from "lucide-react";
 
 export const activityData = [
@@ -298,7 +299,7 @@ export const freeTime = 24; // 8 hours for sleep/eating
 export const moodBonus = Math.floor(freeTime * 2); // 2 mood points per free hour
 
 //timestamp wasnt stupid as a field in story entries
-export const storyEntries = [
+export const storyEntries: StoryEntry[] = [
   {
     time: "Day 1, Morning",
     entry:
@@ -487,4 +488,22 @@ export type NavigationItem =
   | "Recap"
   | "Story";
 
-// export type Navigation
+export type SidebarNavigation = {
+  name: NavigationItem;
+  icon: LucideIcon;
+  url: string;
+};
+
+export type NavigationUnlockState = Record<SidebarNavigation["name"], boolean>;
+
+export const initialNavigationUnlockState: NavigationUnlockState = {
+  Explore: false,
+  Inventory: false,
+  Activities: true,
+  Quests: false,
+  Lifestyle: false,
+  Travel: false,
+  Stats: false,
+  Recap: false,
+  Story: true,
+};

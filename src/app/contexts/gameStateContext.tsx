@@ -6,6 +6,10 @@ import {
   type NavigationItem,
   type NavigationUnlockState,
 } from "../data/data copy";
+import {
+  initialActivityCategoriesUnlockState,
+  type ActivityUnlockState,
+} from "../pages/activities";
 
 type ActivityKeys =
   | "sectDuties"
@@ -96,6 +100,7 @@ type GameStateContextType = {
   setEquippedItems: Dispatch<SetStateAction<EquippedItems>>;
   navigationUnlockState: NavigationUnlockState;
   unlockNavigationTab: (tab: NavigationItem) => void;
+  activityCategoriesUnlockState: ActivityUnlockState;
 };
 
 const GameStateContext = createContext<GameStateContextType | undefined>(
@@ -140,6 +145,9 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
 
   const [navigationUnlockState, setNavigationUnlockState] =
     useState<NavigationUnlockState>(initialNavigationUnlockState);
+
+  const [activityCategoriesUnlockState, setActivityCategoriesUnlockState] =
+    useState<ActivityUnlockState>(initialActivityCategoriesUnlockState);
 
   // unlock a single tab
   const unlockNavigationTab = (tab: NavigationItem) => {
@@ -275,6 +283,7 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
         setGameSpeed,
         selectedLocation,
         setSelectedLocation,
+        activityCategoriesUnlockState,
         activities,
         setActivities,
         showDetailedView,

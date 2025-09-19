@@ -497,11 +497,11 @@ export type SidebarNavigation = {
 export type NavigationUnlockState = Record<SidebarNavigation["name"], boolean>;
 
 export const initialNavigationUnlockState: NavigationUnlockState = {
-  Explore: false,
+  Explore: true,
   Inventory: false,
   Activities: true,
   Quests: false,
-  Lifestyle: true,
+  Lifestyle: false,
   Travel: false,
   Stats: false,
   Recap: false,

@@ -13,6 +13,7 @@ const ALL_CATEGORIES = [
   "life",
   "hobby",
   "adventure",
+  "mesCOuilles",
 ] as const;
 
 // 2. Derive type automatically from array
@@ -22,7 +23,7 @@ type Categories = Record<ActivityCategory, Activity[]>;
 
 export type ActivityUnlockState = Record<ActivityCategory, boolean>;
 
-const INITIALLY_UNLOCKED: ActivityCategory[] = ["work"];
+const INITIALLY_UNLOCKED: ActivityCategory[] = ["work", "training"];
 
 export const initialActivityCategoriesUnlockState: ActivityUnlockState =
   (() => {

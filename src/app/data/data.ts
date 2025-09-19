@@ -203,7 +203,7 @@ export const activityData: Activity[] = [
     cost: 4,
     reward: "+960 Spirit Stones",
     category: "training",
-    unlocked: false,
+    unlocked: true,
   },
 ];
 

@@ -1,6 +1,6 @@
 import { ChevronDown, Minus, Plus, type LucideIcon } from "lucide-react";
 import { activityData } from "../data/data";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useGameState } from "../contexts/gameStateContext";
 import { useState } from "react";
@@ -13,17 +13,12 @@ const ALL_CATEGORIES = [
   "life",
   "hobby",
   "adventure",
-  "mesCOuilles",
 ] as const;
 
-// 2. Derive type automatically from array
 type ActivityCategory = (typeof ALL_CATEGORIES)[number];
-
 type Categories = Record<ActivityCategory, Activity[]>;
-
 export type ActivityUnlockState = Record<ActivityCategory, boolean>;
-
-const INITIALLY_UNLOCKED: ActivityCategory[] = ["work", "training"];
+const INITIALLY_UNLOCKED: ActivityCategory[] = ["work"];
 
 export const initialActivityCategoriesUnlockState: ActivityUnlockState =
   (() => {
@@ -55,6 +50,7 @@ export const RenderActivitiesPage = () => {
     setActivities,
     activityCategoriesUnlockState,
   } = useGameState();
+
   const categorizeActivities = (activityData: Activity[]) => {
     const categories: Categories = {} as Categories;
 
@@ -79,16 +75,6 @@ export const RenderActivitiesPage = () => {
   };
 
   const categories = categorizeActivities(activityData);
-  const diff = [CardTry0, CardTry1, CardTry2, CardTry3];
-  const [choice, setChoice] = useState(0);
-
-  const circleChoices = () => {
-    if (choice === 3) {
-      setChoice(0);
-    } else {
-      setChoice((prev) => prev + 1);
-    }
-  };
 
   return (
     <div className="space-y-4">
@@ -96,9 +82,7 @@ export const RenderActivitiesPage = () => {
         <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent mb-2">
           Daily Activities
         </h2>
-        <p className="text-muted-foreground">
-          Manage your time and cultivation path wisely
-        </p>
+        <p className="text-muted-foreground">Manage your time wisely</p>
       </div>
 
       {ALL_CATEGORIES.filter(
@@ -119,19 +103,11 @@ export const RenderActivitiesPage = () => {
               />
               {category}
             </button>
-            <button
-              className="bg-accent-foreground text-amber-950"
-              onClick={circleChoices}
-            >
-              CLICK TO CHANGE THE LAYOUT
-            </button>
-
             {!collapsedCategories[category] && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                 {categoryActivities.map((activity) => {
-                  const CardComponent = diff[choice];
                   return (
-                    <CardComponent
+                    <ActivityCard
                       key={activity.key}
                       activity={activity}
                       activities={activities}
@@ -147,171 +123,7 @@ export const RenderActivitiesPage = () => {
   );
 };
 
-function CardTry0({ activity, activities }) {
-  return (
-    <Card key={activity.key} className="bg-card border-border/100 ">
-      <CardHeader className="pb-1">
-        <CardTitle className="flex items-center gap- text-sm">
-          <activity.icon className="w-4 h-4 text-purple-400" />
-          {activity.name}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-1 p-2">
-        <div className="flex justify-between items-center">
-          <span className="text-xs text-slate-400 font-semibold">Cost</span>
-          <span className="font-mono text-purple-400 text-xs">
-            {activity.cost}h
-          </span>
-        </div>
-        <div className="h-px bg-gradient-to-r from-transparent via-slate-600/50 to-transparent" />
-        <div className="flex justify-between items-center">
-          <span className="text-xs text-slate-400 font-semibold">Reward</span>
-          <span className="font-mono text-violet-400 text-xs">
-            {activity.reward}
-          </span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-xs text-slate-400 font-semibold">
-            Allocated
-          </span>
-          <span className="font-mono text-orange-400 text-xs">
-            {activities[activity.key as keyof typeof activities]}h
-          </span>
-        </div>
-        <div className="flex justify-between items-center gap-1 pt-1">
-          <Button
-            variant="outline"
-            size="sm"
-            // onClick={() => updateActivity(activity.key, -1)}
-            className="h-6 w-6 p-0"
-          >
-            <Minus className="w-3 h-3" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            // onClick={() => updateActivity(activity.key, 1)}
-            className="h-6 w-6 p-0"
-          >
-            <Plus className="w-3 h-3" />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function CardTry1({ activity, activities }) {
-  return (
-    <Card
-      key={activity.key}
-      className="bg-card/70 border-border/50 rounded-md shadow-sm"
-    >
-      <CardHeader className="pb-1">
-        <CardTitle className="flex items-center gap-1 text-sm">
-          <activity.icon className="w-4 h-4 text-purple-400" />
-          {activity.name}
-        </CardTitle>
-      </CardHeader>
-
-      <CardContent className="p-1.5 space-y-1">
-        {/* Cost / Reward / Allocated */}
-        <div className="flex justify-between text-xs text-slate-400 font-semibold">
-          <span>Cost</span>
-          <span className="text-purple-400 font-mono">{activity.cost}h</span>
-        </div>
-        <div className="flex justify-between text-xs text-slate-400 font-semibold">
-          <span>Reward</span>
-          <span className="text-violet-400 font-mono">{activity.reward}</span>
-        </div>
-        <div className="flex justify-between text-xs text-slate-400 font-semibold">
-          <span>Allocated</span>
-          <span className="text-orange-400 font-mono">
-            {activities[activity.key as keyof typeof activities]}h
-          </span>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-          <div
-            className="h-2 bg-purple-400 rounded-full transition-all"
-            style={{
-              width: `${
-                // (activities[activity.key as keyof typeof activities] /
-                //   maxTimePoints) *
-                100
-              }%`,
-            }}
-          />
-        </div>
-
-        {/* Controls */}
-        <div className="flex gap-1 mt-1">
-          <Button variant="outline" size="sm" className="h-5 w-5 p-0">
-            <Minus className="w-3 h-3" />
-          </Button>
-          <Button variant="outline" size="sm" className="h-5 w-5 p-0">
-            <Plus className="w-3 h-3" />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function CardTry2({ activity, activities }) {
-  return (
-    <Card
-      key={activity.key}
-      className="bg-card/60 border-border/50 rounded-md flex flex-col md:flex-row items-center gap-2 p-2"
-    >
-      <div className="flex items-center gap-1">
-        <activity.icon className="w-5 h-5 text-purple-400" />
-        <span className="text-sm font-semibold">{activity.name}</span>
-      </div>
-
-      <div className="flex-1 flex flex-col gap-0.5 w-full">
-        <div className="flex justify-between text-xs text-slate-400">
-          <span>Cost</span>
-          <span className="text-purple-400 font-mono">{activity.cost}h</span>
-        </div>
-        <div className="flex justify-between text-xs text-slate-400">
-          <span>Reward</span>
-          <span className="text-violet-400 font-mono">{activity.reward}</span>
-        </div>
-        <div className="flex justify-between text-xs text-slate-400">
-          <span>Allocated</span>
-          <span className="text-orange-400 font-mono">
-            {activities[activity.key as keyof typeof activities]}h
-          </span>
-        </div>
-        <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden mt-1">
-          <div
-            className="h-2 bg-purple-400 rounded-full transition-all"
-            style={{
-              width: `${
-                // (activities[activity.key as keyof typeof activities] /
-                //   maxTimePoints) *
-                100
-              }%`,
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <Button variant="outline" size="sm" className="h-5 w-5 p-0">
-          <Plus className="w-3 h-3" />
-        </Button>
-        <Button variant="outline" size="sm" className="h-5 w-5 p-0">
-          <Minus className="w-3 h-3" />
-        </Button>
-      </div>
-    </Card>
-  );
-}
-
-function CardTry3({ activity, activities }) {
+function ActivityCard({ activity, activities }) {
   return (
     <Card
       key={activity.key}

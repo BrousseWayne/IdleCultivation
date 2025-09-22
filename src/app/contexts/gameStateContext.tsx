@@ -3,6 +3,11 @@ import { createContext, useContext } from "react";
 import type { ReactNode, Dispatch, SetStateAction } from "react";
 import {
   initialNavigationUnlockState,
+  initialPlayerAge,
+  initialPlayerHp,
+  initialPlayerLifespan,
+  initialPlayerMortality,
+  initialPlayerSatiety,
   type NavigationItem,
   type NavigationUnlockState,
 } from "../data/data copy";
@@ -51,6 +56,11 @@ type EquippedItems = {
 };
 
 type GameStateContextType = {
+  playerHp: typeof initialPlayerHp;
+  playerSatiety: typeof initialPlayerSatiety;
+  playerMortality: typeof initialPlayerMortality;
+  age: number;
+  lifespan: number;
   selectedTimeScale: string;
   setSelectedTimeScale: Dispatch<SetStateAction<string>>;
   selectedYear: number;
@@ -138,10 +148,15 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [gameSpeed, setGameSpeed] = useState(1);
 
-  const [initialAge, setInitalAge] = useState(12);
-  const [initialLifespan, setInitalLifespan] = useState(60);
+  const [initialAge, setInitalAge] = useState(initialPlayerAge);
+  const [initialLifespan, setInitalLifespan] = useState(initialPlayerLifespan);
   const [age, setAge] = useState(initialAge);
   const [lifespan, setLifespan] = useState(initialLifespan);
+  const [playerHp, setPlayerHp] = useState(initialPlayerHp);
+  const [playerSatiety, setPlayerSatiety] = useState(initialPlayerSatiety);
+  const [playerMortality, setPlayerMortality] = useState(
+    initialPlayerMortality
+  );
 
   const [navigationUnlockState, setNavigationUnlockState] =
     useState<NavigationUnlockState>(initialNavigationUnlockState);
@@ -256,6 +271,11 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
   return (
     <GameStateContext.Provider
       value={{
+        age,
+        playerHp,
+        playerSatiety,
+        playerMortality,
+        lifespan,
         selectedTimeScale,
         setSelectedTimeScale,
         selectedYear,

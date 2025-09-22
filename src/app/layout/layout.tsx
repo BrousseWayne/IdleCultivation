@@ -2,8 +2,8 @@ import { Outlet } from "react-router";
 import { GameStateProvider } from "../contexts/gameStateContext";
 import { Header } from "./layoutHeader";
 import { SideNavigationBar } from "./navigationSidebar";
-import { StatsPanel } from "./statsPanel";
 import { RenderTimeZone } from "./timeZone";
+import { StatsPanel } from "./components/StatsPanel/statsPanel";
 
 export function Layout() {
   return (

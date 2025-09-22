@@ -373,91 +373,146 @@ export const events = [
 export const currentDay = 20; // Current day in the month
 export const daysInMonth = 30;
 
-export const lifestyleOptions = [
+export type Currency =
+  | "Bronze"
+  | "Silver"
+  | "Gold"
+  | "SpiritStones"
+  | "CoreStones"
+  | "HeavenStones";
+export type Period = "daily" | "weekly" | "monthly" | "annual" | "oneTime";
+
+export type Cost = {
+  currency: Currency;
+  amount: number;
+  period?: Period;
+};
+
+export type LifestyleCategory = "Housing" | "Meals" | "Transportation";
+
+export type LifestyleBonus = {
+  xp?: number;
+  mortality?: number;
+};
+
+export type LifestyleOption = {
+  id: string;
+  name: string;
+  description: string;
+  costs: Cost[]; // initial and/or recurring stored together
+  unlocked: boolean;
+  bonuses: LifestyleBonus;
+  icon?: LucideIcon;
+};
+
+export type LifestyleCategoryData = {
+  category: LifestyleCategory;
+  description: string;
+  options: LifestyleOption[];
+};
+export const lifestyleOptions: LifestyleCategoryData[] = [
   {
     category: "Housing",
+    description: "Your place of rest and cultivation",
     options: [
       {
-        name: "Shabby Hut",
-        cost: 0,
-        current: false,
-        description: "Basic shelter, no comfort bonus",
+        id: "streets",
+        name: "Streets",
+        description: "Basic shelter, exposed to the elements and bandits.",
+        costs: [
+          { currency: "Bronze", amount: 0, period: "oneTime" },
+          { currency: "Bronze", amount: 0, period: "daily" },
+        ],
+        unlocked: true,
+        bonuses: { xp: -0.5, mortality: 0.2 },
       },
       {
-        name: "Small Cottage",
-        cost: 500,
-        current: true,
-        description: "Modest living, +10% XP bonus",
+        id: "shabby-tent",
+        name: "Shabby Tent",
+        description: "Ragged tent, minimal protection from weather.",
+        costs: [
+          { currency: "Bronze", amount: 100, period: "oneTime" },
+          { currency: "Bronze", amount: 1, period: "daily" },
+        ],
+        unlocked: true,
+        bonuses: { mortality: 0.1 },
       },
       {
-        name: "Comfortable House",
-        cost: 2000,
-        current: false,
-        description: "Good living, +25% XP bonus",
-      },
-      {
-        name: "Luxurious Manor",
-        cost: 10000,
-        current: false,
-        description: "Excellent living, +50% XP bonus",
+        id: "simple-cottage",
+        name: "Simple Cottage",
+        description: "A modest dwelling with basic privacy for cultivation.",
+        costs: [
+          { currency: "Silver", amount: 5, period: "oneTime" },
+          { currency: "Silver", amount: 1, period: "monthly" },
+        ],
+        unlocked: false,
+        bonuses: { xp: 0.1 },
       },
     ],
   },
   {
     category: "Meals",
+    description: "Nutrition affects cultivation speed",
     options: [
       {
+        id: "bread-water",
         name: "Bread & Water",
-        cost: 5,
-        current: false,
-        description: "Survival rations, no bonus",
+        description: "Bare survival food, no cultivation value.",
+        costs: [{ currency: "Bronze", amount: 5, period: "daily" }],
+        unlocked: true,
+        bonuses: { xp: 0 },
       },
       {
-        name: "Simple Meals",
-        cost: 15,
-        current: true,
-        description: "Basic nutrition, +5% XP bonus",
+        id: "spirit-rice",
+        name: "Spirit Rice",
+        description: "Grain infused with faint qi, aids cultivation.",
+        costs: [{ currency: "Silver", amount: 2, period: "daily" }],
+        unlocked: true,
+        bonuses: { xp: 0.1 },
       },
       {
-        name: "Quality Cuisine",
-        cost: 50,
-        current: false,
-        description: "Good food, +15% XP bonus",
-      },
-      {
-        name: "Gourmet Delicacies",
-        cost: 200,
-        current: false,
-        description: "Finest meals, +30% XP bonus",
+        id: "immortal-banquet",
+        name: "Immortal Banquet",
+        description: "Rare dishes with spiritual herbs and beast meat.",
+        costs: [{ currency: "Gold", amount: 1, period: "weekly" }],
+        unlocked: false,
+        bonuses: { xp: 0.5, mortality: -0.05 },
       },
     ],
   },
   {
     category: "Transportation",
+    description: "Travel method affects safety and opportunities",
     options: [
       {
+        id: "walking",
         name: "Walking",
-        cost: 0,
-        current: true,
-        description: "Free but slow travel",
+        description: "Free but slow travel. Risk of hostile encounters.",
+        costs: [{ currency: "Bronze", amount: 0, period: "daily" }],
+        unlocked: true,
+        bonuses: { mortality: 0.05 },
       },
       {
-        name: "Horse",
-        cost: 300,
-        current: false,
-        description: "Faster travel, -25% travel time",
+        id: "spirit-horse",
+        name: "Spirit Horse",
+        description: "A loyal steed infused with qi, faster journeys.",
+        costs: [
+          { currency: "Silver", amount: 50, period: "oneTime" },
+          { currency: "Silver", amount: 1, period: "daily" },
+        ],
+        unlocked: false,
+        bonuses: { mortality: -0.05 },
       },
       {
-        name: "Carriage",
-        cost: 1500,
-        current: false,
-        description: "Comfortable travel, -50% travel time",
-      },
-      {
+        id: "flying-sword",
         name: "Flying Sword",
-        cost: 5000,
-        current: false,
-        description: "Instant travel between known locations",
+        description: "Traditional cultivator transport through the skies.",
+        costs: [
+          { currency: "Gold", amount: 5, period: "oneTime" },
+          { currency: "Silver", amount: 2, period: "daily" },
+        ],
+        unlocked: false,
+        bonuses: { xp: 0.05, mortality: -0.1 },
       },
     ],
   },
@@ -501,9 +556,27 @@ export const initialNavigationUnlockState: NavigationUnlockState = {
   Inventory: false,
   Activities: true,
   Quests: false,
-  Lifestyle: false,
+  Lifestyle: true,
   Travel: false,
   Stats: false,
   Recap: false,
   Story: true,
+};
+
+export const initialPlayerAge = 12;
+export const initialPlayerLifespan = 60;
+
+export const initialPlayerHp = {
+  max: 100,
+  current: 100,
+};
+
+export const initialPlayerSatiety = {
+  max: 100,
+  current: 100,
+};
+
+export const initialPlayerMortality = {
+  max: 100,
+  current: 1,
 };

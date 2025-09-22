@@ -8,8 +8,14 @@ export function StatsPanel() {
   const [statsCollapsed, setStatsCollapsed] = useState(false);
   const [resourcesCollapsed, setResourcesCollapsed] = useState(false);
   const [livingCollapsed, setLivingCollapsed] = useState(false);
-  const { age, lifespan, playerHp, playerSatiety, playerMortality } =
-    useGameState();
+  const {
+    age,
+    lifespan,
+    playerHp,
+    playerSatiety,
+    playerMortality,
+    playerMoney,
+  } = useGameState();
 
   return (
     <div className="w-64 bg-black border-r border-slate-800/50 p-3 space-y-3 fixed left-0 top-32 h-[calc(100vh-8rem)] overflow-hidden py-6 flex-col leading-7">
@@ -25,6 +31,7 @@ export function StatsPanel() {
       <ResourcesCard
         collapsed={resourcesCollapsed}
         onToggle={() => setResourcesCollapsed(!resourcesCollapsed)}
+        money={playerMoney}
       />
       <LivingConditionsCard
         collapsed={livingCollapsed}

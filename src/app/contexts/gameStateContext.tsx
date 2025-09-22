@@ -6,6 +6,7 @@ import {
   initialPlayerAge,
   initialPlayerHp,
   initialPlayerLifespan,
+  initialPlayerMoney,
   initialPlayerMortality,
   initialPlayerSatiety,
   type NavigationItem,
@@ -56,6 +57,7 @@ type EquippedItems = {
 };
 
 type GameStateContextType = {
+  playerMoney: number;
   playerHp: typeof initialPlayerHp;
   playerSatiety: typeof initialPlayerSatiety;
   playerMortality: typeof initialPlayerMortality;
@@ -157,6 +159,7 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
   const [playerMortality, setPlayerMortality] = useState(
     initialPlayerMortality
   );
+  const [playerMoney, setPlayerMoney] = useState(initialPlayerMoney);
 
   const [navigationUnlockState, setNavigationUnlockState] =
     useState<NavigationUnlockState>(initialNavigationUnlockState);
@@ -272,6 +275,7 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
     <GameStateContext.Provider
       value={{
         age,
+        playerMoney,
         playerHp,
         playerSatiety,
         playerMortality,

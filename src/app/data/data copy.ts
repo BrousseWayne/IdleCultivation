@@ -373,13 +373,7 @@ export const events = [
 export const currentDay = 20; // Current day in the month
 export const daysInMonth = 30;
 
-export type Currency =
-  | "Bronze"
-  | "Silver"
-  | "Gold"
-  | "SpiritStones"
-  | "CoreStones"
-  | "HeavenStones";
+export type Currency = "Bronze" | "Silver" | "Gold" | "Platinum";
 export type Period = "daily" | "weekly" | "monthly" | "annual" | "oneTime";
 
 export type Cost = {
@@ -580,3 +574,5 @@ export const initialPlayerMortality = {
   max: 100,
   current: 1,
 };
+
+export const initialPlayerMoney = 1231231234;

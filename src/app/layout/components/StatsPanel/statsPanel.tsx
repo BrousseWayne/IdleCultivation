@@ -15,8 +15,12 @@ export function StatsPanel() {
     playerSatiety,
     playerMortality,
     playerMoney,
+    dailyIncome,
+    dailyExpenses,
+    time,
   } = useGameState();
 
+  console.log(time);
   return (
     <div className="w-64 bg-black border-r border-slate-800/50 p-3 space-y-3 fixed left-0 top-32 h-[calc(100vh-8rem)] overflow-hidden py-6 flex-col leading-7">
       <StatusCard
@@ -32,6 +36,8 @@ export function StatsPanel() {
         collapsed={resourcesCollapsed}
         onToggle={() => setResourcesCollapsed(!resourcesCollapsed)}
         money={playerMoney}
+        income={dailyIncome}
+        expenses={dailyExpenses}
       />
       <LivingConditionsCard
         collapsed={livingCollapsed}

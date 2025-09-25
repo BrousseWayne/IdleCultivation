@@ -9,6 +9,13 @@ import {
   Play,
 } from "lucide-react";
 import { useGameState } from "../contexts/gameStateContext";
+import { Switch } from "@/components/ui/switch";
+
+const renderDate = (day) => {
+  //TODO: divide in years etc
+
+  return `${day} day`;
+};
 
 export function RenderTimeZone() {
   const {
@@ -23,6 +30,9 @@ export function RenderTimeZone() {
     setTimePoints,
     timeScales,
     setGameSpeed,
+    time,
+    repeatActivities,
+    setRepeatActivities,
   } = useGameState();
 
   const handleTimeScaleChange = (newScale: string) => {
@@ -81,7 +91,9 @@ export function RenderTimeZone() {
 
         <div className="flex items-center gap-2 bg-slate-900/50 px-2 py-1 rounded-lg border border-slate-700/50">
           <Calendar className="w-4 h-4 text-violet-400" />
-          <span className="text-violet-300 font-bold text-sm">Day 127</span>
+          <span className="text-violet-300 font-bold text-sm">
+            {renderDate(time)}
+          </span>
         </div>
 
         <div className="flex items-center gap-2 bg-slate-900/50 px-2 py-1 rounded-lg border border-slate-700/50">
@@ -128,6 +140,17 @@ export function RenderTimeZone() {
             </select>
             <ChevronDown className="absolute right-1 top-1/2 transform -translate-y-1/2 w-3 h-3 text-muted-foreground pointer-events-none" />
           </div>
+        </div>
+        <div className="flex items-center gap-2 bg-slate-900/50 px-3 py-1 rounded-lg border border-slate-700/50">
+          <span className="text-sm font-medium">Auto-Repeat:</span>
+          <Switch
+            checked={repeatActivities}
+            onCheckedChange={setRepeatActivities}
+            className=" data-[state=checked]:bg-green-500"
+            title={
+              repeatActivities ? "Repeating current plan" : "Not repeating plan"
+            }
+          ></Switch>
         </div>
       </div>
     </div>

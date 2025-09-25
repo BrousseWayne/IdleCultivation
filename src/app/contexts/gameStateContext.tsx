@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createContext, useContext } from "react";
 import type { ReactNode, Dispatch, SetStateAction } from "react";
 import {
@@ -58,11 +58,18 @@ type EquippedItems = {
 
 type GameStateContextType = {
   playerMoney: number;
+  setRepeatActivities: Dispatch<SetStateAction<boolean>>;
+  repeatActivities: boolean;
+  dailyExpenses: number;
   playerHp: typeof initialPlayerHp;
   playerSatiety: typeof initialPlayerSatiety;
   playerMortality: typeof initialPlayerMortality;
   age: number;
+  time: number;
+  start: () => void;
+  pause: () => void;
   lifespan: number;
+  dailyIncome: number;
   selectedTimeScale: string;
   setSelectedTimeScale: Dispatch<SetStateAction<string>>;
   selectedYear: number;
@@ -91,7 +98,6 @@ type GameStateContextType = {
   setIsPlaying: Dispatch<SetStateAction<boolean>>;
   gameSpeed: number;
   setGameSpeed: Dispatch<SetStateAction<number>>;
-
   selectedLocation: string;
   setSelectedLocation: Dispatch<SetStateAction<string>>;
   activities: Record<ActivityKeys, number>;
@@ -164,6 +170,9 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
   const [navigationUnlockState, setNavigationUnlockState] =
     useState<NavigationUnlockState>(initialNavigationUnlockState);
 
+  const [dailyIncome, setDailyIncome] = useState(0);
+  const [dailyExpenses, setDailyExpenses] = useState(0);
+
   const [activityCategoriesUnlockState, setActivityCategoriesUnlockState] =
     useState<ActivityUnlockState>(initialActivityCategoriesUnlockState);
 
@@ -200,8 +209,33 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
     exercise: 0,
   });
 
+  function useGameClock(speed = 1000, multiplier = 1) {
+    const [time, setTime] = useState(0);
+    const [running, setRunning] = useState(false);
+
+    useEffect(() => {
+      if (!running) return;
+
+      const id = setInterval(() => setTime((t) => t + 1), speed / multiplier);
+      return () => clearInterval(id);
+    }, [running, speed, multiplier]);
+
+    const start = () => setRunning(true);
+    const pause = () => setRunning(false);
+
+    return { time, start, pause };
+  }
+
+  const { time, start, pause } = useGameClock(1000, gameSpeed);
+
+  useEffect(() => {
+    if (isPlaying) start();
+    else pause();
+  }, [isPlaying, start, pause]);
+
   const [showDetailedView, setShowDetailedView] = useState(false);
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
+  const [repeatActivities, setRepeatActivities] = useState(true);
 
   const [exploreView, setExploreView] = useState("main");
 
@@ -275,6 +309,13 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
     <GameStateContext.Provider
       value={{
         age,
+        repeatActivities,
+        setRepeatActivities,
+        time,
+        start,
+        pause,
+        dailyExpenses,
+        dailyIncome,
         playerMoney,
         playerHp,
         playerSatiety,

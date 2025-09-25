@@ -8,6 +8,8 @@ interface ResourcesCardProps {
   collapsed: boolean;
   onToggle: () => void;
   money: number;
+  income: number;
+  expenses: number;
 }
 
 const currencyColors: Record<Currency, string> = {
@@ -46,17 +48,22 @@ const renderMoney = (amount: number) => {
     );
   }
 
-  // Insert spaces between denominations
-  return parts.reduce(
-    (prev, curr, idx) => (idx === 0 ? [curr] : [...prev, " ", curr]),
-    [] as JSX.Element[]
-  );
+  return parts;
+};
+
+const renderIncome = (amount: number) => {
+  if (amount >= 0) {
+    return <span className="text-green-600">+{amount}g</span>;
+  }
+  return <span className="text-red-600">{amount}g</span>;
 };
 
 export function ResourcesCard({
   collapsed,
   onToggle,
   money,
+  income,
+  expenses,
 }: ResourcesCardProps) {
   return (
     <Card className="border-slate-700/50 bg-black">
@@ -89,15 +96,21 @@ export function ResourcesCard({
           <div className="border-t border-slate-700/50 pt-2 mt-2">
             <div className="flex justify-between">
               <span className="text-slate-400">Daily Income:</span>
-              <span className="text-green-300 font-bold">+45g</span>
+              <span className="text-green-300 font-bold">
+                {renderIncome(income)}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-400">Daily Expenses:</span>
-              <span className="text-red-300 font-bold">-32g</span>
+              <span className="text-red-300 font-bold">
+                {renderIncome(-expenses)}
+              </span>
             </div>
             <div className="flex justify-between font-bold">
               <span className="text-slate-300">Net Income:</span>
-              <span className="text-green-400">+13g</span>
+              <span className="text-green-400">
+                {renderIncome(income - expenses)}
+              </span>
             </div>
           </div>
         </CardContent>

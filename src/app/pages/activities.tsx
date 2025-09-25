@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useGameState } from "../contexts/gameStateContext";
 import { useState } from "react";
+import { Progress } from "@/components/ui/progress";
 
 const ALL_CATEGORIES = [
   "work",
@@ -127,7 +128,7 @@ function ActivityCard({ activity, activities }) {
   return (
     <Card
       key={activity.key}
-      className="bg-card/50 border border-border/40 rounded-md p-1 relative"
+      className="bg-card/50 border border-border/50 rounded-md p-1 relative"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1">
@@ -152,19 +153,14 @@ function ActivityCard({ activity, activities }) {
         </span>
       </div>
 
-      {/* Overlay progress */}
       <div className="absolute bottom-0 left-0 h-1 w-full bg-slate-700 rounded-b-md overflow-hidden mt-1">
-        <div
-          className="h-1 bg-purple-400 transition-all"
-          style={{
-            width: `${
-              // (activities[activity.key as keyof typeof activities] /
-              //   maxTimePoints) *
-              100
-            }%`,
-          }}
+        <Progress
+          value={30}
+          className="h-1.5 bg-slate-800 [&>div]:bg-purple-500"
         />
       </div>
     </Card>
   );
 }
+
+//TODO: Create function for the lvlup of the activities

@@ -26,7 +26,6 @@ export function RenderTimeZone() {
     timeScale,
     gameSpeed,
     setTimeScale,
-    setActivities,
     setTimePoints,
     timeScales,
     setGameSpeed,
@@ -40,28 +39,6 @@ export function RenderTimeZone() {
     const newMaxPoints =
       24 * timeScales[newScale as keyof typeof timeScales].multiplier;
     setTimePoints(newMaxPoints);
-    setActivities({
-      sectDuties: 0,
-      alchemyWork: 0,
-      martialArts: 0,
-      qiCultivation: 0,
-      beastHunting: 0,
-      herbGathering: 0,
-      meditation: 0,
-      socializing: 0,
-      reading: 0,
-      crafting: 0,
-      cooking: 0,
-      shopping: 0,
-      resting: 0,
-      studying: 0,
-      painting: 0,
-      music: 0,
-      gaming: 0,
-      exploring: 0,
-      fishing: 0,
-      exercise: 0,
-    });
   };
   return (
     <div className="sticky top-20 z-40 bg-black/90 backdrop-blur-sm border-b border-slate-800/50 px-4 py-2">

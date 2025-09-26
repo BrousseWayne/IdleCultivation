@@ -14,31 +14,12 @@ import {
   type NavigationUnlockState,
 } from "../data/data copy";
 import {
+  type ActivityModel,
   initialActivityCategoriesUnlockState,
   type ActivityUnlockState,
+  type Activity,
 } from "../pages/activities";
-
-type ActivityKeys =
-  | "sectDuties"
-  | "alchemyWork"
-  | "martialArts"
-  | "qiCultivation"
-  | "beastHunting"
-  | "herbGathering"
-  | "meditation"
-  | "socializing"
-  | "reading"
-  | "crafting"
-  | "cooking"
-  | "shopping"
-  | "resting"
-  | "studying"
-  | "painting"
-  | "music"
-  | "gaming"
-  | "exploring"
-  | "fishing"
-  | "exercise";
+import { activityData, type ActivityKeys } from "../data/data";
 
 type InventoryItem = {
   id: number;
@@ -103,8 +84,10 @@ type GameStateContextType = {
   setGameSpeed: Dispatch<SetStateAction<number>>;
   selectedLocation: string;
   setSelectedLocation: Dispatch<SetStateAction<string>>;
-  activities: Record<ActivityKeys, number>;
-  setActivities: Dispatch<SetStateAction<Record<ActivityKeys, number>>>;
+  allocatedActivities: Record<ActivityKeys, number>;
+  setAllocatedActivities: Dispatch<
+    SetStateAction<Record<ActivityKeys, number>>
+  >;
   showDetailedView: boolean;
   setShowDetailedView: Dispatch<SetStateAction<boolean>>;
   selectedDate: number | null;
@@ -152,6 +135,11 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
     week: { label: "Week", multiplier: 7, unit: "week" },
     month: { label: "Month", multiplier: 30, unit: "month" },
   };
+
+  const activityMap = Object.fromEntries(
+    activityData.map((act) => [act.key, act])
+  ) as Record<(typeof activityData)[number]["key"], Activity>;
+
   const currentScale = timeScales[timeScale];
   const maxTimePoints = 24 * currentScale.multiplier;
   const [timePoints, setTimePoints] = useState(maxTimePoints);
@@ -189,44 +177,51 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
 
   const [selectedLocation, setSelectedLocation] = useState("Eastern Continent");
 
-  const [activities, setActivities] = useState<Record<ActivityKeys, number>>({
-    sectDuties: 0,
-    alchemyWork: 0,
-    martialArts: 0,
-    qiCultivation: 0,
-    beastHunting: 0,
-    herbGathering: 0,
-    meditation: 0,
-    socializing: 0,
-    reading: 0,
-    crafting: 0,
-    cooking: 0,
-    shopping: 0,
-    resting: 0,
-    studying: 0,
-    painting: 0,
-    music: 0,
-    gaming: 0,
-    exploring: 0,
-    fishing: 0,
-    exercise: 0,
+  const [allocatedActivities, setAllocatedActivities] = useState<
+    Record<ActivityKeys, number>
+  >({
+    beg: 0,
+    liftWeights: 0,
   });
+
+  const allocateActivity = (activityKey: ActivityKeys, delta: number) => {
+    if (timePoints - delta * activityMap[activityKey].timeCost >= 0) {
+      setAllocatedActivities((prev) => ({
+        ...prev,
+        [activityKey]:
+          (prev[activityKey] || 0) + delta * activityMap[activityKey].timeCost,
+      }));
+      setTimePoints((prev) => prev - delta * activityMap[activityKey].timeCost);
+    }
+  };
+
+  const [activityQueue, setActivityQueue] = useState<ActivityModel[]>([]);
+
+  const enqueueActivities = (activity: ActivityModel) => {
+    setActivityQueue((prevQueue) => [...prevQueue, activity]);
+  };
+
+  const dequeueActivity = () => {
+    setActivityQueue((prevQueue) => prevQueue.slice(1));
+  };
 
   const [stats, setStats] = useState<Record<Stats, number>>({
     Dexterity: 0,
     Strength: 0,
   });
 
-  function useGameClock(speed = 1000, multiplier = 1) {
-    const [time, setTime] = useState(0);
+  function useGameClock(ticksPerSecond = 24, gameSpeed = 1) {
+    const [time, setTime] = useState(0); // total ticks
     const [running, setRunning] = useState(false);
 
     useEffect(() => {
       if (!running) return;
 
-      const id = setInterval(() => setTime((t) => t + 1), speed / multiplier);
+      const interval = 1000 / (ticksPerSecond * gameSpeed); // ms per tick with speed multiplier
+      const id = setInterval(() => setTime((t) => t + 1), interval);
+
       return () => clearInterval(id);
-    }, [running, speed, multiplier]);
+    }, [running, ticksPerSecond, gameSpeed]);
 
     const start = () => setRunning(true);
     const pause = () => setRunning(false);
@@ -316,6 +311,7 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
   return (
     <GameStateContext.Provider
       value={{
+        allocateActivity,
         stats,
         setStats,
         age,
@@ -359,8 +355,8 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
         selectedLocation,
         setSelectedLocation,
         activityCategoriesUnlockState,
-        activities,
-        setActivities,
+        allocatedActivities,
+        setAllocatedActivities,
         showDetailedView,
         setShowDetailedView,
         selectedDate,

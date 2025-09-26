@@ -3,8 +3,31 @@ import { activityData } from "../data/data";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useGameState } from "../contexts/gameStateContext";
-import { useState } from "react";
+import { useState, type JSX } from "react";
 import { Progress } from "@/components/ui/progress";
+import type { Reward } from "../data/data copy";
+import {
+  currencyColors,
+  statColors,
+} from "../layout/components/StatsPanel/resourcesCard";
+
+export type ActivityModel = {
+  xpScalingFn: () => number; // mathematical function defining level growth curve
+  key: string; // unique identifier for the activity
+  level: number; // current activity level
+  timeCost: number; // cost in time units
+  unlocked: boolean; // whether the activity is available
+  reward: Reward; // outcome of performing the activity
+};
+
+export type ActivityView = {
+  key: string;
+  name: string;
+  icon: LucideIcon;
+  category: ActivityCategory;
+};
+
+export type Activity = ActivityModel & ActivityView;
 
 const ALL_CATEGORIES = [
   "work",
@@ -19,7 +42,7 @@ const ALL_CATEGORIES = [
 type ActivityCategory = (typeof ALL_CATEGORIES)[number];
 type Categories = Record<ActivityCategory, Activity[]>;
 export type ActivityUnlockState = Record<ActivityCategory, boolean>;
-const INITIALLY_UNLOCKED: ActivityCategory[] = ["work"];
+const INITIALLY_UNLOCKED: ActivityCategory[] = ["work", "training"];
 
 export const initialActivityCategoriesUnlockState: ActivityUnlockState =
   (() => {
@@ -30,27 +53,11 @@ export const initialActivityCategoriesUnlockState: ActivityUnlockState =
     return state;
   })();
 
-export type Activity = {
-  key: string;
-  name: string;
-  icon: LucideIcon;
-  cost: number;
-  reward: string;
-  category: ActivityCategory;
-  unlocked: boolean;
-};
-
 export const RenderActivitiesPage = () => {
   const [collapsedCategories, setCollapsedCategories] = useState<
     Record<string, boolean>
   >({});
-  const {
-    maxTimePoints,
-    setTimePoints,
-    activities,
-    setActivities,
-    activityCategoriesUnlockState,
-  } = useGameState();
+  const { activities, activityCategoriesUnlockState } = useGameState();
 
   const categorizeActivities = (activityData: Activity[]) => {
     const categories: Categories = {} as Categories;
@@ -146,8 +153,9 @@ function ActivityCard({ activity, activities }) {
       </div>
 
       <div className="flex justify-between text-[10px] text-slate-400 mt-0.5">
-        <span>Cost: {activity.cost}h</span>
-        <span>Reward: {activity.reward}</span>
+        <span>Cost: {activity.timeCost}h</span>
+        <span>Reward: {formatRewardColor(activity.reward)}</span>
+
         <span>
           Allocated: {activities[activity.key as keyof typeof activities]}h
         </span>
@@ -161,6 +169,21 @@ function ActivityCard({ activity, activities }) {
       </div>
     </Card>
   );
+}
+function formatRewardColor(reward: Reward): JSX.Element {
+  if ("currency" in reward)
+    return (
+      <span className={currencyColors[reward.currency]}>
+        {`+${reward.amount} ${reward.currency}`}
+      </span>
+    );
+  if ("stat" in reward)
+    return (
+      <span className={statColors[reward.stat]}>
+        {`+${reward.amount} ${reward.stat}`}
+      </span>
+    );
+  return <span></span>;
 }
 
 //TODO: Create function for the lvlup of the activities

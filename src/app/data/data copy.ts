@@ -373,8 +373,19 @@ export const events = [
 export const currentDay = 20; // Current day in the month
 export const daysInMonth = 30;
 
-export type Currency = "Bronze" | "Silver" | "Gold" | "Platinum";
 export type Period = "daily" | "weekly" | "monthly" | "annual" | "oneTime";
+export type Currency = "Bronze" | "Silver" | "Gold" | "Platinum";
+export type Stats = "Strength" | "Dexterity";
+
+export type Reward =
+  | {
+      amount: number;
+      currency: Currency;
+    }
+  | {
+      amount: number;
+      stat: Stats;
+    };
 
 export type Cost = {
   currency: Currency;
@@ -547,13 +558,13 @@ export type NavigationUnlockState = Record<SidebarNavigation["name"], boolean>;
 
 export const initialNavigationUnlockState: NavigationUnlockState = {
   Explore: true,
-  Inventory: false,
+  Inventory: true,
   Activities: true,
-  Quests: false,
+  Quests: true,
   Lifestyle: true,
-  Travel: false,
-  Stats: false,
-  Recap: false,
+  Travel: true,
+  Stats: true,
+  Recap: true,
   Story: true,
 };
 

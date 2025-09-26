@@ -191,19 +191,31 @@ export const activityData: Activity[] = [
     key: "beg",
     name: "Beg",
     icon: HandCoins,
-    cost: 8,
-    reward: "+960 Spirit Stones",
     category: "work",
+
+    xpScalingFn: () => 100, // example formula
+    level: 1,
+    timeCost: 8,
     unlocked: true,
+    reward: {
+      amount: 100,
+      currency: "Bronze", // assuming Currency union includes this
+    },
   },
   {
     key: "liftWeights",
     name: "Lift Weights",
     icon: Dumbbell,
-    cost: 4,
-    reward: "+960 Spirit Stones",
     category: "training",
+
+    xpScalingFn: () => 200,
+    level: 1,
+    timeCost: 4,
     unlocked: true,
+    reward: {
+      amount: 5,
+      stat: "Strength", // assuming Stats union includes this
+    },
   },
 ];
 

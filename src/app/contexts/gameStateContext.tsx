@@ -9,6 +9,7 @@ import {
   initialPlayerMoney,
   initialPlayerMortality,
   initialPlayerSatiety,
+  type Stats,
   type NavigationItem,
   type NavigationUnlockState,
 } from "../data/data copy";
@@ -57,6 +58,8 @@ type EquippedItems = {
 };
 
 type GameStateContextType = {
+  stats: Record<Stats, number>;
+  setStats: Dispatch<SetStateAction<Record<Stats, number>>>;
   playerMoney: number;
   setRepeatActivities: Dispatch<SetStateAction<boolean>>;
   repeatActivities: boolean;
@@ -209,6 +212,11 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
     exercise: 0,
   });
 
+  const [stats, setStats] = useState<Record<Stats, number>>({
+    Dexterity: 0,
+    Strength: 0,
+  });
+
   function useGameClock(speed = 1000, multiplier = 1) {
     const [time, setTime] = useState(0);
     const [running, setRunning] = useState(false);
@@ -308,6 +316,8 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
   return (
     <GameStateContext.Provider
       value={{
+        stats,
+        setStats,
         age,
         repeatActivities,
         setRepeatActivities,

@@ -1,4 +1,4 @@
-import type { Currency } from "@/app/data/data copy";
+import type { Currency, Stats } from "@/app/data/data copy";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronDown, Coins } from "lucide-react";
@@ -12,11 +12,16 @@ interface ResourcesCardProps {
   expenses: number;
 }
 
-const currencyColors: Record<Currency, string> = {
+export const currencyColors: Record<Currency, string> = {
   Bronze: "text-orange-400",
   Silver: "text-slate-300",
   Gold: "text-yellow-400",
   Platinum: "text-cyan-400",
+};
+
+export const statColors: Record<Stats, string> = {
+  Strength: "text-red-400",
+  Dexterity: "text-blue-400",
 };
 
 const renderMoney = (amount: number) => {

@@ -118,7 +118,8 @@ function useActivityExecutor(
   activityQueue: ActivityModel[],
   dequeueActivity: () => void,
   onQueueEmpty?: () => void,
-  deallocateActivity: () => void
+  deallocateActivity: () => void,
+  applyActivityReward: () => void
 ) {
   const startTickRef = useRef<number | null>(null);
 
@@ -134,6 +135,8 @@ function useActivityExecutor(
     if (ticks - startTickRef.current >= currentActivity.timeCost) {
       dequeueActivity();
       deallocateActivity();
+      applyActivityReward();
+      console.log(currentActivity.reward);
       startTickRef.current = null;
 
       if (activityQueue.length === 1 && onQueueEmpty) {
@@ -213,6 +216,19 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
       [tab]: true,
     }));
   };
+
+  function applyActivityReward(reward) {
+    if ("currency" in reward) {
+      setPlayerMoney((prev) => prev + reward.amount);
+    }
+    //   } else if ("stat" in reward) {
+    //     setStats((prev) => ({
+    //       ...prev,
+    //       [reward.stat]: (prev[reward.stat] || 0) + reward.amount,
+    //     }));
+    //   }
+    // }
+  }
 
   const [selectedLocation, setSelectedLocation] = useState("Eastern Continent");
 
@@ -303,7 +319,10 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
         ...prev,
         [activityQueue[0].key]:
           (prev[activityQueue[0].key] || 0) - activityQueue[0].timeCost,
-      }))
+      })),
+    () => {
+      applyActivityReward(activityQueue[0].reward);
+    }
   );
 
   const [showDetailedView, setShowDetailedView] = useState(false);

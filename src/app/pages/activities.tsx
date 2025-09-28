@@ -187,7 +187,7 @@ function ActivityCard({
   activities,
   allocateActivity,
 }: ActivityCardProps) {
-  console.log(activities, "test");
+  // console.log(activities, "test");
   return (
     <Card
       key={activity.key}

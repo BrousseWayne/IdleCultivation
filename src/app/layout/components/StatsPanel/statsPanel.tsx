@@ -17,10 +17,10 @@ export function StatsPanel() {
     playerMoney,
     dailyIncome,
     dailyExpenses,
-    time,
+    day,
   } = useGameState();
 
-  console.log(time);
+  // console.log(day);
   return (
     <div className="w-64 bg-black border-r border-slate-800/50 p-3 space-y-3 fixed left-0 top-32 h-[calc(100vh-8rem)] overflow-hidden py-6 flex-col leading-7">
       <StatusCard

@@ -30,7 +30,7 @@ export function SideNavigationBar() {
   const [activeTab, setActiveTab] = useState("Activities");
 
   const { navigationUnlockState } = useGameState();
-  console.log(activeTab);
+  // console.log(activeTab);
   return (
     <div className="w-48 bg-black border-r border-slate-800/50 p-3 fixed left-64 top-32 h-[calc(100vh-8rem)] overflow-hidden px-3 py-6">
       <nav className="space-y-1">

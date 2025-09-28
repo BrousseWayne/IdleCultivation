@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createContext, useContext } from "react";
 import type { ReactNode, Dispatch, SetStateAction } from "react";
 import {
@@ -49,7 +49,8 @@ type GameStateContextType = {
   playerSatiety: typeof initialPlayerSatiety;
   playerMortality: typeof initialPlayerMortality;
   age: number;
-  time: number;
+  ticks: number;
+  day: number;
   start: () => void;
   pause: () => void;
   lifespan: number;
@@ -110,6 +111,44 @@ type GameStateContextType = {
 const GameStateContext = createContext<GameStateContextType | undefined>(
   undefined
 );
+
+function useActivityExecutor(
+  ticks: number,
+  running: boolean,
+  activityQueue: ActivityModel[],
+  dequeueActivity: () => void,
+  onQueueEmpty?: () => void,
+  deallocateActivity: () => void
+) {
+  const startTickRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!running || activityQueue.length === 0) return;
+
+    const currentActivity = activityQueue[0];
+
+    if (startTickRef.current === null) {
+      startTickRef.current = ticks;
+    }
+
+    if (ticks - startTickRef.current >= currentActivity.timeCost) {
+      dequeueActivity();
+      deallocateActivity();
+      startTickRef.current = null;
+
+      if (activityQueue.length === 1 && onQueueEmpty) {
+        onQueueEmpty();
+      }
+    }
+  }, [
+    ticks,
+    running,
+    activityQueue,
+    dequeueActivity,
+    onQueueEmpty,
+    deallocateActivity,
+  ]);
+}
 
 export function useGameState() {
   const context = useContext(GameStateContext);
@@ -185,13 +224,15 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const allocateActivity = (activityKey: ActivityKeys, delta: number) => {
-    if (timePoints - delta * activityMap[activityKey].timeCost >= 0) {
+    const realTimeCost = delta * activityMap[activityKey].timeCost;
+    if (timePoints - realTimeCost >= 0) {
       setAllocatedActivities((prev) => ({
         ...prev,
-        [activityKey]:
-          (prev[activityKey] || 0) + delta * activityMap[activityKey].timeCost,
+        [activityKey]: (prev[activityKey] || 0) + realTimeCost,
       }));
-      setTimePoints((prev) => prev - delta * activityMap[activityKey].timeCost);
+      setTimePoints((prev) => prev - realTimeCost);
+
+      enqueueActivities(activityMap[activityKey]);
     }
   };
 
@@ -211,30 +252,59 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
   });
 
   function useGameClock(ticksPerSecond = 24, gameSpeed = 1) {
-    const [time, setTime] = useState(0); // total ticks
+    const [ticks, setTime] = useState(0);
     const [running, setRunning] = useState(false);
+    const [day, setDay] = useState(0);
 
     useEffect(() => {
       if (!running) return;
 
-      const interval = 1000 / (ticksPerSecond * gameSpeed); // ms per tick with speed multiplier
-      const id = setInterval(() => setTime((t) => t + 1), interval);
-
+      const interval = 1000 / (ticksPerSecond * gameSpeed);
+      const id = setInterval(() => {
+        setTime((prev) => {
+          const next = prev + 1;
+          if (next % 24 === 0) {
+            setDay((d) => d + 1);
+          }
+          return next;
+        });
+      }, interval);
       return () => clearInterval(id);
     }, [running, ticksPerSecond, gameSpeed]);
 
-    const start = () => setRunning(true);
+    const start = () =>
+      setRunning(() => {
+        return true;
+      });
     const pause = () => setRunning(false);
 
-    return { time, start, pause };
+    return { ticks, start, pause, day, running };
   }
 
-  const { time, start, pause } = useGameClock(1000, gameSpeed);
+  const { ticks, start, pause, day, running } = useGameClock(24);
 
   useEffect(() => {
     if (isPlaying) start();
     else pause();
   }, [isPlaying, start, pause]);
+
+  useActivityExecutor(
+    ticks,
+    running,
+    activityQueue,
+    dequeueActivity,
+    () => {
+      console.log("All activities done");
+      setIsPlaying(false);
+      pause();
+    },
+    () =>
+      setAllocatedActivities((prev) => ({
+        ...prev,
+        [activityQueue[0].key]:
+          (prev[activityQueue[0].key] || 0) - activityQueue[0].timeCost,
+      }))
+  );
 
   const [showDetailedView, setShowDetailedView] = useState(false);
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
@@ -312,12 +382,13 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
     <GameStateContext.Provider
       value={{
         allocateActivity,
+        day,
         stats,
         setStats,
         age,
         repeatActivities,
         setRepeatActivities,
-        time,
+        ticks,
         start,
         pause,
         dailyExpenses,

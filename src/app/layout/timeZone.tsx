@@ -12,8 +12,6 @@ import { useGameState } from "../contexts/gameStateContext";
 import { Switch } from "@/components/ui/switch";
 
 const renderDate = (day) => {
-  //TODO: divide in years etc
-
   return `${day} day`;
 };
 
@@ -29,7 +27,7 @@ export function RenderTimeZone() {
     setTimePoints,
     timeScales,
     setGameSpeed,
-    time,
+    day,
     repeatActivities,
     setRepeatActivities,
   } = useGameState();
@@ -69,7 +67,7 @@ export function RenderTimeZone() {
         <div className="flex items-center gap-2 bg-slate-900/50 px-2 py-1 rounded-lg border border-slate-700/50">
           <Calendar className="w-4 h-4 text-violet-400" />
           <span className="text-violet-300 font-bold text-sm">
-            {renderDate(time)}
+            {renderDate(day)}
           </span>
         </div>
 

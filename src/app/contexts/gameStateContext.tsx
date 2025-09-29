@@ -20,6 +20,9 @@ import {
   type Activity,
 } from "../pages/activities";
 import { activityData, type ActivityKeys } from "../data/data";
+import { useActivityQueue } from "../hooks/useActivityQueue";
+import { useGameClock } from "../hooks/useGameClock";
+import { usePlayerState } from "../hooks/usePlayerState";
 
 type InventoryItem = {
   id: number;
@@ -150,6 +153,7 @@ function useActivityExecutor(
     dequeueActivity,
     onQueueEmpty,
     deallocateActivity,
+    applyActivityReward,
   ]);
 }
 
@@ -189,16 +193,7 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [gameSpeed, setGameSpeed] = useState(1);
 
-  const [initialAge, setInitalAge] = useState(initialPlayerAge);
-  const [initialLifespan, setInitalLifespan] = useState(initialPlayerLifespan);
-  const [age, setAge] = useState(initialAge);
-  const [lifespan, setLifespan] = useState(initialLifespan);
-  const [playerHp, setPlayerHp] = useState(initialPlayerHp);
-  const [playerSatiety, setPlayerSatiety] = useState(initialPlayerSatiety);
-  const [playerMortality, setPlayerMortality] = useState(
-    initialPlayerMortality
-  );
-  const [playerMoney, setPlayerMoney] = useState(initialPlayerMoney);
+  const playerState = usePlayerState();
 
   const [navigationUnlockState, setNavigationUnlockState] =
     useState<NavigationUnlockState>(initialNavigationUnlockState);
@@ -219,7 +214,8 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
 
   function applyActivityReward(reward) {
     if ("currency" in reward) {
-      setPlayerMoney((prev) => prev + reward.amount);
+      console.log(reward.amount);
+      playerState.setPlayerMoney((prev) => prev + reward.amount);
     }
     //   } else if ("stat" in reward) {
     //     setStats((prev) => ({
@@ -248,54 +244,17 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
       }));
       setTimePoints((prev) => prev - realTimeCost);
 
-      enqueueActivities(activityMap[activityKey]);
+      enqueueActivity(activityMap[activityKey]);
     }
   };
 
-  const [activityQueue, setActivityQueue] = useState<ActivityModel[]>([]);
-
-  const enqueueActivities = (activity: ActivityModel) => {
-    setActivityQueue((prevQueue) => [...prevQueue, activity]);
-  };
-
-  const dequeueActivity = () => {
-    setActivityQueue((prevQueue) => prevQueue.slice(1));
-  };
+  const { activityQueue, enqueueActivity, dequeueActivity } =
+    useActivityQueue();
 
   const [stats, setStats] = useState<Record<Stats, number>>({
     Dexterity: 0,
     Strength: 0,
   });
-
-  function useGameClock(ticksPerSecond = 24, gameSpeed = 1) {
-    const [ticks, setTime] = useState(0);
-    const [running, setRunning] = useState(false);
-    const [day, setDay] = useState(0);
-
-    useEffect(() => {
-      if (!running) return;
-
-      const interval = 1000 / (ticksPerSecond * gameSpeed);
-      const id = setInterval(() => {
-        setTime((prev) => {
-          const next = prev + 1;
-          if (next % 24 === 0) {
-            setDay((d) => d + 1);
-          }
-          return next;
-        });
-      }, interval);
-      return () => clearInterval(id);
-    }, [running, ticksPerSecond, gameSpeed]);
-
-    const start = () =>
-      setRunning(() => {
-        return true;
-      });
-    const pause = () => setRunning(false);
-
-    return { ticks, start, pause, day, running };
-  }
 
   const { ticks, start, pause, day, running } = useGameClock(24);
 
@@ -404,7 +363,6 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
         day,
         stats,
         setStats,
-        age,
         repeatActivities,
         setRepeatActivities,
         ticks,
@@ -412,11 +370,7 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
         pause,
         dailyExpenses,
         dailyIncome,
-        playerMoney,
-        playerHp,
-        playerSatiety,
-        playerMortality,
-        lifespan,
+        ...playerState,
         selectedTimeScale,
         setSelectedTimeScale,
         selectedYear,

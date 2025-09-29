@@ -200,7 +200,7 @@ function ActivityCard({
         </div>
         <div className="flex gap-1">
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             className="h-5 w-5 p-0"
             onClick={() => allocateActivity(activity.key, 1)}
@@ -208,7 +208,7 @@ function ActivityCard({
             <Plus className="w-3 h-3" />
           </Button>
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             className="h-5 w-5 p-0"
             onClick={() => allocateActivity(activity.key, -1)}

@@ -35,7 +35,7 @@ export function Header() {
               variant="outline"
               className="border-violet-500/30 text-violet-400 text-xs"
             >
-              Qi Condensation 9th Layer
+              Blank Canvas
             </Badge>
           </div>
         </div>

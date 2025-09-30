@@ -1,6 +1,6 @@
 import { Home } from "lucide-react";
-import { lifestyleOptions } from "../data/data copy";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { lifestyleOptions } from "../data/lifestyle";
 
 export function RenderLifestylePage() {
   return (

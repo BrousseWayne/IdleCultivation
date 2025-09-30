@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Clock, Target } from "lucide-react";
-import { activeQuests, completedQuests } from "../data/data";
+import { activeQuests, completedQuests } from "../data/quests";
 
 export function RenderQuestsPage() {
   return (

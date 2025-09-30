@@ -1,28 +1,28 @@
 import { useEffect, useRef, useState } from "react";
 import { createContext, useContext } from "react";
 import type { ReactNode, Dispatch, SetStateAction } from "react";
-import {
-  initialNavigationUnlockState,
-  initialPlayerAge,
-  initialPlayerHp,
-  initialPlayerLifespan,
-  initialPlayerMoney,
-  initialPlayerMortality,
-  initialPlayerSatiety,
-  type Stats,
-  type NavigationItem,
-  type NavigationUnlockState,
-} from "../data/data copy";
-import {
-  type ActivityModel,
-  initialActivityCategoriesUnlockState,
-  type ActivityUnlockState,
-  type Activity,
-} from "../pages/activities";
-import { activityData, type ActivityKeys } from "../data/data";
+
 import { useActivityQueue } from "../hooks/useActivityQueue";
 import { useGameClock } from "../hooks/useGameClock";
 import { usePlayerState } from "../hooks/usePlayerState";
+import { usePlayerResources } from "../hooks/usePlayerResources";
+import type {
+  Activity,
+  ActivityKeys,
+  ActivityModel,
+  NavigationItem,
+  NavigationUnlockState,
+  Stats,
+} from "../types/domain";
+import {
+  initialNavigationUnlockState,
+  type initialPlayerHp,
+  type initialPlayerMortality,
+  type initialPlayerSatiety,
+} from "../data/constant";
+import { activityData } from "../data/activity";
+import type { ActivityUnlockState } from "../types/states";
+import { initialActivityCategoriesUnlockState } from "../pages/activities";
 
 type InventoryItem = {
   id: number;
@@ -212,10 +212,12 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
+  const { addMoney } = usePlayerResources();
+
   function applyActivityReward(reward) {
     if ("currency" in reward) {
       console.log(reward.amount);
-      playerState.setPlayerMoney((prev) => prev + reward.amount);
+      addMoney(reward.amount);
     }
     //   } else if ("stat" in reward) {
     //     setStats((prev) => ({

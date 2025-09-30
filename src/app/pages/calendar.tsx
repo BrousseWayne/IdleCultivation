@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { currentDay, daysInMonth, events } from "../data/data";
 import { Badge, Calendar, ChevronLeft } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGameState } from "../contexts/gameStateContext";
+import { events } from "../data/story";
+import { currentDay, daysInMonth } from "../data/constant";
 
 const getCalendarTitle = (
   calendarView,

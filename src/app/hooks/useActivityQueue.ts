@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { ActivityModel } from "../pages/activities";
+import type { ActivityModel } from "../types/domain";
 
 export function useActivityQueue() {
   const [activityQueue, setQueue] = useState<ActivityModel[]>([]);

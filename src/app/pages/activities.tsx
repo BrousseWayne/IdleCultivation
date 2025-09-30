@@ -1,48 +1,21 @@
-import { ChevronDown, Minus, Plus, type LucideIcon } from "lucide-react";
-import { activityData, type ActivityKeys } from "../data/data";
+import { ChevronDown, Minus, Plus } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useGameState } from "../contexts/gameStateContext";
 import { useState, type JSX } from "react";
 import { Progress } from "@/components/ui/progress";
-import type { Reward } from "../data/data copy";
 import {
   currencyColors,
   statColors,
 } from "../layout/components/StatsPanel/resourcesCard";
-
-export type ActivityModel = {
-  xpScalingFn: () => number; // mathematical function defining level growth curve
-  key: ActivityKeys; // unique identifier for the activity
-  level: number; // current activity level
-  timeCost: number; // cost in time units
-  unlocked: boolean; // whether the activity is available
-  reward: Reward; // outcome of performing the activity
-};
-
-export type ActivityView = {
-  key: string;
-  name: string;
-  icon: LucideIcon;
-  category: ActivityCategory;
-};
-
-export type Activity = ActivityModel & ActivityView;
-
-const ALL_CATEGORIES = [
-  "work",
-  "training",
-  "study",
-  "social",
-  "life",
-  "hobby",
-  "adventure",
-] as const;
-
-type ActivityCategory = (typeof ALL_CATEGORIES)[number];
-type Categories = Record<ActivityCategory, Activity[]>;
-export type ActivityUnlockState = Record<ActivityCategory, boolean>;
-const INITIALLY_UNLOCKED: ActivityCategory[] = ["work", "training"];
+import { activityData, INITIALLY_UNLOCKED } from "../data/activity";
+import type { ActivityUnlockState, Categories } from "../types/states";
+import {
+  ALL_CATEGORIES,
+  type Activity,
+  type ActivityKeys,
+  type Reward,
+} from "../types/domain";
 
 const PlannedActivitiesRecap = ({
   activities,
@@ -249,5 +222,3 @@ function formatRewardColor(reward: Reward): JSX.Element {
     );
   return <span></span>;
 }
-
-//TODO: Create function for the lvlup of the activities

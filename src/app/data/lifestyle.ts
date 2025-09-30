@@ -1,42 +1,5 @@
-import type { LucideIcon } from "lucide-react";
+import type { LifestyleCategoryData } from "../types/domain";
 
-export type Currency =
-  | "Bronze"
-  | "Silver"
-  | "Gold"
-  | "SpiritStones"
-  | "CoreStones"
-  | "HeavenStones";
-export type Period = "daily" | "weekly" | "monthly" | "annual" | "oneTime";
-
-export type Cost = {
-  currency: Currency;
-  amount: number;
-  period?: Period;
-};
-
-export type LifestyleCategory = "Housing" | "Meals" | "Transportation";
-
-export type LifestyleBonus = {
-  xp?: number;
-  mortality?: number;
-};
-
-export type LifestyleOption = {
-  id: string;
-  name: string;
-  description: string;
-  costs: Cost[]; // initial and/or recurring stored together
-  unlocked: boolean;
-  bonuses: LifestyleBonus;
-  icon?: LucideIcon;
-};
-
-export type LifestyleCategoryData = {
-  category: LifestyleCategory;
-  description: string;
-  options: LifestyleOption[];
-};
 export const lifestyleOptions: LifestyleCategoryData[] = [
   {
     category: "Housing",

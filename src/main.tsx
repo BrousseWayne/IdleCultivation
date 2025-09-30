@@ -1,8 +1,6 @@
-// import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./app/globals.css";
 import { BrowserRouter, Route, Routes } from "react-router";
-// import IdleCultivation from "./app/idleCultivation";
 import { Layout } from "./app/layout/layout";
 import { RenderExplorePage } from "./app/pages/explore";
 import { RenderInventoryPage } from "./app/pages/inventory";
@@ -33,5 +31,3 @@ createRoot(document.getElementById("root")!).render(
   </BrowserRouter>
   // </StrictMode>
 );
-
-//TODO: Add hover on button in activities page

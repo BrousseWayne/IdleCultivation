@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { storyEntryColors } from "../data/data copy";
-import { storyEntries } from "../data/data";
+import { storyEntries } from "../data/story";
+import { storyEntryColors } from "../data/constant";
 
 export const RenderStoryPage = () => {
   return (

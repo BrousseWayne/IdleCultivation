@@ -1,21 +1,13 @@
 import { useState } from "react";
+
+import type { PlayerState } from "../types/states";
 import {
   initialPlayerAge,
-  initialPlayerLifespan,
   initialPlayerHp,
-  initialPlayerSatiety,
+  initialPlayerLifespan,
   initialPlayerMortality,
-  initialPlayerMoney,
-} from "../data/data copy";
-
-type PlayerState = {
-  age: number;
-  lifespan: number;
-  hp: typeof initialPlayerHp;
-  satiety: typeof initialPlayerSatiety;
-  mortality: typeof initialPlayerMortality;
-  money: number;
-};
+  initialPlayerSatiety,
+} from "../data/constant";
 
 export function usePlayerState(initialState?: Partial<PlayerState>) {
   const [player, setPlayer] = useState<PlayerState>({
@@ -24,7 +16,6 @@ export function usePlayerState(initialState?: Partial<PlayerState>) {
     hp: initialState?.hp ?? initialPlayerHp,
     satiety: initialState?.satiety ?? initialPlayerSatiety,
     mortality: initialState?.mortality ?? initialPlayerMortality,
-    money: initialState?.money ?? initialPlayerMoney,
   });
 
   return {
@@ -34,7 +25,7 @@ export function usePlayerState(initialState?: Partial<PlayerState>) {
     playerHp: player.hp,
     playerSatiety: player.satiety,
     playerMortality: player.mortality,
-    playerMoney: player.money,
+
     setAge: (age: number) => setPlayer((prev) => ({ ...prev, age })),
     setLifespan: (lifespan: number) =>
       setPlayer((prev) => ({ ...prev, lifespan })),

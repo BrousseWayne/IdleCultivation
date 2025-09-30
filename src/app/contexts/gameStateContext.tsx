@@ -10,6 +10,7 @@ import type {
   Activity,
   ActivityKeys,
   ActivityModel,
+  InventoryItem,
   NavigationItem,
   NavigationUnlockState,
   Stats,
@@ -21,25 +22,9 @@ import {
   type initialPlayerSatiety,
 } from "../data/constant";
 import { activityData } from "../data/activity";
-import type { ActivityUnlockState } from "../types/states";
+import type { ActivityUnlockState, EquippedItems } from "../types/states";
 import { initialActivityCategoriesUnlockState } from "../pages/activities";
-
-type InventoryItem = {
-  id: number;
-  name: string;
-  type: string;
-  rarity: string;
-  equipped: boolean;
-};
-
-type EquippedItems = {
-  weapon: InventoryItem | null;
-  armor: InventoryItem | null;
-  helmet: InventoryItem | null;
-  boots: InventoryItem | null;
-  ring: InventoryItem | null;
-  amulet: InventoryItem | null;
-};
+import { useInventoryManager } from "../hooks/useInventoryManager";
 
 type GameStateContextType = {
   stats: Record<Stats, number>;
@@ -299,64 +284,7 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
   const [currentExploreLocation, setCurrentExploreLocation] =
     useState("Whispering Forest");
 
-  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([
-    {
-      id: 1,
-      name: "Iron Sword",
-      type: "weapon",
-      rarity: "common",
-      equipped: true,
-    },
-    {
-      id: 2,
-      name: "Leather Armor",
-      type: "armor",
-      rarity: "common",
-      equipped: true,
-    },
-    {
-      id: 3,
-      name: "Health Potion",
-      type: "consumable",
-      rarity: "common",
-      equipped: false,
-    },
-    {
-      id: 4,
-      name: "Spirit Ring",
-      type: "ring",
-      rarity: "rare",
-      equipped: false,
-    },
-    {
-      id: 5,
-      name: "Cultivation Manual",
-      type: "book",
-      rarity: "epic",
-      equipped: false,
-    },
-  ]);
-
-  const [equippedItems, setEquippedItems] = useState<EquippedItems>({
-    weapon: {
-      id: 1,
-      name: "Iron Sword",
-      rarity: "common",
-      type: "weapon",
-      equipped: true,
-    },
-    armor: {
-      id: 2,
-      name: "Leather Armor",
-      rarity: "common",
-      type: "armor",
-      equipped: true,
-    },
-    helmet: null,
-    boots: null,
-    ring: null,
-    amulet: null,
-  });
+  const inventoryManager = useInventoryManager();
 
   return (
     <GameStateContext.Provider
@@ -373,6 +301,7 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
         dailyExpenses,
         dailyIncome,
         ...playerState,
+        ...inventoryManager,
         selectedTimeScale,
         setSelectedTimeScale,
         selectedYear,
@@ -413,10 +342,6 @@ export const GameStateProvider = ({ children }: { children: ReactNode }) => {
         setEventLog,
         currentExploreLocation,
         setCurrentExploreLocation,
-        inventoryItems,
-        setInventoryItems,
-        equippedItems,
-        setEquippedItems,
       }}
     >
       {children}

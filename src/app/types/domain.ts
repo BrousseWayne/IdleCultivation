@@ -99,3 +99,11 @@ export const ALL_CATEGORIES = [
 export type ActivityCategory = (typeof ALL_CATEGORIES)[number];
 
 export type Activity = ActivityModel & ActivityView;
+
+export type InventoryItem = {
+  id: number;
+  name: string;
+  type: string;
+  rarity: string;
+  equipped: boolean;
+};

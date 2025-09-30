@@ -8,12 +8,6 @@ import {
   Settings,
   Smile,
 } from "lucide-react";
-import {
-  currentLocation,
-  currentTask,
-  freeTime,
-  moodBonus,
-} from "../data/data";
 
 export function Header() {
   return (
@@ -43,22 +37,22 @@ export function Header() {
           <div className="flex items-center gap-1 text-sm">
             <MapPin className="w-4 h-4 text-purple-400" />
             <span className="text-purple-200 font-semibold">Location:</span>
-            <span className="text-violet-300 font-bold">{currentLocation}</span>
+            <span className="text-violet-300 font-bold">PLACEHOLDER</span>
           </div>
           <div className="flex items-center gap-1 text-sm">
             <Activity className="w-4 h-4 text-purple-400" />
             <span className="text-purple-200 font-semibold">Current Task:</span>
-            <span className="text-violet-300 font-bold">{currentTask}</span>
+            <span className="text-violet-300 font-bold">PLACEHOLDER</span>
           </div>
           <div className="flex items-center gap-1 text-sm">
             <Clock className="w-4 h-4 text-purple-400" />
             <span className="text-purple-200 font-semibold">Free Time:</span>
-            <span className="text-violet-300 font-bold">{freeTime}h</span>
+            <span className="text-violet-300 font-bold">PLACEHOLDER</span>
           </div>
           <div className="flex items-center gap-1 text-sm">
             <Smile className="w-4 h-4 text-violet-400" />
             <span className="text-violet-200 font-semibold">Mood Bonus:</span>
-            <span className="text-purple-300 font-bold">+{moodBonus}</span>
+            <span className="text-purple-300 font-bold">+PLACEHOLDER</span>
           </div>
           <Button
             variant="ghost"

@@ -22,11 +22,11 @@ export const initialPlayerMortality = {
 export const initialPlayerMoney = 10;
 
 export const storyEntryColors: Record<StoryEntry["type"], string> = {
-  narrative: "border-purple-500/50 text-purple-400",
-  discovery: "border-yellow-500/50 text-yellow-400",
-  journey: "border-blue-500/50 text-blue-400",
-  achievement: "border-green-500/50 text-green-400",
-  combat: "border-red-500/50 text-red-400",
+  narrative: "border-accent-violet/50 text-accent-violet",
+  discovery: "border-accent-gold/50 text-accent-gold",
+  journey: "border-accent-sky/50 text-accent-sky",
+  achievement: "border-accent-emerald/50 text-accent-emerald",
+  combat: "border-accent-cinnabar/50 text-accent-cinnabar",
 };
 
 export const initialNavigationUnlockState: NavigationUnlockState = {

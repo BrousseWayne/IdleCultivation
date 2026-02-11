@@ -107,3 +107,37 @@ export type InventoryItem = {
   type: string;
   rarity: string;
 };
+
+export type Location = {
+  name: string;
+  travel: number;
+  description: string;
+  x: number;
+  y: number;
+  connections: string[];
+};
+
+export type ActiveQuest = {
+  id: number;
+  title: string;
+  description: string;
+  progress: number;
+  reward: string;
+  timeLeft: string;
+};
+
+export type CompletedQuest = {
+  id: number;
+  title: string;
+  description: string;
+  reward: string;
+  completedDate: string;
+};
+
+export type CalendarEvent = {
+  date: number;
+  type: "past" | "future";
+  activity: string;
+  result: string;
+  category: string;
+};

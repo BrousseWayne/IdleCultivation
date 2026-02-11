@@ -4,7 +4,6 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Light mode tokens (rarely used in this game) */
   --background: oklch(1 0 0);
   --foreground: oklch(0.35 0 0);
   --card: oklch(0.98 0 0);
@@ -41,44 +40,58 @@
 }
 
 .dark {
-  /* Updated to elegant AMOLED dark theme with sophisticated color palette */
-  --background: oklch(0 0 0); /* Pure black for AMOLED */
-  --foreground: oklch(0.95 0 0); /* Soft white for text */
-  --card: oklch(0.08 0 0); /* Very dark gray for cards */
-  --card-foreground: oklch(0.9 0 0); /* Light text on cards */
-  --popover: oklch(0.08 0 0); /* Dark popover background */
-  --popover-foreground: oklch(0.9 0 0); /* Light popover text */
-  --primary: oklch(0.65 0.15 280); /* Elegant purple for primary actions */
-  --primary-foreground: oklch(1 0 0); /* White text on primary */
-  --secondary: oklch(0.6 0.12 250); /* Soft blue-purple for secondary */
-  --secondary-foreground: oklch(1 0 0); /* White text on secondary */
-  --muted: oklch(0.15 0 0); /* Muted background */
-  --muted-foreground: oklch(0.6 0 0); /* Muted text */
-  --accent: oklch(0.7 0.18 320); /* Refined magenta accent */
-  --accent-foreground: oklch(1 0 0); /* White text on accent */
-  --destructive: oklch(0.6 0.2 15); /* Warm red for destructive actions */
-  --destructive-foreground: oklch(0.95 0 0); /* Light text on destructive */
-  --border: oklch(0.2 0 0); /* Subtle borders */
-  --input: oklch(0.08 0 0); /* Dark input backgrounds */
-  --ring: oklch(0.65 0.15 280); /* Purple focus ring */
-  --chart-1: oklch(0.65 0.15 280); /* Purple for charts */
-  --chart-2: oklch(0.6 0.12 250); /* Blue-purple for charts */
-  --chart-3: oklch(0.7 0.18 320); /* Magenta for charts */
-  --chart-4: oklch(0.6 0.2 15); /* Warm red for charts */
-  --chart-5: oklch(0.6 0 0); /* Neutral gray for charts */
-  --sidebar: oklch(0.05 0 0); /* Slightly lighter than pure black */
-  --sidebar-foreground: oklch(0.9 0 0); /* Light sidebar text */
-  --sidebar-primary: oklch(0.65 0.15 280); /* Purple sidebar primary */
-  --sidebar-primary-foreground: oklch(1 0 0); /* White sidebar primary text */
-  --sidebar-accent: oklch(0.7 0.18 320); /* Magenta sidebar accent */
-  --sidebar-accent-foreground: oklch(1 0 0); /* White sidebar accent text */
-  --sidebar-border: oklch(0.2 0 0); /* Subtle sidebar borders */
-  --sidebar-ring: oklch(0.65 0.15 280); /* Purple sidebar focus ring */
+  --background: oklch(0 0 0);
+  --foreground: oklch(0.95 0 0);
+  --card: oklch(0.08 0 0);
+  --card-foreground: oklch(0.9 0 0);
+  --popover: oklch(0.08 0 0);
+  --popover-foreground: oklch(0.9 0 0);
+  --primary: oklch(0.7 0.12 175);
+  --primary-foreground: oklch(0.1 0 0);
+  --secondary: oklch(0.55 0.08 220);
+  --secondary-foreground: oklch(1 0 0);
+  --muted: oklch(0.15 0 0);
+  --muted-foreground: oklch(0.6 0 0);
+  --accent: oklch(0.65 0.12 175);
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.6 0.2 15);
+  --destructive-foreground: oklch(0.95 0 0);
+  --border: oklch(0.2 0 0);
+  --input: oklch(0.08 0 0);
+  --ring: oklch(0.7 0.12 175);
+  --chart-1: oklch(0.7 0.12 175);
+  --chart-2: oklch(0.55 0.08 220);
+  --chart-3: oklch(0.65 0.15 320);
+  --chart-4: oklch(0.6 0.2 15);
+  --chart-5: oklch(0.6 0 0);
+  --sidebar: oklch(0.05 0 0);
+  --sidebar-foreground: oklch(0.9 0 0);
+  --sidebar-primary: oklch(0.7 0.12 175);
+  --sidebar-primary-foreground: oklch(0.1 0 0);
+  --sidebar-accent: oklch(0.65 0.12 175);
+  --sidebar-accent-foreground: oklch(1 0 0);
+  --sidebar-border: oklch(0.2 0 0);
+  --sidebar-ring: oklch(0.7 0.12 175);
+
+  --accent-jade: #2DD4BF;
+  --accent-cinnabar: #EF4444;
+  --accent-gold: #F59E0B;
+  --accent-emerald: #10B981;
+  --accent-violet: #A78BFA;
+  --accent-sky: #3B82F6;
+  --accent-lotus: #F472B6;
+  --accent-silver: #94A3B8;
+
+  --bg-base: oklch(0 0 0);
+  --bg-surface: oklch(0.08 0 0);
+  --bg-elevated: oklch(0.12 0 0);
+  --bg-overlay: oklch(0.15 0 0);
 }
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: "Cinzel", serif;
+  --font-sans: "Crimson Text", serif;
+  --font-mono: "JetBrains Mono", monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -115,6 +128,65 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-accent-jade: var(--accent-jade);
+  --color-accent-cinnabar: var(--accent-cinnabar);
+  --color-accent-gold: var(--accent-gold);
+  --color-accent-emerald: var(--accent-emerald);
+  --color-accent-violet: var(--accent-violet);
+  --color-accent-sky: var(--accent-sky);
+  --color-accent-lotus: var(--accent-lotus);
+  --color-accent-silver: var(--accent-silver);
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes stripe-move {
+  0% { background-position: 0 0; }
+  100% { background-position: 40px 0; }
+}
+
+@keyframes flash-complete {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(1.5); }
+  100% { filter: brightness(1); }
+}
+
+@keyframes float-up {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-30px); }
+}
+
+@keyframes unlock-flash {
+  0% { transform: scale(0.8); opacity: 0; }
+  60% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.progress-striped {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(255, 255, 255, 0.1) 10px,
+    rgba(255, 255, 255, 0.1) 20px
+  );
+  background-size: 40px 100%;
+  animation: stripe-move 1s linear infinite;
+}
+
+.animate-breathe {
+  animation: breathe 2s ease-in-out infinite;
+}
+
+.animate-float-up {
+  animation: float-up 1s ease-out forwards;
+}
+
+.animate-unlock-flash {
+  animation: unlock-flash 0.5s ease-out;
 }
 
 @layer base {
@@ -123,5 +195,14 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-striped,
+  .animate-breathe,
+  .animate-float-up,
+  .animate-unlock-flash {
+    animation: none !important;
   }
 }

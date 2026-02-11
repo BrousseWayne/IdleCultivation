@@ -71,7 +71,7 @@ export const RenderCalendarPage = () => {
                 key={index}
                 className={`border-border/50 ${
                   event.type === "future"
-                    ? "bg-violet-950/30 border-violet-500/30"
+                    ? "bg-accent-violet/10 border-accent-violet/30"
                     : "bg-muted/30"
                 }`}
               >
@@ -107,7 +107,7 @@ export const RenderCalendarPage = () => {
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent mb-2">
+        <h2 className="text-2xl font-bold font-[family-name:var(--font-display)] text-accent-sky mb-2">
           Cultivation Chronicle
         </h2>
         <p className="text-muted-foreground">
@@ -115,7 +115,6 @@ export const RenderCalendarPage = () => {
         </p>
       </div>
 
-      {/* Calendar Navigation */}
       <div className="flex items-center gap-2 mb-4 flex-wrap">
         <div className="flex items-center gap-1">
           <Button
@@ -213,7 +212,7 @@ export const RenderCalendarPage = () => {
       <Card className="bg-card border-border/50">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-base">
-            <Calendar className="w-4 h-4 text-purple-400" />
+            <Calendar className="w-4 h-4 text-accent-sky" />
             {getCalendarTitle(
               calendarView,
               selectedDecade,
@@ -224,7 +223,6 @@ export const RenderCalendarPage = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-3">
-          {/* Calendar Grid */}
           <div className="grid grid-cols-7 gap-1 mb-2">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
               <div
@@ -255,7 +253,7 @@ export const RenderCalendarPage = () => {
                       relative p-2 text-sm rounded hover:bg-slate-800/50 transition-colors
                       ${
                         isCurrentDay
-                          ? "bg-purple-500/20 border border-purple-500/50"
+                          ? "bg-accent-sky/20 border border-accent-sky/50"
                           : ""
                       }
                       ${hasEvent ? "font-semibold" : ""}
@@ -263,12 +261,12 @@ export const RenderCalendarPage = () => {
                 >
                   {day}
                   {isCurrentDay && (
-                    <div className="absolute top-1 right-1 w-2 h-2 bg-purple-400 rounded-full"></div>
+                    <div className="absolute top-1 right-1 w-2 h-2 bg-accent-sky rounded-full"></div>
                   )}
                   {hasEvent && (
                     <div
                       className={`absolute bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 rounded-full ${
-                        hasUpcomingEvent ? "bg-violet-300" : "bg-slate-300"
+                        hasUpcomingEvent ? "bg-accent-violet" : "bg-slate-300"
                       }`}
                     ></div>
                   )}

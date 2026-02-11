@@ -1,13 +1,4 @@
-import type { Activity, InventoryItem, SidebarNavigation } from "../types/domain";
-
-export type Location = {
-  name: string;
-  travel: number;
-  description: string;
-  x: number;
-  y: number;
-  connections: string[];
-};
+import type { Activity, InventoryItem, Location, SidebarNavigation } from "../types/domain";
 
 interface EntityTypeMap {
   activity: Activity;

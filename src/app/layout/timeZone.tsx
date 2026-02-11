@@ -11,6 +11,7 @@ import {
 import { useGameStore } from "../stores/gameStore";
 import { useActivityStore } from "../stores/activityStore";
 import { Switch } from "@/components/ui/switch";
+import { useLerpNumber } from "../utils/useLerpNumber";
 
 const renderDate = (day: number) => {
   return `${day} day`;
@@ -34,6 +35,8 @@ export function RenderTimeZone() {
   const setGameSpeed = useGameStore((s) => s.setGameSpeed);
   const setTimeScale = useGameStore((s) => s.setTimeScale);
 
+  const lerpTimePoints = useLerpNumber(timePoints);
+
   const repeatActivities = useActivityStore((s) => s.repeatActivities);
   const setRepeatActivities = useActivityStore((s) => s.setRepeatActivities);
 
@@ -48,16 +51,17 @@ export function RenderTimeZone() {
   return (
     <div className="sticky top-20 z-40 bg-black/90 backdrop-blur-sm border-b border-slate-800/50 px-4 py-2">
       <div className="flex items-center justify-center gap-4">
-        <div className="flex items-center gap-3 bg-purple-500/10 px-3 py-2 rounded-lg border border-purple-500/30">
-          <Clock className="w-4 h-4 text-purple-400" />
+        <div className="flex items-center gap-3 bg-accent-jade/10 px-3 py-2 rounded-lg border border-accent-jade/30">
+          <Clock className="w-4 h-4 text-accent-jade" />
           <span className="font-semibold text-sm">Available Time Points:</span>
-          <span className="text-xl font-bold text-purple-400 font-mono">
-            {timePoints}/{maxTimePoints}
+          <span className="text-xl font-bold text-accent-jade font-mono">
+            {lerpTimePoints}/{maxTimePoints}
           </span>
           <div className="w-32 relative">
             <Progress
               value={(timePoints / maxTimePoints) * 100}
               className="h-2"
+              striped
             />
             <div
               className="absolute top-0 right-0 h-2 bg-slate-500/60 rounded-r group cursor-help border border-slate-400/40"
@@ -72,8 +76,8 @@ export function RenderTimeZone() {
         </div>
 
         <div className="flex items-center gap-2 bg-slate-900/50 px-2 py-1 rounded-lg border border-slate-700/50">
-          <Calendar className="w-4 h-4 text-violet-400" />
-          <span className="text-violet-300 font-bold text-sm">
+          <Calendar className="w-4 h-4 text-accent-sky" />
+          <span className="text-accent-sky font-bold text-sm font-mono">
             {renderDate(day)}
           </span>
         </div>
@@ -88,7 +92,7 @@ export function RenderTimeZone() {
             {isPlaying ? (
               <Pause className="w-3 h-3" />
             ) : (
-              <Play className="w-3 h-3" />
+              <Play className={`w-3 h-3 ${!isPlaying ? "animate-breathe" : ""}`} />
             )}
           </Button>
           <Button
@@ -112,7 +116,7 @@ export function RenderTimeZone() {
             <select
               value={timeScale}
               onChange={(e) => handleTimeScaleChange(e.target.value as "day" | "week" | "month")}
-              className="appearance-none bg-black border border-slate-700/50 rounded px-2 py-1 text-sm font-medium pr-6 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+              className="appearance-none bg-black border border-slate-700/50 rounded px-2 py-1 text-sm font-medium pr-6 focus:outline-none focus:ring-2 focus:ring-accent-jade/50"
             >
               {Object.entries(timeScales).map(([key, scale]) => (
                 <option key={key} value={key}>

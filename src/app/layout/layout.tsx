@@ -13,8 +13,7 @@ export function Layout() {
         <RenderTimeZone />
         <div className="flex flex-1">
           <div
-            className="flex-1 p-4 overflow-y-auto"
-            style={{ marginLeft: "28rem" }}
+            className="flex-1 p-4 overflow-y-auto ml-[28rem]"
           >
             <Outlet />
           </div>

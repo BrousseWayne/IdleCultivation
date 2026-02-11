@@ -16,7 +16,7 @@ export function LivingConditionsCard({
       <CardHeader className="pb-1">
         <CardTitle className="text-sm flex items-center justify-between text-slate-200">
           <div className="flex items-center gap-2">
-            <Home className="w-4 h-4 text-green-400" />
+            <Home className="w-4 h-4 text-accent-jade" />
             Living Conditions
           </div>
           <Button
@@ -37,27 +37,27 @@ export function LivingConditionsCard({
         <CardContent className="space-y-2 text-xs">
           <div className="flex justify-between">
             <span className="text-slate-400">Housing:</span>
-            <span className="text-green-300 font-bold">Small Cottage</span>
+            <span className="text-accent-emerald font-bold">Small Cottage</span>
           </div>
           <div className="flex justify-between">
             <span className="text-slate-400">Meal Quality:</span>
-            <span className="text-yellow-300 font-bold">Average</span>
+            <span className="text-accent-gold font-bold">Average</span>
           </div>
           <div className="space-y-1">
             <div className="flex justify-between">
               <span className="text-slate-400">Lifestyle:</span>
-              <span className="text-blue-300 font-bold">Modest (65%)</span>
+              <span className="text-accent-sky font-bold">Modest (65%)</span>
             </div>
             <div className="w-full bg-slate-800 rounded-full h-1.5">
               <div
-                className="bg-blue-500 h-1.5 rounded-full"
+                className="bg-accent-sky h-1.5 rounded-full"
                 style={{ width: "65%" }}
               ></div>
             </div>
           </div>
           <div className="flex justify-between">
             <span className="text-slate-400">XP Multiplier:</span>
-            <span className="text-purple-300 font-bold">1.2x</span>
+            <span className="text-accent-jade font-bold">1.2x</span>
           </div>
         </CardContent>
       )}

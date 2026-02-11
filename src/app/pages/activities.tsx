@@ -3,7 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useActivityStore } from "../stores/activityStore";
 import { useGameStore } from "../stores/gameStore";
-import { useState, type JSX } from "react";
+import { useState, useEffect, useCallback, type JSX } from "react";
+import { EventBus } from "../services";
 import { Progress } from "@/components/ui/progress";
 import {
   currencyColors,
@@ -17,6 +18,7 @@ import {
   type Reward,
 } from "../types/domain";
 import { EntityRegistry } from "../services";
+import { CATEGORY_COLORS } from "../data/sectionColors";
 
 const PlannedActivitiesRecap = ({
   activities,
@@ -30,7 +32,7 @@ const PlannedActivitiesRecap = ({
 
   return (
     <Card className="bg-card/50 border border-border/50 p-3 mb-4">
-      <h3 className="text-sm font-semibold text-purple-300 mb-2">
+      <h3 className="text-sm font-semibold text-accent-jade mb-2">
         Planned Activities
       </h3>
       <div className="space-y-1 text-xs">
@@ -40,14 +42,14 @@ const PlannedActivitiesRecap = ({
           return (
             <div key={key} className="flex justify-between items-center">
               <span className="flex items-center gap-1">
-                <activity.icon className="w-3 h-3 text-purple-400" />
+                <activity.icon className="w-3 h-3 text-accent-jade" />
                 {activity.name}
               </span>
               <span className="text-slate-400">{hours}h</span>
               <div className="w-24 h-2 bg-slate-700 rounded overflow-hidden">
                 <Progress
                   value={progress}
-                  className="h-2 bg-slate-800 [&>div]:bg-purple-500"
+                  className="h-2 bg-slate-800 [&>div]:bg-accent-jade"
                 />
               </div>
             </div>
@@ -71,6 +73,31 @@ export const RenderActivitiesPage = () => {
   const [collapsedCategories, setCollapsedCategories] = useState<
     Record<string, boolean>
   >({});
+  const [floatingRewards, setFloatingRewards] = useState<
+    { id: number; text: string; color: string }[]
+  >([]);
+
+  const handleReward = useCallback((event: any) => {
+    const { reward } = event.payload;
+    let text: string;
+    let color: string;
+    if ("currency" in reward) {
+      text = `+${reward.amount} ${reward.currency}`;
+      color = currencyColors[reward.currency as keyof typeof currencyColors] || "text-gray-400";
+    } else if ("stat" in reward) {
+      text = `+${reward.amount} ${reward.stat}`;
+      color = statColors[reward.stat as keyof typeof statColors] || "text-gray-400";
+    } else return;
+
+    const id = Date.now();
+    setFloatingRewards((prev) => [...prev, { id, text, color }]);
+    setTimeout(() => setFloatingRewards((prev) => prev.filter((r) => r.id !== id)), 1000);
+  }, []);
+
+  useEffect(() => {
+    EventBus.on("activity:reward-earned", handleReward);
+    return () => EventBus.off("activity:reward-earned", handleReward);
+  }, [handleReward]);
 
   const allocatedActivities = useActivityStore((s) => s.allocatedActivities);
   const allocateTime = useActivityStore((s) => s.allocateTime);
@@ -118,24 +145,32 @@ export const RenderActivitiesPage = () => {
   const categories = categorizeActivities(activityData);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 relative">
       <div className="mb-4">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent mb-2">
+        <h2 className="text-2xl font-bold font-[family-name:var(--font-display)] text-accent-jade mb-2">
           Daily Activities
         </h2>
         <p className="text-muted-foreground">Manage your time wisely</p>
+      </div>
+      <div className="fixed top-28 right-8 z-50 pointer-events-none space-y-1">
+        {floatingRewards.map((r) => (
+          <div key={r.id} className={`animate-float-up text-sm font-bold ${r.color}`}>
+            {r.text}
+          </div>
+        ))}
       </div>
       <PlannedActivitiesRecap activities={allocatedActivities} />
       {ALL_CATEGORIES.filter(
         (category) => activityCategoriesUnlockState[category]
       ).map((category) => {
         const categoryActivities = categories[category];
+        const catColor = CATEGORY_COLORS[category];
 
         return (
           <div key={category} className="space-y-2">
             <button
               onClick={() => toggleCategory(category)}
-              className="flex items-center gap-2 text-lg font-semibold text-purple-300 capitalize hover:text-purple-200 transition-colors"
+              className={`flex items-center gap-2 text-lg font-semibold text-${catColor} capitalize hover:opacity-80 transition-colors`}
             >
               <ChevronDown
                 className={`w-4 h-4 transition-transform ${
@@ -145,7 +180,7 @@ export const RenderActivitiesPage = () => {
               {category}
             </button>
             {!collapsedCategories[category] && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+              <div className="space-y-1">
                 {categoryActivities.map((activity) => {
                   return (
                     <ActivityCard
@@ -176,26 +211,16 @@ function ActivityCard({
   activities,
   allocateActivity,
 }: ActivityCardProps) {
-  // console.log(activities, "test");
+  const allocated = activities[activity.key] || 0;
+  const progress = activity.timeCost > 0 ? Math.min((allocated / activity.timeCost) * 100, 100) : 0;
+
   return (
-    <Card
-      key={activity.key}
-      className="bg-card/50 border border-border/50 rounded-md p-1 relative"
-    >
-      <div className="flex items-center justify-between">
+    <div className="relative">
+      <div className="flex items-center gap-3 px-2 py-1.5 bg-card/30 border border-border/30 rounded-md hover:bg-card/50 transition-colors">
+        <activity.icon className="w-4 h-4 text-accent-jade shrink-0" />
+        <span className="text-xs font-semibold w-28 truncate">{activity.name}</span>
+        <span className="text-[10px] text-slate-400 w-16">{formatRewardColor(activity.reward)}</span>
         <div className="flex items-center gap-1">
-          <activity.icon className="w-4 h-4 text-purple-400" />
-          <span className="text-xs font-semibold">{activity.name}</span>
-        </div>
-        <div className="flex gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-5 w-5 p-0"
-            onClick={() => allocateActivity(activity.key, 1)}
-          >
-            <Plus className="w-3 h-3" />
-          </Button>
           <Button
             variant="ghost"
             size="sm"
@@ -204,22 +229,26 @@ function ActivityCard({
           >
             <Minus className="w-3 h-3" />
           </Button>
+          <span className="text-xs font-mono w-8 text-center font-bold text-accent-jade">{allocated}h</span>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-5 w-5 p-0"
+            onClick={() => allocateActivity(activity.key, 1)}
+          >
+            <Plus className="w-3 h-3" />
+          </Button>
         </div>
+        <span className="text-[10px] text-slate-500 ml-auto">{activity.timeCost}h/cycle</span>
       </div>
-
-      <div className="flex justify-between text-[10px] text-slate-400 mt-0.5">
-        <span>Cost: {activity.timeCost}h</span>
-        <span>Reward: {formatRewardColor(activity.reward)}</span>
-        <span>Allocated: {activities[activity.key] || 0}h</span>
-      </div>
-
-      <div className="absolute bottom-0 left-0 h-1 w-full bg-slate-700 rounded-b-md overflow-hidden mt-1">
+      <div className="h-0.5 w-full bg-slate-800 rounded-b overflow-hidden">
         <Progress
-          value={0}
-          className="h-1.5 bg-slate-800 [&>div]:bg-purple-500"
+          value={progress}
+          striped={progress > 0}
+          className="h-0.5 bg-slate-800 [&>div]:bg-accent-jade"
         />
       </div>
-    </Card>
+    </div>
   );
 }
 

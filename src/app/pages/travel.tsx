@@ -12,11 +12,11 @@ export const RenderTravelMap = () => {
 
   return (
     <div className="space-y-6">
-      <div className="mb-2 p-2 bg-accent/10 rounded-lg border border-accent/20">
+      <div className="mb-2 p-2 bg-accent-sky/10 rounded-lg border border-accent-sky/20">
         <div className="flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-accent" />
+          <MapPin className="w-4 h-4 text-accent-sky" />
           <span className="font-semibold text-sm">Current Location:</span>
-          <span className="text-accent text-sm">{selectedLocation}</span>
+          <span className="text-accent-sky text-sm">{selectedLocation}</span>
         </div>
       </div>
 
@@ -105,20 +105,20 @@ export const RenderTravelMap = () => {
               >
                 <div
                   className={`relative ${
-                    location.name === selectedLocation ? "animate-pulse" : ""
+                    location.name === selectedLocation ? "animate-breathe" : ""
                   }`}
                 >
                   <div
                     className={`w-4 h-4 rounded-full border-2 ${
                       location.name === selectedLocation
-                        ? "bg-accent border-accent shadow-lg shadow-accent/50"
+                        ? "bg-accent-sky border-accent-sky shadow-lg shadow-accent-sky/50"
                         : location.travel === 0
                         ? "bg-primary border-primary"
                         : "bg-slate-600 border-slate-400 hover:bg-slate-500"
                     }`}
                   />
                   {location.name === selectedLocation && (
-                    <div className="absolute -inset-2 rounded-full border-2 border-accent/50 animate-ping" />
+                    <div className="absolute -inset-2 rounded-full border-2 border-accent-sky/50 animate-breathe" />
                   )}
                 </div>
 
@@ -146,7 +146,7 @@ export const RenderTravelMap = () => {
           .map((location) => (
             <Card
               key={location.name}
-              className="cursor-pointer transition-all hover:scale-105 bg-muted/30 border-border/30 hover:border-accent/30"
+              className="cursor-pointer transition-all hover:scale-105 bg-muted/30 border-border/30 hover:border-accent-sky/30"
               onClick={() => setSelectedLocation(location.name)}
             >
               <CardContent className="p-3">
@@ -182,7 +182,7 @@ export const RenderTravelPage = () => {
   return (
     <div className="space-y-6">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent mb-2">
+        <h2 className="text-2xl font-bold font-[family-name:var(--font-display)] text-accent-sky mb-2">
           Travel the World
         </h2>
         <p className="text-muted-foreground">

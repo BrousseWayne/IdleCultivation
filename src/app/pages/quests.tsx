@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { CheckCircle, Clock, Target } from "lucide-react";
 import { activeQuests, completedQuests } from "../data/quests";
 
@@ -6,18 +7,17 @@ export function RenderQuestsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <Target className="w-6 h-6 text-purple-400" />
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent">
+        <Target className="w-6 h-6 text-accent-violet" />
+        <h2 className="text-2xl font-bold font-[family-name:var(--font-display)] text-accent-violet">
           Quests
         </h2>
       </div>
 
       <div className="space-y-6">
-        {/* Active Quests */}
         <Card className="bg-black border-slate-700/50">
           <CardHeader>
             <CardTitle className="text-lg text-slate-200 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-yellow-400" />
+              <Clock className="w-5 h-5 text-accent-gold" />
               Active Quests
             </CardTitle>
           </CardHeader>
@@ -29,7 +29,7 @@ export function RenderQuestsPage() {
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-purple-300">
+                    <h3 className="font-semibold text-accent-violet">
                       {quest.title}
                     </h3>
                     <p className="text-sm text-slate-400 mt-1">
@@ -37,31 +37,28 @@ export function RenderQuestsPage() {
                     </p>
                     <div className="flex items-center gap-4 mt-2">
                       <div className="text-xs text-slate-500">
-                        Progress: {quest.progress}%
+                        Progress: <span className="font-mono">{quest.progress}%</span>
                       </div>
-                      <div className="text-xs text-yellow-400">
+                      <div className="text-xs text-accent-gold">
                         Reward: {quest.reward}
                       </div>
                     </div>
                   </div>
                   <div className="text-xs text-slate-500">{quest.timeLeft}</div>
                 </div>
-                <div className="w-full bg-slate-800 rounded-full h-1.5 mt-2">
-                  <div
-                    className="bg-purple-500 h-1.5 rounded-full"
-                    style={{ width: `${quest.progress}%` }}
-                  ></div>
-                </div>
+                <Progress
+                  value={quest.progress}
+                  className="h-1.5 bg-slate-800 [&>div]:bg-accent-violet mt-2"
+                />
               </div>
             ))}
           </CardContent>
         </Card>
 
-        {/* Completed Quests */}
         <Card className="bg-black border-slate-700/50">
           <CardHeader>
             <CardTitle className="text-lg text-slate-200 flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-400" />
+              <CheckCircle className="w-5 h-5 text-accent-emerald" />
               Completed Quests
             </CardTitle>
           </CardHeader>
@@ -73,16 +70,15 @@ export function RenderQuestsPage() {
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-semibold text-green-300 text-sm">
+                    <h3 className="font-semibold text-accent-emerald text-sm">
                       {quest.title}
                     </h3>
                     <div className="text-xs text-slate-500">
                       Completed: {quest.completedDate}
                     </div>
                   </div>
-                  <div className="text-xs text-green-400">{quest.reward}</div>
+                  <div className="text-xs text-accent-emerald">{quest.reward}</div>
                 </div>
-                ß
               </div>
             ))}
           </CardContent>

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge, Calendar, ChevronLeft } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useGameState } from "../contexts/gameStateContext";
+import { useGameStore } from "../stores/gameStore";
 import { events } from "../data/story";
 import { currentDay, daysInMonth } from "../data/constant";
 
@@ -35,22 +35,20 @@ const getCalendarTitle = (
 };
 
 export const RenderCalendarPage = () => {
-  const {
-    calendarView,
-    selectedDecade,
-    selectedEra,
-    selectedMonth,
-    selectedYear,
-    showDetailedView,
-    selectedDate,
-    setShowDetailedView,
-    setSelectedEra,
-    setSelectedDecade,
-    setSelectedYear,
-    setSelectedMonth,
-    setCalendarView,
-    setSelectedDate,
-  } = useGameState();
+  const calendarView = useGameStore((s) => s.calendarView);
+  const selectedDecade = useGameStore((s) => s.selectedDecade);
+  const selectedEra = useGameStore((s) => s.selectedEra);
+  const selectedMonth = useGameStore((s) => s.selectedMonth);
+  const selectedYear = useGameStore((s) => s.selectedYear);
+  const showDetailedView = useGameStore((s) => s.showDetailedView);
+  const selectedDate = useGameStore((s) => s.selectedDate);
+  const setShowDetailedView = useGameStore((s) => s.setShowDetailedView);
+  const setSelectedEra = useGameStore((s) => s.setSelectedEra);
+  const setSelectedDecade = useGameStore((s) => s.setSelectedDecade);
+  const setSelectedYear = useGameStore((s) => s.setSelectedYear);
+  const setSelectedMonth = useGameStore((s) => s.setSelectedMonth);
+  const setCalendarView = useGameStore((s) => s.setCalendarView);
+  const setSelectedDate = useGameStore((s) => s.setSelectedDate);
   if (showDetailedView && selectedDate) {
     const dayEvents = events.filter((e) => e.date === selectedDate);
     return (

@@ -1,7 +1,8 @@
 import { ChevronDown, Minus, Plus } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useGameState } from "../contexts/gameStateContext";
+import { useActivityStore } from "../stores/activityStore";
+import { useGameStore } from "../stores/gameStore";
 import { useState, type JSX } from "react";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -13,9 +14,9 @@ import type { ActivityUnlockState, Categories } from "../types/states";
 import {
   ALL_CATEGORIES,
   type Activity,
-  type ActivityKeys,
   type Reward,
 } from "../types/domain";
+import { EntityRegistry } from "../services";
 
 const PlannedActivitiesRecap = ({
   activities,
@@ -34,7 +35,7 @@ const PlannedActivitiesRecap = ({
       </h3>
       <div className="space-y-1 text-xs">
         {planned.map(([key, hours]) => {
-          const activity = activityData.find((a) => a.key === key)!;
+          const activity = EntityRegistry.get("activity", key)!;
           const progress = Math.min((hours / activity.timeCost) * 100, 100);
           return (
             <div key={key} className="flex justify-between items-center">
@@ -70,11 +71,26 @@ export const RenderActivitiesPage = () => {
   const [collapsedCategories, setCollapsedCategories] = useState<
     Record<string, boolean>
   >({});
-  const {
-    allocatedActivities,
-    activityCategoriesUnlockState,
-    allocateActivity,
-  } = useGameState();
+
+  const allocatedActivities = useActivityStore((s) => s.allocatedActivities);
+  const allocateTime = useActivityStore((s) => s.allocateTime);
+  const enqueueActivity = useActivityStore((s) => s.enqueueActivity);
+
+  const activityCategoriesUnlockState = useGameStore(
+    (s) => s.activityCategoryUnlocks
+  );
+  const timePoints = useGameStore((s) => s.timePoints);
+  const gameAllocateTime = useGameStore((s) => s.allocateTime);
+
+  const allocateActivity = (activityKey: string, delta: number) => {
+    const activity = EntityRegistry.get("activity", activityKey)!;
+    const realTimeCost = delta * activity.timeCost;
+    if (timePoints - realTimeCost >= 0) {
+      allocateTime(activityKey, realTimeCost);
+      gameAllocateTime(realTimeCost);
+      enqueueActivity(activity);
+    }
+  };
 
   const categorizeActivities = (activityData: Activity[]) => {
     const categories: Categories = {} as Categories;
@@ -151,8 +167,8 @@ export const RenderActivitiesPage = () => {
 
 type ActivityCardProps = {
   activity: Activity;
-  activities: Record<ActivityKeys, number>;
-  allocateActivity: (activityKey: ActivityKeys, delta: number) => void;
+  activities: Record<string, number>;
+  allocateActivity: (activityKey: string, delta: number) => void;
 };
 
 function ActivityCard({
@@ -194,7 +210,7 @@ function ActivityCard({
       <div className="flex justify-between text-[10px] text-slate-400 mt-0.5">
         <span>Cost: {activity.timeCost}h</span>
         <span>Reward: {formatRewardColor(activity.reward)}</span>
-        <span>Allocated: {activities[activity.key]}h</span>
+        <span>Allocated: {activities[activity.key] || 0}h</span>
       </div>
 
       <div className="absolute bottom-0 left-0 h-1 w-full bg-slate-700 rounded-b-md overflow-hidden mt-1">
@@ -210,13 +226,13 @@ function ActivityCard({
 function formatRewardColor(reward: Reward): JSX.Element {
   if ("currency" in reward)
     return (
-      <span className={currencyColors[reward.currency]}>
+      <span className={currencyColors[reward.currency] || "text-gray-400"}>
         {`+${reward.amount} ${reward.currency}`}
       </span>
     );
   if ("stat" in reward)
     return (
-      <span className={statColors[reward.stat]}>
+      <span className={statColors[reward.stat] || "text-gray-400"}>
         {`+${reward.amount} ${reward.stat}`}
       </span>
     );

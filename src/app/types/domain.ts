@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import type { UnlockCondition } from "./unlocks";
 
 export type Reward =
   | {
@@ -34,6 +35,7 @@ export type LifestyleOption = {
   unlocked: boolean;
   bonuses: LifestyleBonus;
   icon?: LucideIcon;
+  unlockConditions?: UnlockCondition[];
 };
 
 export type LifestyleCategoryData = {
@@ -63,20 +65,19 @@ export type SidebarNavigation = {
   name: NavigationItem;
   icon: LucideIcon;
   url: string;
+  unlockConditions?: UnlockCondition[];
 };
 
 export type NavigationUnlockState = Record<SidebarNavigation["name"], boolean>;
 
-export const activityKeys = ["beg", "liftWeights"] as const;
-export type ActivityKeys = (typeof activityKeys)[number];
-
 export type ActivityModel = {
-  xpScalingFn: () => number; // mathematical function defining level growth curve
-  key: ActivityKeys; // unique identifier for the activity
-  level: number; // current activity level
-  timeCost: number; // cost in time units
-  unlocked: boolean; // whether the activity is available
-  reward: Reward; // outcome of performing the activity
+  xpScalingFn: () => number;
+  key: string;
+  level: number;
+  timeCost: number;
+  unlocked: boolean;
+  reward: Reward;
+  unlockConditions?: UnlockCondition[];
 };
 
 export type ActivityView = {
@@ -105,5 +106,4 @@ export type InventoryItem = {
   name: string;
   type: string;
   rarity: string;
-  equipped: boolean;
 };

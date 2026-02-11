@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useGameState } from "@/app/contexts/gameStateContext";
+import { useCultivatorStore } from "@/app/stores/cultivatorStore";
+import { useInventoryStore } from "@/app/stores/inventoryStore";
 import { StatusCard } from "./statusCard";
 import { ResourcesCard } from "./resourcesCard";
 import { LivingConditionsCard } from "./livingConditionsCard";
@@ -8,17 +9,16 @@ export function StatsPanel() {
   const [statsCollapsed, setStatsCollapsed] = useState(false);
   const [resourcesCollapsed, setResourcesCollapsed] = useState(false);
   const [livingCollapsed, setLivingCollapsed] = useState(false);
-  const {
-    age,
-    lifespan,
-    playerHp,
-    playerSatiety,
-    playerMortality,
-    playerMoney,
-    dailyIncome,
-    dailyExpenses,
-    day,
-  } = useGameState();
+
+  const age = useCultivatorStore((s) => s.age);
+  const lifespan = useCultivatorStore((s) => s.lifespan);
+  const playerHp = useCultivatorStore((s) => s.vitality);
+  const playerSatiety = useCultivatorStore((s) => s.satiety);
+  const playerMortality = useCultivatorStore((s) => s.mortality);
+
+  const playerMoney = useInventoryStore((s) => s.spiritStones);
+  const dailyIncome = useInventoryStore((s) => s.dailyIncome);
+  const dailyExpenses = useInventoryStore((s) => s.dailyExpenses);
 
   // console.log(day);
   return (

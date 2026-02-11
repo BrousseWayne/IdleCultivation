@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Briefcase, Heart, User } from "lucide-react";
-import { useGameState } from "../contexts/gameStateContext";
+import { useCultivatorStore } from "../stores/cultivatorStore";
 
 const CoreStatsCard = ({ stats }) => (
   <Card className="bg-card border-border/50">
@@ -135,8 +135,7 @@ const ProgressField = ({
 );
 
 export const RenderStatsPage = () => {
-  const { stats } = useGameState();
-  console.log(stats);
+  const stats = useCultivatorStore((s) => s.stats);
   return (
     <div className="space-y-6">
       <div className="mb-6">

@@ -6,10 +6,21 @@ import {
   MapPin,
   Mountain,
   Settings,
-  Smile,
 } from "lucide-react";
+import { useGameStore } from "../stores/gameStore";
+import { useActivityStore } from "../stores/activityStore";
+import { EntityRegistry } from "../services";
 
 export function Header() {
+  const currentExploreLocation = useGameStore((s) => s.currentExploreLocation);
+  const timePoints = useGameStore((s) => s.timePoints);
+  const maxTimePoints = useGameStore((s) => s.maxTimePoints);
+  const activityQueue = useActivityStore((s) => s.activityQueue);
+
+  const currentTask = activityQueue.length > 0
+    ? EntityRegistry.get("activity", activityQueue[0].key)?.name ?? "Unknown"
+    : "Idle";
+
   return (
     <header className="sticky top-0 z-50 h-20 bg-black/95 backdrop-blur-sm border-b border-slate-800/50 flex flex-col px-4">
       <div className="flex items-center justify-between py-2">
@@ -37,22 +48,17 @@ export function Header() {
           <div className="flex items-center gap-1 text-sm">
             <MapPin className="w-4 h-4 text-purple-400" />
             <span className="text-purple-200 font-semibold">Location:</span>
-            <span className="text-violet-300 font-bold">PLACEHOLDER</span>
+            <span className="text-violet-300 font-bold">{currentExploreLocation}</span>
           </div>
           <div className="flex items-center gap-1 text-sm">
             <Activity className="w-4 h-4 text-purple-400" />
             <span className="text-purple-200 font-semibold">Current Task:</span>
-            <span className="text-violet-300 font-bold">PLACEHOLDER</span>
+            <span className="text-violet-300 font-bold">{currentTask}</span>
           </div>
           <div className="flex items-center gap-1 text-sm">
             <Clock className="w-4 h-4 text-purple-400" />
             <span className="text-purple-200 font-semibold">Free Time:</span>
-            <span className="text-violet-300 font-bold">PLACEHOLDER</span>
-          </div>
-          <div className="flex items-center gap-1 text-sm">
-            <Smile className="w-4 h-4 text-violet-400" />
-            <span className="text-violet-200 font-semibold">Mood Bonus:</span>
-            <span className="text-purple-300 font-bold">+PLACEHOLDER</span>
+            <span className="text-violet-300 font-bold">{timePoints}/{maxTimePoints}h</span>
           </div>
           <Button
             variant="ghost"

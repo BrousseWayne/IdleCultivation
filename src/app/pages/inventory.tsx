@@ -1,27 +1,30 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package } from "lucide-react";
-import { useGameState } from "../contexts/gameStateContext";
+import { useInventoryStore } from "../stores/inventoryStore";
+import type { EquippedItems } from "../types/states";
+import type { InventoryItem } from "../types/domain";
 
 export function RenderInventoryPage() {
-  const { setEquippedItems, setInventoryItems, equippedItems, inventoryItems } =
-    useGameState();
-  const equipItem = (item) => {
+  const inventoryItems = useInventoryStore((s) => s.inventoryItems);
+  const equippedItems = useInventoryStore((s) => s.equippedItems);
+  const equipItem = useInventoryStore((s) => s.equipItem);
+  const unequipItem = useInventoryStore((s) => s.unequipItem);
+
+  const isEquipped = (itemId: number): keyof EquippedItems | null => {
+    for (const [slot, slotItem] of Object.entries(equippedItems)) {
+      if (slotItem?.id === itemId) return slot as keyof EquippedItems;
+    }
+    return null;
+  };
+
+  const handleEquip = (item: InventoryItem) => {
     if (item.type in equippedItems) {
-      setEquippedItems((prev) => ({ ...prev, [item.type]: item }));
-      setInventoryItems((prev) =>
-        prev.map((i) => (i.id === item.id ? { ...i, equipped: true } : i))
-      );
+      equipItem(item.id, item.type as keyof EquippedItems);
     }
   };
 
-  const unequipItem = (slot) => {
-    const item = equippedItems[slot];
-    if (item) {
-      setEquippedItems((prev) => ({ ...prev, [slot]: null }));
-      setInventoryItems((prev) =>
-        prev.map((i) => (i.id === item.id ? { ...i, equipped: false } : i))
-      );
-    }
+  const handleUnequip = (slot: keyof EquippedItems) => {
+    unequipItem(slot);
   };
 
   const getRarityColor = (rarity) => {
@@ -60,7 +63,7 @@ export function RenderInventoryPage() {
                 <div
                   key={slot}
                   className="aspect-square border-2 border-dashed border-slate-600 rounded-lg flex flex-col items-center justify-center p-2 hover:border-purple-500/50 transition-colors cursor-pointer"
-                  onClick={() => item && unequipItem(slot)}
+                  onClick={() => item && handleUnequip(slot as keyof EquippedItems)}
                 >
                   <div className="text-xs text-slate-400 mb-1 capitalize">
                     {slot}
@@ -94,11 +97,11 @@ export function RenderInventoryPage() {
                 <div
                   key={item.id}
                   className={`flex items-center justify-between p-2 rounded-lg border cursor-pointer transition-colors ${
-                    item.equipped
+                    isEquipped(item.id)
                       ? "border-purple-500 bg-purple-500/10"
                       : "border-slate-600 hover:border-purple-500/50 bg-slate-900/30"
                   }`}
-                  onClick={() => !item.equipped && equipItem(item)}
+                  onClick={() => !isEquipped(item.id) && handleEquip(item)}
                 >
                   <div className="flex items-center gap-3">
                     <div
@@ -128,7 +131,7 @@ export function RenderInventoryPage() {
                     </div>
                   </div>
                   <div className="text-xs text-slate-400">
-                    {item.equipped ? "Equipped" : "Click to equip"}
+                    {isEquipped(item.id) ? "Equipped" : "Click to equip"}
                   </div>
                 </div>
               ))}

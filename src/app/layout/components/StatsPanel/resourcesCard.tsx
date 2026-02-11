@@ -1,4 +1,4 @@
-import type { Currency, Stats } from "@/app/data/data copy";
+import type { Currency, Stats } from "@/app/types/domain";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronDown, Coins } from "lucide-react";
@@ -12,14 +12,14 @@ interface ResourcesCardProps {
   expenses: number;
 }
 
-export const currencyColors: Record<Currency, string> = {
+export const currencyColors: Partial<Record<Currency, string>> = {
   Bronze: "text-orange-400",
   Silver: "text-slate-300",
   Gold: "text-yellow-400",
   Platinum: "text-cyan-400",
 };
 
-export const statColors: Record<Stats, string> = {
+export const statColors: Partial<Record<Stats, string>> = {
   Strength: "text-red-400",
   Dexterity: "text-blue-400",
 };
@@ -35,7 +35,7 @@ const renderMoney = (amount: number) => {
       parts.unshift(
         <span
           key={currencyArray[i]}
-          className={currencyColors[currencyArray[i]]}
+          className={currencyColors[currencyArray[i]] || "text-gray-400"}
         >
           {value}
           {currencyArray[i][0]}
@@ -47,7 +47,7 @@ const renderMoney = (amount: number) => {
 
   if (parts.length === 0) {
     return (
-      <span className={currencyColors[currencyArray[0]]}>
+      <span className={currencyColors[currencyArray[0]] || "text-gray-400"}>
         0{currencyArray[0][0]}
       </span>
     );

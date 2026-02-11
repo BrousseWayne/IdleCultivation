@@ -1,12 +1,14 @@
 import { Clock, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useGameState } from "../contexts/gameStateContext";
+import { useActivityStore } from "../stores/activityStore";
 import { locations } from "../data/locations";
+import { EntityRegistry } from "../services";
 
 export const RenderTravelMap = () => {
-  const { selectedLocation, setSelectedLocation } = useGameState();
-  const currentLoc = locations.find((loc) => loc.name === selectedLocation);
+  const selectedLocation = useActivityStore((s) => s.selectedLocation);
+  const setSelectedLocation = useActivityStore((s) => s.setSelectedLocation);
+  const currentLoc = EntityRegistry.get("location", selectedLocation);
 
   return (
     <div className="space-y-6">
@@ -73,9 +75,7 @@ export const RenderTravelMap = () => {
             >
               {locations.map((location) =>
                 location.connections.map((connectedName) => {
-                  const connected = locations.find(
-                    (loc) => loc.name === connectedName
-                  );
+                  const connected = EntityRegistry.get("location", connectedName);
                   if (!connected) return null;
 
                   return (

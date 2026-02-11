@@ -1,0 +1,17 @@
+{
+  "project": {
+    "name": "IdleCultivationFront",
+    "type": "react-typescript",
+    "framework": "vite"
+  },
+  "preferences": {
+    "autoCommit": false,
+    "includeTests": false
+  },
+  "ignore": [
+    "node_modules/**",
+    "dist/**",
+    ".git/**",
+    "*.log"
+  ]
+}

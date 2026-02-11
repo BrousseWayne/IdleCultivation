@@ -8,35 +8,42 @@ import {
   Pause,
   Play,
 } from "lucide-react";
-import { useGameState } from "../contexts/gameStateContext";
+import { useGameStore } from "../stores/gameStore";
+import { useActivityStore } from "../stores/activityStore";
 import { Switch } from "@/components/ui/switch";
 
-const renderDate = (day) => {
+const renderDate = (day: number) => {
   return `${day} day`;
 };
 
-export function RenderTimeZone() {
-  const {
-    timePoints,
-    maxTimePoints,
-    isPlaying,
-    setIsPlaying,
-    timeScale,
-    gameSpeed,
-    setTimeScale,
-    setTimePoints,
-    timeScales,
-    setGameSpeed,
-    day,
-    repeatActivities,
-    setRepeatActivities,
-  } = useGameState();
+const timeScales = {
+  day: { label: "Day", multiplier: 1, unit: "day" },
+  week: { label: "Week", multiplier: 7, unit: "week" },
+  month: { label: "Month", multiplier: 30, unit: "month" },
+};
 
-  const handleTimeScaleChange = (newScale: string) => {
+export function RenderTimeZone() {
+  const timePoints = useGameStore((s) => s.timePoints);
+  const maxTimePoints = useGameStore((s) => s.maxTimePoints);
+  const isPlaying = useGameStore((s) => s.isPlaying);
+  const timeScale = useGameStore((s) => s.timeScale);
+  const gameSpeed = useGameStore((s) => s.gameSpeed);
+  const day = useGameStore((s) => s.day);
+  const startGameLoop = useGameStore((s) => s.startGameLoop);
+  const stopGameLoop = useGameStore((s) => s.stopGameLoop);
+  const setGameSpeed = useGameStore((s) => s.setGameSpeed);
+  const setTimeScale = useGameStore((s) => s.setTimeScale);
+
+  const repeatActivities = useActivityStore((s) => s.repeatActivities);
+  const setRepeatActivities = useActivityStore((s) => s.setRepeatActivities);
+
+  const handleTimeScaleChange = (newScale: "day" | "week" | "month") => {
     setTimeScale(newScale);
-    const newMaxPoints =
-      24 * timeScales[newScale as keyof typeof timeScales].multiplier;
-    setTimePoints(newMaxPoints);
+  };
+
+  const togglePlaying = () => {
+    if (isPlaying) stopGameLoop();
+    else startGameLoop();
   };
   return (
     <div className="sticky top-20 z-40 bg-black/90 backdrop-blur-sm border-b border-slate-800/50 px-4 py-2">
@@ -75,7 +82,7 @@ export function RenderTimeZone() {
           <Button
             size="sm"
             variant={isPlaying ? "default" : "outline"}
-            onClick={() => setIsPlaying(!isPlaying)}
+            onClick={togglePlaying}
             className="w-7 h-7 p-0"
           >
             {isPlaying ? (
@@ -104,7 +111,7 @@ export function RenderTimeZone() {
           <div className="relative">
             <select
               value={timeScale}
-              onChange={(e) => handleTimeScaleChange(e.target.value)}
+              onChange={(e) => handleTimeScaleChange(e.target.value as "day" | "week" | "month")}
               className="appearance-none bg-black border border-slate-700/50 rounded px-2 py-1 text-sm font-medium pr-6 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
             >
               {Object.entries(timeScales).map(([key, scale]) => (

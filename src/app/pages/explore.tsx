@@ -11,16 +11,14 @@ import {
   Sword,
   Users,
 } from "lucide-react";
-import { useGameState } from "../contexts/gameStateContext";
+import { useGameStore } from "../stores/gameStore";
 
 export function RenderExplorePage() {
-  const {
-    exploreView,
-    setExploreView,
-    eventLog,
-    setEventLog,
-    currentExploreLocation,
-  } = useGameState();
+  const exploreView = useGameStore((s) => s.exploreView);
+  const setExploreView = useGameStore((s) => s.setExploreView);
+  const eventLog = useGameStore((s) => s.eventLog);
+  const addEventLog = useGameStore((s) => s.addEventLog);
+  const currentExploreLocation = useGameStore((s) => s.currentExploreLocation);
   if (exploreView === "shop") {
     return (
       <div className="space-y-4">
@@ -164,10 +162,7 @@ export function RenderExplorePage() {
               <button
                 className="w-full p-3 rounded-lg bg-red-900/50 border border-red-700/50 hover:border-red-500/50 text-red-300 text-sm transition-colors"
                 onClick={() =>
-                  setEventLog((prev) => [
-                    ...prev,
-                    "You chose to fight the arrogant young master!",
-                  ])
+                  addEventLog("You chose to fight the arrogant young master!")
                 }
               >
                 🗡️ Fight - "I bow to no one!"
@@ -175,10 +170,7 @@ export function RenderExplorePage() {
               <button
                 className="w-full p-3 rounded-lg bg-blue-900/50 border border-blue-700/50 hover:border-blue-500/50 text-blue-300 text-sm transition-colors"
                 onClick={() =>
-                  setEventLog((prev) => [
-                    ...prev,
-                    "You apologized to avoid conflict.",
-                  ])
+                  addEventLog("You apologized to avoid conflict.")
                 }
               >
                 🙏 Apologize - "Forgive this humble one's offense."
@@ -186,10 +178,7 @@ export function RenderExplorePage() {
               <button
                 className="w-full p-3 rounded-lg bg-yellow-900/50 border border-yellow-700/50 hover:border-yellow-500/50 text-yellow-300 text-sm transition-colors"
                 onClick={() =>
-                  setEventLog((prev) => [
-                    ...prev,
-                    "You quickly fled from the dangerous situation.",
-                  ])
+                  addEventLog("You quickly fled from the dangerous situation.")
                 }
               >
                 🏃 Flee - "I have urgent business elsewhere!"
@@ -437,10 +426,9 @@ export function RenderExplorePage() {
                 key={index}
                 className="flex items-center justify-between p-3 rounded-lg bg-slate-900/50 border border-slate-700/50 hover:border-purple-500/30 transition-colors cursor-pointer"
                 onClick={() =>
-                  setEventLog((prev) => [
-                    ...prev,
-                    `You completed ${activity.name} and gained ${activity.reward}.`,
-                  ])
+                  addEventLog(
+                    `You completed ${activity.name} and gained ${activity.reward}.`
+                  )
                 }
               >
                 <div className="flex items-center gap-3">

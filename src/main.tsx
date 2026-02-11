@@ -11,6 +11,25 @@ import { RenderTravelPage } from "./app/pages/travel";
 import { RenderStatsPage } from "./app/pages/stats";
 import { RenderCalendarPage } from "./app/pages/calendar";
 import { RenderStoryPage } from "./app/pages/story";
+import {
+  EntityRegistry,
+  initializeGameEventListeners,
+} from "./app/services";
+import { activityData } from "./app/data/activity";
+import { items } from "./app/data/items";
+import { locations } from "./app/data/locations";
+import { sidebarData } from "./app/data/navigation";
+
+activityData.forEach((a) => EntityRegistry.register("activity", a.key, a));
+items.forEach((i) => EntityRegistry.register("item", String(i.id), i));
+locations.forEach((l) => EntityRegistry.register("location", l.name, l));
+sidebarData.forEach((n) => EntityRegistry.register("navigation", n.name, n));
+
+initializeGameEventListeners();
+
+if (typeof window !== "undefined") {
+  (window as any).EntityRegistry = EntityRegistry;
+}
 
 createRoot(document.getElementById("root")!).render(
   // <StrictMode>

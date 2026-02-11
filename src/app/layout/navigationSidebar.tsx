@@ -1,4 +1,4 @@
-import { useGameState } from "../contexts/gameStateContext";
+import { useGameStore } from "../stores/gameStore";
 import { Link } from "react-router";
 import { useState } from "react";
 import { sidebarData } from "../data/navigation";
@@ -6,7 +6,7 @@ import { sidebarData } from "../data/navigation";
 export function SideNavigationBar() {
   const [activeTab, setActiveTab] = useState("Activities");
 
-  const { navigationUnlockState } = useGameState();
+  const navigationUnlockState = useGameStore((s) => s.navigationUnlocks);
   return (
     <div className="w-48 bg-black border-r border-slate-800/50 p-3 fixed left-64 top-32 h-[calc(100vh-8rem)] overflow-hidden px-3 py-6">
       <nav className="space-y-1">

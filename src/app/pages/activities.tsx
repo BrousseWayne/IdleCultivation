@@ -11,8 +11,8 @@ import type { Categories } from "../types/states";
 import {
   ALL_CATEGORIES,
   type Activity,
-  type Reward,
 } from "../types/domain";
+import type { Effect } from "../types/effects";
 import { EntityRegistry } from "../services";
 
 export const RenderActivitiesPage = () => {
@@ -165,7 +165,7 @@ function ActivityCard({
       <div className={`flex items-center gap-3 px-3 py-2 bg-card/30 rounded-md hover:bg-card/50 transition-all border-l-3 ${isRunning ? colors.border : colors.borderFaded}`}>
         <activity.icon className={`w-4 h-4 ${colors.text} shrink-0`} />
         <span className="text-xs font-semibold w-28 truncate">{activity.name}</span>
-        <span className="text-[10px] text-slate-400 w-16">{formatRewardColor(activity.reward)}</span>
+        <span className="text-[10px] text-slate-400 w-16">{formatEffects(activity.effects)}</span>
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
@@ -198,18 +198,24 @@ function ActivityCard({
   );
 }
 
-function formatRewardColor(reward: Reward): JSX.Element {
-  if ("currency" in reward)
-    return (
-      <span className={CURRENCY_COLORS[reward.currency] || "text-gray-400"}>
-        {`+${reward.amount} ${reward.currency}`}
-      </span>
-    );
-  if ("stat" in reward)
-    return (
-      <span className={STAT_COLORS[reward.stat] || "text-gray-400"}>
-        {`+${reward.amount} ${reward.stat}`}
-      </span>
-    );
-  return <span></span>;
+function formatEffects(effects: Effect[]): JSX.Element {
+  return (
+    <>
+      {effects.map((effect, i) => {
+        if (effect.type === "grant_currency")
+          return (
+            <span key={i} className={CURRENCY_COLORS[effect.currency] || "text-gray-400"}>
+              +{effect.amount} {effect.currency}
+            </span>
+          );
+        if (effect.type === "grant_stat")
+          return (
+            <span key={i} className={STAT_COLORS[effect.stat] || "text-gray-400"}>
+              +{effect.amount} {effect.stat}
+            </span>
+          );
+        return null;
+      })}
+    </>
+  );
 }

@@ -1,7 +1,6 @@
-import type { Reward, Stats } from "./domain";
+import type { Stats } from "./domain";
 
 export type GameEvent =
-  | { type: "activity:reward-earned"; payload: { reward: Reward } }
   | {
       type: "cultivator:stat-changed";
       payload: { stat: Stats; oldValue: number; newValue: number };

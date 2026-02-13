@@ -12,10 +12,7 @@ export const activityData: Activity[] = [
     level: 1,
     timeCost: 8,
     unlocked: true,
-    reward: {
-      amount: 100,
-      currency: "Bronze",
-    },
+    effects: [{ type: "grant_currency", currency: "Bronze", amount: 100 }],
   },
   {
     key: "liftWeights",
@@ -27,10 +24,7 @@ export const activityData: Activity[] = [
     level: 1,
     timeCost: 4,
     unlocked: true,
-    reward: {
-      amount: 5,
-      stat: "Strength",
-    },
+    effects: [{ type: "grant_stat", stat: "Strength", amount: 5 }],
   },
 ];
 

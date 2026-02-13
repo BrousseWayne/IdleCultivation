@@ -1,6 +1,8 @@
 import { create } from "zustand";
-import type { Activity, Reward } from "../types/domain";
+import type { Activity } from "../types/domain";
+import type { Effect } from "../types/effects";
 import { EventBus } from "../services";
+import { EffectExecutor } from "../services/EffectExecutor";
 
 interface ActivityState {
   activityQueue: Activity[];
@@ -21,7 +23,7 @@ interface ActivityState {
   setSelectedLocation: (location: string) => void;
 
   completeCurrentActivity: () => void;
-  applyReward: (reward: Reward) => void;
+  applyEffects: (effects: Effect[]) => void;
 }
 
 export const useActivityStore = create<ActivityState>((set, get) => ({
@@ -68,12 +70,12 @@ export const useActivityStore = create<ActivityState>((set, get) => ({
   setRepeatActivities: (repeat) => set({ repeatActivities: repeat }),
   setSelectedLocation: (location) => set({ selectedLocation: location }),
 
-  applyReward: (reward) => {
-    EventBus.emit({ type: "activity:reward-earned", payload: { reward } });
+  applyEffects: (effects) => {
+    EffectExecutor.execute(effects);
   },
 
   completeCurrentActivity: () => {
-    const { activityQueue, applyReward, deallocateTime, dequeueActivity, enqueueActivity, repeatActivities, allocatedActivities } =
+    const { activityQueue, applyEffects, deallocateTime, dequeueActivity, enqueueActivity, repeatActivities, allocatedActivities } =
       get();
     if (activityQueue.length === 0) return;
 
@@ -87,7 +89,7 @@ export const useActivityStore = create<ActivityState>((set, get) => ({
       },
     }));
 
-    applyReward(currentActivity.reward);
+    applyEffects(currentActivity.effects);
     deallocateTime(currentActivity.key, currentActivity.timeCost);
     dequeueActivity();
 

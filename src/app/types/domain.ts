@@ -1,15 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import type { UnlockCondition } from "./unlocks";
-
-export type Reward =
-  | {
-      amount: number;
-      currency: Currency;
-    }
-  | {
-      amount: number;
-      stat: Stats;
-    };
+import type { Effect } from "./effects";
 
 export type Cost = {
   currency: Currency;
@@ -76,7 +67,7 @@ export type ActivityModel = {
   level: number;
   timeCost: number;
   unlocked: boolean;
-  reward: Reward;
+  effects: Effect[];
   unlockConditions?: UnlockCondition[];
   queueId?: string;
 };

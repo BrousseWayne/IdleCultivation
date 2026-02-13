@@ -1,7 +1,5 @@
 import { EventBus } from "./EventBus";
 import { UnlockEvaluator } from "./UnlockEvaluator";
-import { useInventoryStore } from "../stores/inventoryStore";
-import { useCultivatorStore } from "../stores/cultivatorStore";
 import { useGameStore } from "../stores/gameStore";
 import { unlockables } from "../data/unlocks";
 
@@ -19,29 +17,6 @@ export function initializeGameEventListeners() {
       },
     });
   }
-
-  EventBus.on("activity:reward-earned", ({ payload }) => {
-    console.log("[EventBus] activity:reward-earned", payload);
-
-    if ("currency" in payload.reward) {
-      useInventoryStore.getState().addSpiritStones(payload.reward.amount);
-    } else if ("stat" in payload.reward) {
-      const cultivator = useCultivatorStore.getState();
-      const oldValue = cultivator.stats[payload.reward.stat] || 0;
-      const newValue = oldValue + payload.reward.amount;
-
-      cultivator.incrementStat(payload.reward.stat, payload.reward.amount);
-
-      EventBus.emit({
-        type: "cultivator:stat-changed",
-        payload: {
-          stat: payload.reward.stat,
-          oldValue,
-          newValue,
-        },
-      });
-    }
-  });
 
   EventBus.on("activity:completed", ({ payload }) => {
     console.log("[EventBus] activity:completed", payload.activityKey);

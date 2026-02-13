@@ -1,4 +1,4 @@
-import type { NavigationItem, ActivityCategory } from "../types/domain";
+import type { NavigationItem, ActivityCategory, Currency, Stats } from "../types/domain";
 
 export const SECTION_COLORS: Record<NavigationItem, string> = {
   Activities: "accent-jade",
@@ -20,4 +20,40 @@ export const CATEGORY_COLORS: Record<ActivityCategory, string> = {
   life: "accent-emerald",
   hobby: "accent-sky",
   adventure: "accent-cinnabar",
+};
+
+type ColorClasses = {
+  text: string;
+  border: string;
+  borderFaded: string;
+  progress: string;
+};
+
+const colorClasses = (token: string): ColorClasses => ({
+  text: `text-${token}`,
+  border: `border-l-${token}`,
+  borderFaded: `border-l-${token}/30 hover:border-l-${token}/60`,
+  progress: `[&>div]:bg-${token}`,
+});
+
+export const CATEGORY_COLOR_CLASSES: Record<ActivityCategory, ColorClasses> = {
+  work: colorClasses("accent-gold"),
+  training: colorClasses("accent-jade"),
+  study: colorClasses("accent-violet"),
+  social: colorClasses("accent-lotus"),
+  life: colorClasses("accent-emerald"),
+  hobby: colorClasses("accent-sky"),
+  adventure: colorClasses("accent-cinnabar"),
+};
+
+export const CURRENCY_COLORS: Record<Currency, string> = {
+  Bronze: "text-orange-400",
+  Silver: "text-slate-300",
+  Gold: "text-accent-gold",
+  Platinum: "text-cyan-400",
+};
+
+export const STAT_COLORS: Record<Stats, string> = {
+  Strength: "text-red-400",
+  Dexterity: "text-blue-400",
 };

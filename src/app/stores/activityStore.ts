@@ -1,15 +1,15 @@
 import { create } from "zustand";
-import type { ActivityModel, Reward } from "../types/domain";
+import type { Activity, Reward } from "../types/domain";
 import { EventBus } from "../services";
 
 interface ActivityState {
-  activityQueue: ActivityModel[];
+  activityQueue: Activity[];
   allocatedActivities: Record<string, number>;
   completionCounts: Record<string, number>;
   repeatActivities: boolean;
   selectedLocation: string;
 
-  enqueueActivity: (activity: ActivityModel) => void;
+  enqueueActivity: (activity: Activity) => void;
   dequeueActivity: () => void;
   clearQueue: () => void;
 
@@ -33,7 +33,7 @@ export const useActivityStore = create<ActivityState>((set, get) => ({
 
   enqueueActivity: (activity) =>
     set((state) => ({
-      activityQueue: [...state.activityQueue, activity],
+      activityQueue: [...state.activityQueue, { ...activity, queueId: `${activity.key}-${Date.now()}-${Math.random()}` }],
     })),
 
   dequeueActivity: () =>
@@ -73,7 +73,7 @@ export const useActivityStore = create<ActivityState>((set, get) => ({
   },
 
   completeCurrentActivity: () => {
-    const { activityQueue, applyReward, deallocateTime, dequeueActivity } =
+    const { activityQueue, applyReward, deallocateTime, dequeueActivity, enqueueActivity, repeatActivities, allocatedActivities } =
       get();
     if (activityQueue.length === 0) return;
 
@@ -90,6 +90,11 @@ export const useActivityStore = create<ActivityState>((set, get) => ({
     applyReward(currentActivity.reward);
     deallocateTime(currentActivity.key, currentActivity.timeCost);
     dequeueActivity();
+
+    // Re-queue if repeat is enabled and there are still allocated hours
+    if (repeatActivities && allocatedActivities[currentActivity.key] >= currentActivity.timeCost) {
+      enqueueActivity(currentActivity);
+    }
 
     EventBus.emit({
       type: "activity:completed",

@@ -1,17 +1,18 @@
 import { Button } from "@/components/ui/button";
-import { Badge, Calendar, ChevronLeft } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, ChevronLeft } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGameStore } from "../stores/gameStore";
 import { events } from "../data/story";
 import { currentDay, daysInMonth } from "../data/constant";
 
 const getCalendarTitle = (
-  calendarView,
-  selectedDecade,
-  selectedEra,
-  selectedMonth,
-  selectedYear
-) => {
+  calendarView: string,
+  selectedDecade: number,
+  selectedEra: number,
+  selectedMonth: number,
+  selectedYear: number
+): string => {
   switch (calendarView) {
     case "era":
       return `Era ${selectedEra} (Years ${(selectedEra - 1) * 1000 + 1}-${

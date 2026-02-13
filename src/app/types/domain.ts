@@ -78,6 +78,7 @@ export type ActivityModel = {
   unlocked: boolean;
   reward: Reward;
   unlockConditions?: UnlockCondition[];
+  queueId?: string;
 };
 
 export type ActivityView = {

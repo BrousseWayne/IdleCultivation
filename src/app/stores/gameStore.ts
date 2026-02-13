@@ -1,8 +1,8 @@
 import { create } from "zustand";
-import type {
-  NavigationItem,
-  NavigationUnlockState,
+import {
   ALL_CATEGORIES,
+  type NavigationItem,
+  type NavigationUnlockState,
 } from "../types/domain";
 import type { ActivityUnlockState } from "../types/states";
 import { initialNavigationUnlockState } from "../data/constant";
@@ -12,25 +12,15 @@ import { EventBus } from "../services";
 type TimeScale = "day" | "week" | "month";
 type CalendarView = "month" | "year" | "decade" | "era";
 
-const TIME_SCALES = {
+export const TIME_SCALES = {
   day: { label: "Day", multiplier: 1, unit: "day" },
   week: { label: "Week", multiplier: 7, unit: "week" },
   month: { label: "Month", multiplier: 30, unit: "month" },
 } as const;
 
-const ALL_ACTIVITY_CATEGORIES = [
-  "work",
-  "training",
-  "study",
-  "social",
-  "life",
-  "hobby",
-  "adventure",
-] as const;
-
 const createInitialActivityUnlockState = (): ActivityUnlockState => {
   const state = {} as ActivityUnlockState;
-  for (const category of ALL_ACTIVITY_CATEGORIES) {
+  for (const category of ALL_CATEGORIES) {
     state[category] = INITIALLY_UNLOCKED.includes(category);
   }
   return state;
@@ -82,7 +72,7 @@ interface GameState {
 
   unlockNavigationTab: (tab: NavigationItem) => void;
   unlockActivityCategory: (
-    category: (typeof ALL_ACTIVITY_CATEGORIES)[number]
+    category: (typeof ALL_CATEGORIES)[number]
   ) => void;
 
   setExploreView: (view: string) => void;

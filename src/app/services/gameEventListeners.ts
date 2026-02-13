@@ -16,7 +16,6 @@ export function initializeGameEventListeners() {
         } else if (def.type === "navigation_tab") {
           useGameStore.getState().unlockNavigationTab(def.target);
         }
-        console.log(`[UnlockEvaluator] Unlocked: ${def.id}`);
       },
     });
   }

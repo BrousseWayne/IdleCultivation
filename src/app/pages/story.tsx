@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { BookOpen } from "lucide-react";
 import { storyEntries } from "../data/story";
 import { storyEntryColors } from "../data/constant";
 
@@ -11,6 +12,13 @@ export const RenderStoryPage = () => {
         </h2>
         <p className="text-muted-foreground">Your journey so far</p>
       </div>
+
+      {storyEntries.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-16 text-slate-500">
+          <BookOpen className="w-12 h-12 mb-3 opacity-30" />
+          <p className="text-sm">Your story has not yet begun.</p>
+        </div>
+      )}
 
       <div className="space-y-2">
         {storyEntries.map((entry, index) => (

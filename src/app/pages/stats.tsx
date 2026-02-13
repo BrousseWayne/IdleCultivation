@@ -1,5 +1,5 @@
 import { Progress } from "@/components/ui/progress";
-import { Briefcase, Heart, User } from "lucide-react";
+import { User } from "lucide-react";
 import { useCultivatorStore } from "../stores/cultivatorStore";
 
 const StatRow = ({
@@ -81,31 +81,6 @@ export const RenderStatsPage = () => {
           </div>
         </section>
 
-        <section>
-          <h3 className="flex items-center gap-2 text-base font-semibold text-slate-200 mb-2">
-            <Briefcase className="w-4 h-4 text-accent-sky" />
-            Skills & Abilities
-          </h3>
-          <div className="bg-card/30 border border-border/30 rounded-md px-4 py-1">
-            <StatRow label="Crafting Skill" value="67/100" colorClass="text-accent-jade" />
-            <StatRow label="Trading Skill" value="34/100" colorClass="text-accent-gold" />
-            <StatRow label="Cooking Skill" value="45/100" colorClass="text-accent-lotus" />
-            <StatRow label="Musical Skill" value="12/100" colorClass="text-accent-violet" />
-          </div>
-        </section>
-
-        <section>
-          <h3 className="flex items-center gap-2 text-base font-semibold text-slate-200 mb-2">
-            <Heart className="w-4 h-4 text-accent-lotus" />
-            Social & Mental
-          </h3>
-          <div className="bg-card/30 border border-border/30 rounded-md px-4 py-1">
-            <StatRow label="Relationship Points" value="156" colorClass="text-accent-lotus" />
-            <StatRow label="Knowledge" value="89" colorClass="text-accent-sky" />
-            <StatRow label="Strategic Thinking" value="43" colorClass="text-accent-silver" />
-            <StatRow label="Artistic Skill" value="28" colorClass="text-accent-violet" />
-          </div>
-        </section>
       </div>
     </div>
   );

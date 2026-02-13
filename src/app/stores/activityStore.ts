@@ -22,6 +22,9 @@ interface ActivityState {
   setRepeatActivities: (repeat: boolean) => void;
   setSelectedLocation: (location: string) => void;
 
+  currentActivityStartTick: number | null;
+  setCurrentActivityStartTick: (tick: number | null) => void;
+
   completeCurrentActivity: () => void;
   applyEffects: (effects: Effect[]) => void;
 }
@@ -32,6 +35,8 @@ export const useActivityStore = create<ActivityState>((set, get) => ({
   completionCounts: {},
   repeatActivities: true,
   selectedLocation: "Eastern Continent",
+  currentActivityStartTick: null,
+  setCurrentActivityStartTick: (tick) => set({ currentActivityStartTick: tick }),
 
   enqueueActivity: (activity) =>
     set((state) => ({

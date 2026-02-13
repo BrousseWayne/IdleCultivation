@@ -8,6 +8,7 @@ import type { Activity } from "../types/domain";
 const SAVE_KEY = "cultivation-save";
 const SAVE_VERSION = 1;
 const AUTO_SAVE_INTERVAL = 30_000;
+const MAX_EVENT_LOG = 200;
 
 class SaveManagerService {
   private intervalId: ReturnType<typeof setInterval> | null = null;
@@ -44,9 +45,8 @@ class SaveManagerService {
         calendarView: game.calendarView,
         navigationUnlocks: game.navigationUnlocks,
         activityCategoryUnlocks: game.activityCategoryUnlocks,
-        exploreView: game.exploreView,
         currentExploreLocation: game.currentExploreLocation,
-        eventLog: game.eventLog,
+        eventLog: game.eventLog.slice(-MAX_EVENT_LOG),
         selectedDate: game.selectedDate,
         showDetailedView: game.showDetailedView,
       },
@@ -56,6 +56,7 @@ class SaveManagerService {
         completionCounts: activity.completionCounts,
         repeatActivities: activity.repeatActivities,
         selectedLocation: activity.selectedLocation,
+        currentActivityStartTick: activity.currentActivityStartTick,
       },
       inventory: {
         spiritStones: inventory.spiritStones,
@@ -94,13 +95,21 @@ class SaveManagerService {
   }
 
   save(): void {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(this.snapshot()));
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(this.snapshot()));
+    } catch (err) {
+      console.error("[SaveManager] Save failed:", err);
+    }
   }
 
   load(): void {
-    const raw = localStorage.getItem(SAVE_KEY);
-    if (!raw) return;
-    this.restore(JSON.parse(raw));
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return;
+      this.restore(JSON.parse(raw));
+    } catch (err) {
+      console.error("[SaveManager] Load failed:", err);
+    }
   }
 
   exportSave(): string {

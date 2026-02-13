@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import type { ReactNode } from "react";
 import { useActivityStore } from "../stores/activityStore";
 import { useGameStore } from "../stores/gameStore";
@@ -13,21 +13,21 @@ function useActivityExecutor() {
     (s) => s.completeCurrentActivity
   );
   const repeatActivities = useActivityStore((s) => s.repeatActivities);
-
-  const startTickRef = useRef<number | null>(null);
+  const startTick = useActivityStore((s) => s.currentActivityStartTick);
+  const setStartTick = useActivityStore((s) => s.setCurrentActivityStartTick);
 
   useEffect(() => {
     if (!isPlaying || activityQueue.length === 0) return;
 
     const currentActivity = activityQueue[0];
 
-    if (startTickRef.current === null) {
-      startTickRef.current = ticks;
+    if (startTick === null) {
+      setStartTick(ticks);
     }
 
-    if (ticks - startTickRef.current >= currentActivity.timeCost) {
+    if (startTick !== null && ticks - startTick >= currentActivity.timeCost) {
       completeCurrentActivity();
-      startTickRef.current = null;
+      setStartTick(null);
 
       if (activityQueue.length === 1 && !repeatActivities) {
         stopGameLoop();
@@ -40,6 +40,8 @@ function useActivityExecutor() {
     completeCurrentActivity,
     repeatActivities,
     stopGameLoop,
+    startTick,
+    setStartTick,
   ]);
 }
 

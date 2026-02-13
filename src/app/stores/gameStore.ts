@@ -47,7 +47,6 @@ interface GameState {
   navigationUnlocks: NavigationUnlockState;
   activityCategoryUnlocks: ActivityUnlockState;
 
-  exploreView: string;
   currentExploreLocation: string;
   eventLog: string[];
   selectedDate: number | null;
@@ -75,7 +74,6 @@ interface GameState {
     category: (typeof ALL_CATEGORIES)[number]
   ) => void;
 
-  setExploreView: (view: string) => void;
   setCurrentExploreLocation: (location: string) => void;
   addEventLog: (entry: string) => void;
   setEventLog: (entries: string[]) => void;
@@ -106,12 +104,8 @@ export const useGameStore = create<GameState>((set, get) => ({
   navigationUnlocks: initialNavigationUnlockState,
   activityCategoryUnlocks: createInitialActivityUnlockState(),
 
-  exploreView: "main",
   currentExploreLocation: "Whispering Forest",
-  eventLog: [
-    "You arrive at the Whispering Forest. The ancient trees seem to watch your every move.",
-    "A gentle breeze carries the scent of medicinal herbs through the air.",
-  ],
+  eventLog: [],
   selectedDate: null,
   showDetailedView: false,
 
@@ -216,11 +210,13 @@ export const useGameStore = create<GameState>((set, get) => ({
       },
     })),
 
-  setExploreView: (view) => set({ exploreView: view }),
   setCurrentExploreLocation: (location) =>
     set({ currentExploreLocation: location }),
   addEventLog: (entry) =>
-    set((state) => ({ eventLog: [...state.eventLog, entry] })),
+    set((state) => {
+      const log = [...state.eventLog, entry];
+      return { eventLog: log.length > 200 ? log.slice(-200) : log };
+    }),
   setEventLog: (entries) => set({ eventLog: entries }),
   setSelectedDate: (date) => set({ selectedDate: date }),
   setShowDetailedView: (show) => set({ showDetailedView: show }),

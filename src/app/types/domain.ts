@@ -153,13 +153,6 @@ export type LocationEntry = {
   locations: ExploreLocation[];
 };
 
-export type ShopItem = {
-  name: string;
-  price: string;
-  stats: string;
-  icon: LucideIcon;
-};
-
 export type UnlockableDefinition =
   | {
       id: string;

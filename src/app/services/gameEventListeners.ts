@@ -1,9 +1,9 @@
 import { EventBus } from "./EventBus";
 import { UnlockEvaluator } from "./UnlockEvaluator";
 import { useGameStore } from "../stores/gameStore";
+import { useCultivatorStore } from "../stores/cultivatorStore";
 import { unlockables } from "../data/unlocks";
 import { activityData } from "../data/activity";
-import { lifestyleOptions } from "../data/lifestyle";
 import { sidebarData } from "../data/navigation";
 
 export function initializeGameEventListeners() {
@@ -27,23 +27,9 @@ export function initializeGameEventListeners() {
         id: `activity:${activity.key}`,
         unlockConditions: activity.unlockConditions,
         onUnlock: () => {
-          console.log(`[UnlockEvaluator] Unlocked activity: ${activity.key}`);
+          activity.unlocked = true;
         },
       });
-    }
-  }
-
-  for (const category of lifestyleOptions) {
-    for (const option of category.options) {
-      if (option.unlockConditions && !option.unlocked) {
-        UnlockEvaluator.registerUnlockable({
-          id: `lifestyle:${option.id}`,
-          unlockConditions: option.unlockConditions,
-          onUnlock: () => {
-            console.log(`[UnlockEvaluator] Unlocked lifestyle: ${option.id}`);
-          },
-        });
-      }
     }
   }
 
@@ -68,8 +54,15 @@ export function initializeGameEventListeners() {
     UnlockEvaluator.checkAll();
   });
 
+  let lastAgeDay = useGameStore.getState().day;
+
   EventBus.on("game:tick", ({ payload }) => {
-    if (payload.day % 10 === 0) {
+    const daysSinceLastAge = payload.day - lastAgeDay;
+    if (daysSinceLastAge >= 60) {
+      useCultivatorStore.getState().incrementAge();
+      lastAgeDay = payload.day;
+      UnlockEvaluator.checkAll();
+    } else if (payload.day % 10 === 0) {
       UnlockEvaluator.checkAll();
     }
   });

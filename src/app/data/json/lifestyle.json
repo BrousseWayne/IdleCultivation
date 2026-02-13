@@ -34,7 +34,10 @@
           { "currency": "Silver", "amount": 1, "period": "monthly" }
         ],
         "unlocked": false,
-        "bonuses": { "xp": 0.1 }
+        "bonuses": { "xp": 0.1 },
+        "unlockConditions": [
+          { "type": "spirit_stones", "operator": ">=", "value": 100 }
+        ]
       }
     ]
   },
@@ -64,7 +67,10 @@
         "description": "Rare dishes with spiritual herbs and beast meat.",
         "costs": [{ "currency": "Gold", "amount": 1, "period": "weekly" }],
         "unlocked": false,
-        "bonuses": { "xp": 0.5, "mortality": -0.05 }
+        "bonuses": { "xp": 0.5, "mortality": -0.05 },
+        "unlockConditions": [
+          { "type": "spirit_stones", "operator": ">=", "value": 500 }
+        ]
       }
     ]
   },
@@ -89,7 +95,10 @@
           { "currency": "Silver", "amount": 1, "period": "daily" }
         ],
         "unlocked": false,
-        "bonuses": { "mortality": -0.05 }
+        "bonuses": { "mortality": -0.05 },
+        "unlockConditions": [
+          { "type": "stat", "stat": "Dexterity", "operator": ">=", "value": 10 }
+        ]
       },
       {
         "id": "flying-sword",
@@ -100,7 +109,10 @@
           { "currency": "Silver", "amount": 2, "period": "daily" }
         ],
         "unlocked": false,
-        "bonuses": { "xp": 0.05, "mortality": -0.1 }
+        "bonuses": { "xp": 0.05, "mortality": -0.1 },
+        "unlockConditions": [
+          { "type": "stat", "stat": "Strength", "operator": ">=", "value": 30 }
+        ]
       }
     ]
   }

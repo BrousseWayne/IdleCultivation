@@ -196,14 +196,15 @@ Use xianxia terms everywhere (code, data, UI):
 
 ## Next Steps
 
-**Phase 3: Effect System + Data Layer (NEXT)**
+**Phase 3: Effect System + Data Layer (COMPLETED)**
 
-1. [ ] Effect System: Replace `Reward` type with `Effect[]` discriminated union + `EffectExecutor` service
-2. [ ] Migrate `ActivityModel.reward` → `ActivityModel.effects: Effect[]`
-3. [ ] EffectExecutor calls stores directly (replaces `activity:reward-earned` event handler)
-4. [ ] Move pure data to JSON files (items, locations, realms, events)
-5. [ ] Keep TypeScript for data with functions/icons (activities)
-6. [ ] Add unlock conditions to data files
+1. [x] Effect System: `Effect[]` discriminated union + `EffectExecutor` service
+2. [x] Migrated `ActivityModel.reward` → `ActivityModel.effects: Effect[]`
+3. [x] EffectExecutor calls stores directly (replaced `activity:reward-earned` event)
+4. [x] Unlocks migrated to JSON (`unlockables.json` + Zod schema)
+5. [x] Unlock conditions wired into lifestyle, navigation, explore data
+6. [x] Explore locations cleaned up: types → domain.ts, reward → Effect[]
+7. [x] All entities with `unlockConditions` auto-registered in gameEventListeners
 
 **Phase 4: Advanced Systems (FUTURE)**
 

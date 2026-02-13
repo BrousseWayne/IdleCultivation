@@ -133,3 +133,43 @@ export type CalendarEvent = {
   result: string;
   category: string;
 };
+
+export type ExploreActivity = {
+  name: string;
+  time: string;
+  effects: Effect[];
+  icon: LucideIcon;
+};
+
+export type ExploreLocation = {
+  name: string;
+  icon: LucideIcon;
+  view: "shop" | "conversation" | "combat";
+};
+
+export type LocationEntry = {
+  description: string;
+  activities: ExploreActivity[];
+  locations: ExploreLocation[];
+};
+
+export type ShopItem = {
+  name: string;
+  price: string;
+  stats: string;
+  icon: LucideIcon;
+};
+
+export type UnlockableDefinition =
+  | {
+      id: string;
+      unlockConditions: UnlockCondition[];
+      type: "activity_category";
+      target: ActivityCategory;
+    }
+  | {
+      id: string;
+      unlockConditions: UnlockCondition[];
+      type: "navigation_tab";
+      target: NavigationItem;
+    };

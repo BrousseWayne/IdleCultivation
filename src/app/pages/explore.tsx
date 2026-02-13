@@ -315,11 +315,11 @@ export function RenderExplorePage() {
               <div
                 key={index}
                 className="flex items-center justify-between p-3 rounded-lg bg-slate-900/50 border border-slate-700/50 hover:border-accent-cinnabar/30 transition-colors cursor-pointer"
-                onClick={() =>
-                  addEventLog(
-                    `You completed ${activity.name} and gained ${activity.reward}.`
-                  )
-                }
+                onClick={() => {
+                  for (const effect of activity.effects) {
+                    if (effect.type === "log") addEventLog(effect.message);
+                  }
+                }}
               >
                 <div className="flex items-center gap-3">
                   <activity.icon className="w-4 h-4 text-accent-cinnabar" />
@@ -328,7 +328,7 @@ export function RenderExplorePage() {
                       {activity.name}
                     </span>
                     <div className="text-xs text-slate-400">
-                      {activity.time} - {activity.reward}
+                      {activity.time}
                     </div>
                   </div>
                 </div>

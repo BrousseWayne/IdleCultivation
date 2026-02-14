@@ -3,6 +3,7 @@ import { useInventoryStore } from "../stores/inventoryStore";
 import type { EquippedItems } from "../types/states";
 import type { InventoryItem } from "../types/domain";
 import { useState } from "react";
+import { PageHeader } from "../components/PageHeader";
 
 const RARITY_STYLES: Record<string, { border: string; bg: string; text: string }> = {
   common: { border: "border-slate-500", bg: "bg-slate-500/10", text: "text-slate-400" },
@@ -41,12 +42,11 @@ export function RenderInventoryPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Package className="w-6 h-6 text-accent-gold" />
-        <h2 className="text-2xl font-bold font-[family-name:var(--font-display)] text-accent-gold">
-          Inventory & Equipment
-        </h2>
-      </div>
+      <PageHeader
+        icon={Package}
+        title="Inventory & Equipment"
+        color="text-accent-gold"
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <section>

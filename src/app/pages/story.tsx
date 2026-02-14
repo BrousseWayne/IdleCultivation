@@ -2,16 +2,17 @@ import { Badge } from "@/components/ui/badge";
 import { BookOpen } from "lucide-react";
 import { storyEntries } from "../data/story";
 import { storyEntryColors } from "../data/constant";
+import { PageHeader } from "../components/PageHeader";
 
 export const RenderStoryPage = () => {
   return (
     <div className="space-y-4">
-      <div className="mb-4">
-        <h2 className="text-2xl font-bold font-[family-name:var(--font-display)] text-accent-violet mb-2">
-          Your Story
-        </h2>
-        <p className="text-muted-foreground">Your journey so far</p>
-      </div>
+      <PageHeader
+        icon={BookOpen}
+        title="Your Story"
+        color="text-accent-violet"
+        subtitle="Your journey so far"
+      />
 
       {storyEntries.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 text-slate-500">

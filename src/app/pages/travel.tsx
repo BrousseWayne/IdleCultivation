@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { useActivityStore } from "../stores/activityStore";
 import { locations } from "../data/locations";
 import { EntityRegistry } from "../services";
+import { PageHeader } from "../components/PageHeader";
 
 export const RenderTravelMap = () => {
   const selectedLocation = useActivityStore((s) => s.selectedLocation);
@@ -181,14 +182,12 @@ export const RenderTravelMap = () => {
 export const RenderTravelPage = () => {
   return (
     <div className="space-y-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold font-[family-name:var(--font-display)] text-accent-sky mb-2">
-          Travel the World
-        </h2>
-        <p className="text-muted-foreground">
-          Explore different locations and unlock new opportunities
-        </p>
-      </div>
+      <PageHeader
+        icon={MapPin}
+        title="Travel the World"
+        color="text-accent-sky"
+        subtitle="Explore different locations and unlock new opportunities"
+      />
 
       {RenderTravelMap()}
     </div>

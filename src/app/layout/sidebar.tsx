@@ -116,7 +116,7 @@ export function Sidebar() {
 
   return (
     <aside className="w-60 fixed left-0 top-12 h-[calc(100vh-3rem)] bg-slate-950/50 overflow-y-auto">
-      <nav className="flex items-center px-1 py-2">
+      <nav className="grid grid-cols-5 gap-1 p-2">
         {sidebarData
           .filter((item) => navigationUnlocks[item.name])
           .map((item) => {
@@ -127,29 +127,29 @@ export function Sidebar() {
                 key={item.name}
                 to={item.url}
                 title={item.name}
-                className={`relative flex-1 flex items-center justify-center py-2 rounded transition-colors ${
+                className={`relative flex items-center justify-center p-2.5 rounded-md transition-all ${
                   isActive
-                    ? `text-${color}`
-                    : `text-slate-600 hover:text-${color}/60`
+                    ? `bg-${color}/15 text-${color}`
+                    : `text-slate-600 hover:text-slate-400 hover:bg-slate-900/40`
                 }`}
               >
-                <item.icon className="w-6 h-6" />
+                <item.icon className={`w-[18px] h-[18px] transition-transform ${isActive ? 'scale-110' : ''}`} />
                 {isActive && (
-                  <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-${color} rounded-full`} />
+                  <span className={`absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-4 h-[2px] bg-${color} rounded-full`} />
                 )}
               </Link>
             );
           })}
       </nav>
 
-      <div className="border-t border-slate-800/30 mx-4" />
-
-      <div className="px-4 py-4">
-        <div className="flex items-center gap-1.5 text-[10px] text-slate-400 uppercase tracking-widest mb-3 font-semibold">
-          <User className="w-3.5 h-3.5" />
-          Status
+      <div className="px-4 py-3">
+        <div className="mb-3 pb-1.5 border-b border-accent-jade/30">
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-4 bg-accent-jade rounded-full" />
+            <span className="text-sm font-bold text-accent-jade uppercase tracking-wider">Status</span>
+          </div>
         </div>
-        <div className="space-y-2.5 text-sm">
+        <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-slate-500">Age</span>
             <span className="text-accent-jade font-mono font-bold">{lerpAge}/{lifespan}</span>
@@ -160,12 +160,12 @@ export function Sidebar() {
         </div>
       </div>
 
-      <div className="border-t border-slate-800/30 mx-4" />
-
-      <div className="px-4 py-4">
-        <div className="flex items-center gap-1.5 text-[10px] text-slate-400 uppercase tracking-widest mb-3 font-semibold">
-          <Coins className="w-3.5 h-3.5" />
-          Resources
+      <div className="px-4 py-3">
+        <div className="mb-3 pb-1.5 border-b border-accent-gold/30">
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-4 bg-accent-gold rounded-full" />
+            <span className="text-sm font-bold text-accent-gold uppercase tracking-wider">Resources</span>
+          </div>
         </div>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
@@ -181,7 +181,7 @@ export function Sidebar() {
             <span className="text-accent-cinnabar font-mono">-{formatNumber(dailyExpenses)}g</span>
           </div>
           <div className="flex justify-between font-bold">
-            <span className="text-slate-400">Net</span>
+            <span className="text-slate-200">Net</span>
             <span className={`font-mono ${net >= 0 ? "text-accent-emerald" : "text-accent-cinnabar"}`}>
               {net >= 0 ? "+" : ""}{formatNumber(net)}g
             </span>
@@ -191,12 +191,12 @@ export function Sidebar() {
 
       {hasStats && (
         <>
-          <div className="border-t border-slate-800/30 mx-4" />
-
-          <div className="px-4 py-4">
-            <div className="flex items-center gap-1.5 text-[10px] text-slate-400 uppercase tracking-widest mb-3 font-semibold">
-              <TrendingUp className="w-3.5 h-3.5" />
-              Attributes
+          <div className="px-4 py-3">
+            <div className="mb-3 pb-1.5 border-b border-accent-violet/30">
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-4 bg-accent-violet rounded-full" />
+                <span className="text-sm font-bold text-accent-violet uppercase tracking-wider">Attributes</span>
+              </div>
             </div>
             <div className="space-y-2 text-sm">
               {statEntries.map(([stat, value]) => (

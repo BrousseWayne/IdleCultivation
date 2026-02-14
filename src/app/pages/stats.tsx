@@ -1,8 +1,9 @@
 import { Progress } from "@/components/ui/progress";
-import { User } from "lucide-react";
+import { User, BarChart3 } from "lucide-react";
 import { useCultivatorStore } from "../stores/cultivatorStore";
 import { useEtherealShimmer } from "../hooks/useEtherealShimmer";
 import { EtherealEffect } from "../components/EtherealEffect";
+import { PageHeader } from "../components/PageHeader";
 
 const StatRow = ({
   label,
@@ -62,14 +63,12 @@ export const RenderStatsPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold font-[family-name:var(--font-display)] text-accent-silver mb-2">
-          Cultivator Statistics
-        </h2>
-        <p className="text-muted-foreground">
-          Comprehensive overview of your cultivation progress and abilities
-        </p>
-      </div>
+      <PageHeader
+        icon={BarChart3}
+        title="Cultivator Statistics"
+        color="text-accent-silver"
+        subtitle="Comprehensive overview of your cultivation progress and abilities"
+      />
 
       <div className="space-y-6">
         <section>

@@ -1,39 +1,21 @@
-import { ChevronDown, Clock, Minus, Plus, TrendingUp, ListOrdered } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ChevronDown, Clock, TrendingUp, ListOrdered, Activity } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useActivityStore } from "../stores/activityStore";
 import { useGameStore, TIME_SCALES } from "../stores/gameStore";
-import { useState, useMemo, type JSX } from "react";
-import { Progress } from "@/components/ui/progress";
+import { useState, useMemo } from "react";
 import { CURRENCY_COLORS, STAT_COLORS, CATEGORY_COLOR_CLASSES, getCategoryHex } from "../data/sectionColors";
 import { activityData } from "../data/activity";
 import type { Categories } from "../types/states";
 import {
   ALL_CATEGORIES,
-  type Activity,
+  type Activity as ActivityType,
   type ActivityCategory,
 } from "../types/domain";
-import type { Effect } from "../types/effects";
 import { EntityRegistry } from "../services";
 import { formatNumber, getActivityXpProgress, scaleEffectAmount } from "../utils";
 import { StatIcon, CurrencyIcon } from "../components/StatIcon";
-import { ACTIVITY_DESIGN } from "../styles/activityDesignTokens";
-
-function getFoilGradient(categoryColor: string): string {
-  const foilPalettes: Record<string, string[]> = {
-    '#5FB4A0': ['#5FB4A0', '#6DC4B0', '#7DD4C0', '#90DCC8', '#A0E8D8', '#90DCC8', '#7DD4C0', '#6DC4B0', '#5FB4A0'],
-    '#D4AF6A': ['#D4AF6A', '#DDB87C', '#E8C988', '#EDD59A', '#F5E1B8', '#EDD59A', '#E8C988', '#DDB87C', '#D4AF6A'],
-    '#E07856': ['#E07856', '#E68565', '#F09475', '#F5A488', '#FFB8A0', '#F5A488', '#F09475', '#E68565', '#E07856'],
-    '#B59ACF': ['#B59ACF', '#C3A6DA', '#D0B8E5', '#DCC8EE', '#E8D8F8', '#DCC8EE', '#D0B8E5', '#C3A6DA', '#B59ACF'],
-    '#52B788': ['#52B788', '#61C396', '#70D4A5', '#88DCB6', '#A0F0C8', '#88DCB6', '#70D4A5', '#61C396', '#52B788'],
-    '#D88FB8': ['#D88FB8', '#E09EC4', '#E8ACD0', '#EEBEDC', '#F8D0E8', '#EEBEDC', '#E8ACD0', '#E09EC4', '#D88FB8'],
-    '#6BA3D4': ['#6BA3D4', '#7AAEDC', '#88BEE8', '#9FCEEE', '#B8DCFF', '#9FCEEE', '#88BEE8', '#7AAEDC', '#6BA3D4'],
-  };
-
-  const colors = foilPalettes[categoryColor] || foilPalettes['#5FB4A0'];
-  const stops = colors.map((c, i) => `${c} ${(i / (colors.length - 1)) * 100}%`).join(', ');
-  return `linear-gradient(90deg, ${stops})`;
-}
+import { ActivityCard, QueueItem } from "../components/activities";
+import { PageHeader } from "../components/PageHeader";
 
 export function RenderActivitiesPage() {
   const [collapsedCategories, setCollapsedCategories] = useState<
@@ -95,7 +77,7 @@ export function RenderActivitiesPage() {
 
     for (const [activityKey, allocatedHours] of Object.entries(allocatedActivities)) {
       if (allocatedHours <= 0) continue;
-      const activity = EntityRegistry.get<Activity>("activity", activityKey);
+      const activity = EntityRegistry.get<ActivityType>("activity", activityKey);
       if (!activity) continue;
       const completions = Math.floor(allocatedHours / activity.timeCost);
       if (completions <= 0) continue;
@@ -129,7 +111,7 @@ export function RenderActivitiesPage() {
     const breakdown: Record<string, number> = {};
     for (const [activityKey, hours] of Object.entries(allocatedActivities)) {
       if (hours <= 0) continue;
-      const activity = EntityRegistry.get<Activity>("activity", activityKey);
+      const activity = EntityRegistry.get<ActivityType>("activity", activityKey);
       if (!activity) continue;
       breakdown[activity.category] = (breakdown[activity.category] || 0) + hours;
     }
@@ -139,12 +121,12 @@ export function RenderActivitiesPage() {
   return (
     <div className="flex gap-6 items-start">
       <div className="flex-[3] min-w-0 space-y-4">
-        <div className="mb-2">
-          <h2 className="text-2xl font-bold font-[family-name:var(--font-display)] text-accent-jade mb-1 text-glow-jade">
-            Daily Activities
-          </h2>
-          <p className="text-sm text-muted-foreground italic">Manage your time wisely</p>
-        </div>
+        <PageHeader
+          icon={Activity}
+          title="Daily Activities"
+          color="text-accent-jade"
+          subtitle="Manage your time wisely"
+        />
 
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
@@ -311,146 +293,5 @@ export function RenderActivitiesPage() {
         </div>
       </div>
     </div>
-  );
-}
-
-function QueueItem({ activity, index, isCurrent }: { activity: Activity; index: number; isCurrent: boolean }) {
-  const hex = getCategoryHex(activity.category);
-
-  return (
-    <div
-      className={`flex items-center ${ACTIVITY_DESIGN.spacing.queue.gap} ${ACTIVITY_DESIGN.spacing.queue.padding} rounded ${
-        isCurrent ? "bg-slate-800/60" : "bg-slate-800/20"
-      } ${ACTIVITY_DESIGN.transitions.quick} ${ACTIVITY_DESIGN.states.hover.queue}`}
-    >
-      <span className="text-slate-600 font-mono w-4 text-right text-[10px]">{index + 1}.</span>
-      <activity.icon className={`${ACTIVITY_DESIGN.icon.queue} shrink-0`} style={{ color: hex }} />
-      <span className={`${ACTIVITY_DESIGN.typography.name.queue} ${isCurrent ? "font-semibold text-slate-200" : "text-slate-400"} truncate`}>
-        {activity.name}
-      </span>
-      <span className={`ml-auto ${ACTIVITY_DESIGN.typography.time}`}>{activity.timeCost}h</span>
-      {isCurrent && (
-        <span className="w-1.5 h-1.5 rounded-full bg-accent-jade animate-pulse shrink-0" />
-      )}
-    </div>
-  );
-}
-
-type ActivityCardProps = {
-  activity: Activity;
-  activities: Record<string, number>;
-  completions: number;
-  totalXp: number;
-  allocateActivity: (activityKey: string, delta: number) => void;
-};
-
-function ActivityCard({
-  activity,
-  activities,
-  completions,
-  totalXp,
-  allocateActivity,
-}: ActivityCardProps) {
-  const allocated = activities[activity.key] || 0;
-  const progress = activity.timeCost > 0 ? Math.min((allocated / activity.timeCost) * 100, 100) : 0;
-  const currentActivity = useActivityStore((s) => s.activityQueue[0]);
-  const isRunning = currentActivity?.key === activity.key;
-  const colors = CATEGORY_COLOR_CLASSES[activity.category];
-  const ticks = useGameStore((s) => s.ticks);
-  const startTick = useActivityStore((s) => s.currentActivityStartTick);
-
-  const activityProgress = isRunning && startTick !== null
-    ? Math.min((ticks - startTick) / activity.timeCost, 1)
-    : 0;
-  const xpGain = activity.xpScalingFn();
-  const interpolatedXp = totalXp + (xpGain * activityProgress);
-  const { level, currentXp, xpForNext } = getActivityXpProgress(interpolatedXp);
-  const xpPct = xpForNext > 0 ? (currentXp / xpForNext) * 100 : 0;
-
-  return (
-    <div className="relative group">
-      <div className={`flex items-center ${ACTIVITY_DESIGN.spacing.card.gap} ${ACTIVITY_DESIGN.spacing.card.padding} bg-card/30 rounded-md ${ACTIVITY_DESIGN.states.hover.card} ${ACTIVITY_DESIGN.transitions.standard} ${ACTIVITY_DESIGN.states.running.borderWidth} ${isRunning ? colors.border : colors.borderFaded}`}>
-        <activity.icon className={`${ACTIVITY_DESIGN.icon.card} ${colors.text} shrink-0`} />
-        <div className={`flex items-center ${ACTIVITY_DESIGN.spacing.card.innerGap} w-28 shrink-0`}>
-          <span className={`${ACTIVITY_DESIGN.typography.name.card} truncate`}>{activity.name}</span>
-          <span className={`${ACTIVITY_DESIGN.typography.level} shrink-0`}>Lv.{level}</span>
-        </div>
-        <div className={`flex-1 flex flex-wrap ${ACTIVITY_DESIGN.effects.gap} min-w-0`}>{formatEffects(activity.effects, level)}</div>
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-5 w-5 p-0"
-            onClick={() => allocateActivity(activity.key, -1)}
-          >
-            <Minus className="w-3 h-3" />
-          </Button>
-          <span className={`${ACTIVITY_DESIGN.typography.allocation} w-8 text-center ${colors.text}`}>{allocated}h</span>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-5 w-5 p-0"
-            onClick={() => allocateActivity(activity.key, 1)}
-          >
-            <Plus className="w-3 h-3" />
-          </Button>
-        </div>
-        {completions > 0 && (
-          <span className={ACTIVITY_DESIGN.typography.completions}>x{completions}</span>
-        )}
-        <span className={ACTIVITY_DESIGN.typography.time}>{activity.timeCost}h</span>
-      </div>
-      <div className="space-y-px">
-        <div className={`${ACTIVITY_DESIGN.progressBar.allocation.height} w-full ${ACTIVITY_DESIGN.progressBar.allocation.track} overflow-hidden`}>
-          <Progress
-            value={progress}
-            striped={progress > 0}
-            className={`${ACTIVITY_DESIGN.progressBar.allocation.height} ${ACTIVITY_DESIGN.progressBar.allocation.track} ${colors.progress}`}
-          />
-        </div>
-        <div className={`${ACTIVITY_DESIGN.progressBar.xp.height} w-full ${ACTIVITY_DESIGN.progressBar.xp.track} rounded-b overflow-hidden relative`}>
-          <div
-            className={`h-full ${ACTIVITY_DESIGN.transitions.allocation} absolute left-0 top-0`}
-            style={{ width: `${xpPct}%` }}
-          >
-            <div
-              className="absolute inset-0 animate-shimmer"
-              style={{
-                background: getFoilGradient(getCategoryHex(activity.category)),
-                backgroundSize: ACTIVITY_DESIGN.progressBar.xp.shimmerSize,
-              }}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function formatEffects(effects: Effect[], level: number): JSX.Element {
-  return (
-    <>
-      {effects.map((effect, i) => {
-        if (effect.type === "grant_currency")
-          return (
-            <div key={i} className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm ${CURRENCY_COLORS[effect.currency].replace('text-', 'bg-')}/10 border border-${CURRENCY_COLORS[effect.currency].replace('text-', '')}/20`}>
-              <CurrencyIcon currency={effect.currency} className={CURRENCY_COLORS[effect.currency]} size={10} />
-              <span className={`text-[10px] font-mono font-bold ${CURRENCY_COLORS[effect.currency]}`}>
-                +{formatNumber(scaleEffectAmount(effect.amount, level))}
-              </span>
-            </div>
-          );
-        if (effect.type === "grant_stat")
-          return (
-            <div key={i} className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm ${STAT_COLORS[effect.stat].replace('text-', 'bg-')}/10 border border-${STAT_COLORS[effect.stat].replace('text-', '')}/20`}>
-              <StatIcon stat={effect.stat} className={STAT_COLORS[effect.stat]} size={10} />
-              <span className={`text-[10px] font-mono font-bold ${STAT_COLORS[effect.stat]}`}>
-                +{formatNumber(scaleEffectAmount(effect.amount, level))}
-              </span>
-            </div>
-          );
-        return null;
-      })}
-    </>
   );
 }

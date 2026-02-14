@@ -1,20 +1,19 @@
-import { Target } from "lucide-react";
+import { Target, CheckCircle, Clock } from "lucide-react";
 import { activeQuests, completedQuests } from "../data/quests";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Clock } from "lucide-react";
+import { PageHeader } from "../components/PageHeader";
 
 export function RenderQuestsPage() {
   const hasContent = activeQuests.length > 0 || completedQuests.length > 0;
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Target className="w-6 h-6 text-accent-violet" />
-        <h2 className="text-2xl font-bold font-[family-name:var(--font-display)] text-accent-violet">
-          Quests
-        </h2>
-      </div>
+      <PageHeader
+        icon={Target}
+        title="Quests"
+        color="text-accent-violet"
+      />
 
       {!hasContent && (
         <div className="flex flex-col items-center justify-center py-16 text-slate-500">

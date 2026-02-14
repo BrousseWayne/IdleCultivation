@@ -130,12 +130,12 @@ export function Sidebar() {
                 className={`relative flex-1 flex items-center justify-center py-2 rounded transition-colors ${
                   isActive
                     ? `text-${color}`
-                    : "text-slate-600 hover:text-slate-400"
+                    : `text-slate-600 hover:text-${color}/60`
                 }`}
               >
-                <item.icon className="w-5 h-5" />
+                <item.icon className="w-6 h-6" />
                 {isActive && (
-                  <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-0.5 bg-${color} rounded-full`} />
+                  <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-${color} rounded-full`} />
                 )}
               </Link>
             );

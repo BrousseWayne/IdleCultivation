@@ -17,6 +17,7 @@ import type { Effect } from "../types/effects";
 import { EntityRegistry } from "../services";
 import { formatNumber, getActivityXpProgress, scaleEffectAmount } from "../utils";
 import { StatIcon, CurrencyIcon } from "../components/StatIcon";
+import { ACTIVITY_DESIGN } from "../styles/activityDesignTokens";
 
 function getFoilGradient(categoryColor: string): string {
   const foilPalettes: Record<string, string[]> = {
@@ -318,18 +319,18 @@ function QueueItem({ activity, index, isCurrent }: { activity: Activity; index: 
 
   return (
     <div
-      className={`flex items-center gap-2 px-2 py-1 rounded text-xs ${
+      className={`flex items-center ${ACTIVITY_DESIGN.spacing.queue.gap} ${ACTIVITY_DESIGN.spacing.queue.padding} rounded ${
         isCurrent ? "bg-slate-800/60" : "bg-slate-800/20"
-      }`}
+      } ${ACTIVITY_DESIGN.transitions.quick} ${ACTIVITY_DESIGN.states.hover.queue}`}
     >
-      <span className="text-slate-600 font-mono w-4 text-right">{index + 1}.</span>
-      <activity.icon className="w-3 h-3 shrink-0" style={{ color: hex }} />
-      <span className={isCurrent ? "font-semibold text-slate-200" : "text-slate-400"}>
+      <span className="text-slate-600 font-mono w-4 text-right text-[10px]">{index + 1}.</span>
+      <activity.icon className={`${ACTIVITY_DESIGN.icon.queue} shrink-0`} style={{ color: hex }} />
+      <span className={`${ACTIVITY_DESIGN.typography.name.queue} ${isCurrent ? "font-semibold text-slate-200" : "text-slate-400"} truncate`}>
         {activity.name}
       </span>
-      <span className="ml-auto text-slate-600 font-mono">{activity.timeCost}h</span>
+      <span className={`ml-auto ${ACTIVITY_DESIGN.typography.time}`}>{activity.timeCost}h</span>
       {isCurrent && (
-        <span className="w-1.5 h-1.5 rounded-full bg-accent-jade animate-pulse" />
+        <span className="w-1.5 h-1.5 rounded-full bg-accent-jade animate-pulse shrink-0" />
       )}
     </div>
   );
@@ -368,13 +369,13 @@ function ActivityCard({
 
   return (
     <div className="relative group">
-      <div className={`flex items-center gap-3 px-3 py-2 bg-card/30 rounded-md hover:bg-card/50 transition-all border-l-3 ${isRunning ? colors.border : colors.borderFaded}`}>
-        <activity.icon className={`w-4 h-4 ${colors.text} shrink-0`} />
-        <div className="flex items-center gap-1.5 w-28 shrink-0">
-          <span className="text-xs font-semibold truncate">{activity.name}</span>
-          <span className="text-[10px] font-bold text-accent-gold shrink-0">Lv.{level}</span>
+      <div className={`flex items-center ${ACTIVITY_DESIGN.spacing.card.gap} ${ACTIVITY_DESIGN.spacing.card.padding} bg-card/30 rounded-md ${ACTIVITY_DESIGN.states.hover.card} ${ACTIVITY_DESIGN.transitions.standard} ${ACTIVITY_DESIGN.states.running.borderWidth} ${isRunning ? colors.border : colors.borderFaded}`}>
+        <activity.icon className={`${ACTIVITY_DESIGN.icon.card} ${colors.text} shrink-0`} />
+        <div className={`flex items-center ${ACTIVITY_DESIGN.spacing.card.innerGap} w-28 shrink-0`}>
+          <span className={`${ACTIVITY_DESIGN.typography.name.card} truncate`}>{activity.name}</span>
+          <span className={`${ACTIVITY_DESIGN.typography.level} shrink-0`}>Lv.{level}</span>
         </div>
-        <div className="flex-1 flex flex-wrap gap-1 min-w-0">{formatEffects(activity.effects, level)}</div>
+        <div className={`flex-1 flex flex-wrap ${ACTIVITY_DESIGN.effects.gap} min-w-0`}>{formatEffects(activity.effects, level)}</div>
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
@@ -384,7 +385,7 @@ function ActivityCard({
           >
             <Minus className="w-3 h-3" />
           </Button>
-          <span className={`text-xs font-mono w-8 text-center font-bold ${colors.text}`}>{allocated}h</span>
+          <span className={`${ACTIVITY_DESIGN.typography.allocation} w-8 text-center ${colors.text}`}>{allocated}h</span>
           <Button
             variant="ghost"
             size="sm"
@@ -395,28 +396,28 @@ function ActivityCard({
           </Button>
         </div>
         {completions > 0 && (
-          <span className="text-[10px] text-slate-600 font-mono">x{completions}</span>
+          <span className={ACTIVITY_DESIGN.typography.completions}>x{completions}</span>
         )}
-        <span className="text-[10px] text-slate-500">{activity.timeCost}h</span>
+        <span className={ACTIVITY_DESIGN.typography.time}>{activity.timeCost}h</span>
       </div>
       <div className="space-y-px">
-        <div className="h-0.5 w-full bg-slate-800/50 overflow-hidden">
+        <div className={`${ACTIVITY_DESIGN.progressBar.allocation.height} w-full ${ACTIVITY_DESIGN.progressBar.allocation.track} overflow-hidden`}>
           <Progress
             value={progress}
             striped={progress > 0}
-            className={`h-0.5 bg-slate-800/50 ${colors.progress}`}
+            className={`${ACTIVITY_DESIGN.progressBar.allocation.height} ${ACTIVITY_DESIGN.progressBar.allocation.track} ${colors.progress}`}
           />
         </div>
-        <div className="h-[1.2px] w-full bg-slate-800/30 rounded-b overflow-hidden relative">
+        <div className={`${ACTIVITY_DESIGN.progressBar.xp.height} w-full ${ACTIVITY_DESIGN.progressBar.xp.track} rounded-b overflow-hidden relative`}>
           <div
-            className="h-full transition-all duration-300 absolute left-0 top-0"
+            className={`h-full ${ACTIVITY_DESIGN.transitions.allocation} absolute left-0 top-0`}
             style={{ width: `${xpPct}%` }}
           >
             <div
               className="absolute inset-0 animate-shimmer"
               style={{
                 background: getFoilGradient(getCategoryHex(activity.category)),
-                backgroundSize: '400% 100%',
+                backgroundSize: ACTIVITY_DESIGN.progressBar.xp.shimmerSize,
               }}
             />
           </div>

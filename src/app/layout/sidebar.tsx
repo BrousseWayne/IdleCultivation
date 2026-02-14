@@ -1,15 +1,19 @@
-import { type JSX } from "react";
+import { type JSX, useMemo } from "react";
 import { Link, useLocation } from "react-router";
-import { User, Coins, Home } from "lucide-react";
+import { User, Coins, TrendingUp } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { sidebarData } from "../data/navigation";
-import { SECTION_COLORS, CURRENCY_COLORS } from "../data/sectionColors";
+import { SECTION_COLORS, CURRENCY_COLORS, STAT_COLORS } from "../data/sectionColors";
 import { useCultivatorStore } from "../stores/cultivatorStore";
 import { useInventoryStore } from "../stores/inventoryStore";
 import { useGameStore } from "../stores/gameStore";
+import { useActivityStore } from "../stores/activityStore";
 import { useLerpNumber } from "../utils/useLerpNumber";
 import { formatNumber } from "../utils/formatNumber";
-import type { Currency } from "../types/domain";
+import { getActivityXpProgress, scaleEffectAmount } from "../utils";
+import type { Currency, Stats, Activity } from "../types/domain";
+import { StatIcon } from "../components/StatIcon";
+import { EntityRegistry } from "../services";
 
 function renderMoney(amount: number): JSX.Element[] | JSX.Element {
   const currencyArray: Currency[] = ["Bronze", "Silver", "Gold", "Platinum"];
@@ -75,14 +79,40 @@ export function Sidebar() {
   const vitality = useCultivatorStore((s) => s.vitality);
   const satiety = useCultivatorStore((s) => s.satiety);
   const mortality = useCultivatorStore((s) => s.mortality);
+  const stats = useCultivatorStore((s) => s.stats);
 
   const spiritStones = useInventoryStore((s) => s.spiritStones);
-  const dailyIncome = useInventoryStore((s) => s.dailyIncome);
-  const dailyExpenses = useInventoryStore((s) => s.dailyExpenses);
+  const allocatedActivities = useActivityStore((s) => s.allocatedActivities);
+  const activityXp = useActivityStore((s) => s.activityXp);
+
+  const dailyIncome = useMemo(() => {
+    let income = 0;
+    for (const [activityKey, allocatedHours] of Object.entries(allocatedActivities)) {
+      if (allocatedHours <= 0) continue;
+      const activity = EntityRegistry.get<Activity>("activity", activityKey);
+      if (!activity) continue;
+      const completions = Math.floor(allocatedHours / activity.timeCost);
+      if (completions <= 0) continue;
+      const { level } = getActivityXpProgress(activityXp[activityKey] || 0);
+
+      for (const effect of activity.effects) {
+        if (effect.type === "grant_currency") {
+          const scaled = scaleEffectAmount(effect.amount, level);
+          income += scaled * completions;
+        }
+      }
+    }
+    return income;
+  }, [allocatedActivities, activityXp]);
+
+  const dailyExpenses = 0;
 
   const lerpAge = useLerpNumber(age);
   const lerpMoney = useLerpNumber(spiritStones);
   const net = dailyIncome - dailyExpenses;
+
+  const statEntries = Object.entries(stats) as [Stats, number][];
+  const hasStats = statEntries.some(([_, value]) => value > 0);
 
   return (
     <aside className="w-60 fixed left-0 top-12 h-[calc(100vh-3rem)] bg-slate-950/50 overflow-y-auto">
@@ -159,37 +189,32 @@ export function Sidebar() {
         </div>
       </div>
 
-      <div className="border-t border-slate-800/30 mx-4" />
+      {hasStats && (
+        <>
+          <div className="border-t border-slate-800/30 mx-4" />
 
-      <div className="px-4 py-4">
-        <div className="flex items-center gap-1.5 text-[10px] text-slate-400 uppercase tracking-widest mb-3 font-semibold">
-          <Home className="w-3.5 h-3.5" />
-          Living
-        </div>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-slate-500">Housing</span>
-            <span className="text-accent-emerald font-bold">Small Cottage</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-slate-500">Meals</span>
-            <span className="text-accent-gold font-bold">Average</span>
-          </div>
-          <div className="space-y-0.5">
-            <div className="flex justify-between">
-              <span className="text-slate-500">Lifestyle</span>
-              <span className="text-accent-sky font-bold">Modest (65%)</span>
+          <div className="px-4 py-4">
+            <div className="flex items-center gap-1.5 text-[10px] text-slate-400 uppercase tracking-widest mb-3 font-semibold">
+              <TrendingUp className="w-3.5 h-3.5" />
+              Attributes
             </div>
-            <div className="w-full bg-slate-800/50 rounded-full h-1">
-              <div className="bg-accent-sky h-1 rounded-full" style={{ width: "65%" }} />
+            <div className="space-y-2 text-sm">
+              {statEntries.map(([stat, value]) => (
+                <div key={stat} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <StatIcon stat={stat} className={STAT_COLORS[stat]} size={16} />
+                    <span className="text-slate-500">{stat}</span>
+                  </div>
+                  <span className={`font-mono font-bold ${STAT_COLORS[stat]}`}>
+                    {formatNumber(value)}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
-          <div className="flex justify-between">
-            <span className="text-slate-500">XP Mult</span>
-            <span className="text-accent-jade font-bold font-mono">1.2x</span>
-          </div>
-        </div>
-      </div>
+        </>
+      )}
+
     </aside>
   );
 }

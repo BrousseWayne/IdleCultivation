@@ -54,6 +54,7 @@ class SaveManagerService {
         activityQueueKeys: activity.activityQueue.map((a) => a.key),
         allocatedActivities: activity.allocatedActivities,
         completionCounts: activity.completionCounts,
+        activityXp: activity.activityXp,
         repeatActivities: activity.repeatActivities,
         selectedLocation: activity.selectedLocation,
         currentActivityStartTick: activity.currentActivityStartTick,

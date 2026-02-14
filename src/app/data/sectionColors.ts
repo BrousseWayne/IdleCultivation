@@ -57,3 +57,17 @@ export const STAT_COLORS: Record<Stats, string> = {
   Strength: "text-red-400",
   Dexterity: "text-blue-400",
 };
+
+export function getCategoryHex(category: ActivityCategory): string {
+  return ACCENT_HEX[CATEGORY_COLORS[category]] || '#5FB4A0';
+}
+
+export const ACCENT_HEX: Record<string, string> = {
+  'accent-jade': '#5FB4A0',
+  'accent-gold': '#D4AF6A',
+  'accent-cinnabar': '#E07856',
+  'accent-violet': '#B59ACF',
+  'accent-emerald': '#52B788',
+  'accent-lotus': '#D88FB8',
+  'accent-sky': '#6BA3D4',
+};

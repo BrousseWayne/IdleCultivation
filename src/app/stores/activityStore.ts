@@ -3,11 +3,13 @@ import type { Activity } from "../types/domain";
 import type { Effect } from "../types/effects";
 import { EventBus } from "../services";
 import { EffectExecutor } from "../services/EffectExecutor";
+import { getActivityXpProgress, scaleEffectAmount } from "../utils/activityXp";
 
 interface ActivityState {
   activityQueue: Activity[];
   allocatedActivities: Record<string, number>;
   completionCounts: Record<string, number>;
+  activityXp: Record<string, number>;
   repeatActivities: boolean;
   selectedLocation: string;
 
@@ -26,13 +28,13 @@ interface ActivityState {
   setCurrentActivityStartTick: (tick: number | null) => void;
 
   completeCurrentActivity: () => void;
-  applyEffects: (effects: Effect[]) => void;
 }
 
 export const useActivityStore = create<ActivityState>((set, get) => ({
   activityQueue: [],
   allocatedActivities: {},
   completionCounts: {},
+  activityXp: {},
   repeatActivities: true,
   selectedLocation: "Eastern Continent",
   currentActivityStartTick: null,
@@ -75,16 +77,15 @@ export const useActivityStore = create<ActivityState>((set, get) => ({
   setRepeatActivities: (repeat) => set({ repeatActivities: repeat }),
   setSelectedLocation: (location) => set({ selectedLocation: location }),
 
-  applyEffects: (effects) => {
-    EffectExecutor.execute(effects);
-  },
-
   completeCurrentActivity: () => {
-    const { activityQueue, applyEffects, deallocateTime, dequeueActivity, enqueueActivity, repeatActivities, allocatedActivities } =
+    const { activityQueue, deallocateTime, dequeueActivity, enqueueActivity, repeatActivities, allocatedActivities } =
       get();
     if (activityQueue.length === 0) return;
 
     const currentActivity = activityQueue[0];
+    const xpGain = currentActivity.xpScalingFn();
+    const newXp = (get().activityXp[currentActivity.key] || 0) + xpGain;
+    const { level } = getActivityXpProgress(newXp);
 
     set((state) => ({
       completionCounts: {
@@ -92,9 +93,20 @@ export const useActivityStore = create<ActivityState>((set, get) => ({
         [currentActivity.key]:
           (state.completionCounts[currentActivity.key] || 0) + 1,
       },
+      activityXp: {
+        ...state.activityXp,
+        [currentActivity.key]: newXp,
+      },
     }));
 
-    applyEffects(currentActivity.effects);
+    const scaledEffects: Effect[] = currentActivity.effects.map((effect) => {
+      if (effect.type === "grant_currency" || effect.type === "grant_stat") {
+        return { ...effect, amount: scaleEffectAmount(effect.amount, level) };
+      }
+      return effect;
+    });
+
+    EffectExecutor.execute(scaledEffects);
     deallocateTime(currentActivity.key, currentActivity.timeCost);
     dequeueActivity();
 

@@ -64,7 +64,6 @@ export type NavigationUnlockState = Record<SidebarNavigation["name"], boolean>;
 export type ActivityModel = {
   xpScalingFn: () => number;
   key: string;
-  level: number;
   timeCost: number;
   unlocked: boolean;
   effects: Effect[];

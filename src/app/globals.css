@@ -175,6 +175,35 @@
   50% { box-shadow: 0 0 18px rgba(239, 68, 68, 0.35); }
 }
 
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes ethereal-ripple {
+  0% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.92;
+    filter: brightness(1.08);
+  }
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+@keyframes ethereal-shimmer-soft {
+  0%, 100% {
+    text-shadow: 0 0 1px currentColor;
+  }
+  50% {
+    text-shadow: 0 0 3px currentColor, 0 0 6px currentColor;
+  }
+}
+
 .progress-striped {
   background-image: repeating-linear-gradient(
     45deg,
@@ -205,6 +234,22 @@
 
 .animate-pulse-danger {
   animation: pulse-danger 2.5s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 6s linear infinite;
+}
+
+.effect-holographic {
+  animation: ethereal-shimmer-soft 5s ease-in-out;
+}
+
+.effect-prismatic {
+  animation: ethereal-ripple 4.5s ease-in-out;
+}
+
+.effect-sparkle {
+  animation: ethereal-shimmer-soft 5s ease-in-out;
 }
 
 .text-glow-jade {

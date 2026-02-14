@@ -17,6 +17,9 @@ import {
 import { useGameStore } from "../stores/gameStore";
 import { SaveManager } from "../services";
 import { useLerpNumber } from "../utils/useLerpNumber";
+import { StatPanel } from "../components/StatPanel";
+import { useEtherealShimmer } from "../hooks/useEtherealShimmer";
+import { EtherealEffect } from "../components/EtherealEffect";
 
 export function Header() {
   const currentExploreLocation = useGameStore((s) => s.currentExploreLocation);
@@ -32,6 +35,7 @@ export function Header() {
   const lerpTimePoints = useLerpNumber(timePoints);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { getEffect } = useEtherealShimmer();
 
   const togglePlaying = () => {
     if (isPlaying) stopGameLoop();
@@ -90,6 +94,8 @@ export function Header() {
         <span className="text-accent-cinnabar font-semibold">{currentExploreLocation}</span>
       </div>
 
+      <StatPanel />
+
       <div className="h-4 w-px bg-slate-800" />
 
       <div className="flex items-center gap-1">
@@ -112,13 +118,17 @@ export function Header() {
         {gameSpeed > 1 && <span className="text-[10px] text-muted-foreground font-mono">{gameSpeed}x</span>}
       </div>
 
-      <span className="text-xs text-accent-sky font-mono font-bold">Day {day}</span>
+      <span className="text-xs text-accent-sky font-mono font-bold">
+        Day <EtherealEffect effect={getEffect("day")}>{day}</EtherealEffect>
+      </span>
 
       <div className="h-4 w-px bg-slate-800" />
 
       <div className="flex items-center gap-3 px-3 py-1.5 bg-slate-900/50 rounded-md border border-slate-800/50">
         <Clock className="w-4 h-4 text-accent-jade" />
-        <span className="text-sm text-accent-jade font-mono font-bold">{lerpTimePoints}/{maxTimePoints}h</span>
+        <EtherealEffect effect={getEffect("timePoints")}>
+          <span className="text-sm text-accent-jade font-mono font-bold">{lerpTimePoints}/{maxTimePoints}h</span>
+        </EtherealEffect>
         <div className="w-32">
           <Progress value={(timePoints / maxTimePoints) * 100} className="h-2 bg-slate-800 [&>div]:bg-accent-jade" />
         </div>

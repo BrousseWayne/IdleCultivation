@@ -1,6 +1,8 @@
 import { Progress } from "@/components/ui/progress";
 import { User } from "lucide-react";
 import { useCultivatorStore } from "../stores/cultivatorStore";
+import { useEtherealShimmer } from "../hooks/useEtherealShimmer";
+import { EtherealEffect } from "../components/EtherealEffect";
 
 const StatRow = ({
   label,
@@ -25,18 +27,22 @@ const ProgressRow = ({
   current,
   max,
   colorClass,
+  effect,
 }: {
   label: string;
   current: number;
   max: number;
   colorClass: string;
+  effect?: "sparkle" | "holographic" | "prismatic" | null;
 }) => (
   <div className="py-1.5">
     <div className="flex justify-between text-sm mb-1">
       <span className="text-slate-400">{label}</span>
-      <span className={`font-mono text-sm ${colorClass}`}>
-        {current}/{max}
-      </span>
+      <EtherealEffect effect={effect || null}>
+        <span className={`font-mono text-sm ${colorClass}`}>
+          {current}/{max}
+        </span>
+      </EtherealEffect>
     </div>
     <Progress
       value={(current / max) * 100}
@@ -52,6 +58,7 @@ export const RenderStatsPage = () => {
   const mortality = useCultivatorStore((s) => s.mortality);
   const age = useCultivatorStore((s) => s.age);
   const lifespan = useCultivatorStore((s) => s.lifespan);
+  const { getEffect } = useEtherealShimmer();
 
   return (
     <div className="space-y-6">
@@ -71,13 +78,19 @@ export const RenderStatsPage = () => {
             Core Stats
           </h3>
           <div className="bg-card/30 border border-border/30 rounded-md px-4 py-1">
-            <StatRow label="Age / Lifespan" value={`${age} / ${lifespan}`} colorClass="text-accent-jade" />
+            <div className="flex justify-between items-center py-1.5">
+              <span className="text-sm text-slate-400">Age / Lifespan</span>
+              <span className="font-mono text-sm text-accent-jade">
+                <EtherealEffect effect={getEffect("age")}>{age}</EtherealEffect> / {lifespan}
+              </span>
+            </div>
+            <div className="h-px bg-gradient-to-r from-transparent via-slate-700/30 to-transparent" />
             {Object.entries(stats).map(([stat, value]) => (
               <StatRow key={stat} label={stat} value={String(value)} colorClass="text-accent-cinnabar" />
             ))}
-            <ProgressRow label="HP" current={vitality.current} max={vitality.max} colorClass="text-accent-emerald" />
-            <ProgressRow label="Satiety" current={satiety.current} max={satiety.max} colorClass="text-accent-gold" />
-            <ProgressRow label="Mortality" current={mortality.current} max={mortality.max} colorClass="text-accent-cinnabar" />
+            <ProgressRow label="HP" current={vitality.current} max={vitality.max} colorClass="text-accent-emerald" effect={getEffect("vitality")} />
+            <ProgressRow label="Satiety" current={satiety.current} max={satiety.max} colorClass="text-accent-gold" effect={getEffect("satiety")} />
+            <ProgressRow label="Mortality" current={mortality.current} max={mortality.max} colorClass="text-accent-cinnabar" effect={getEffect("mortality")} />
           </div>
         </section>
 

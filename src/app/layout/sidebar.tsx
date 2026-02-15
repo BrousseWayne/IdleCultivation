@@ -14,6 +14,8 @@ import { getActivityXpProgress, scaleEffectAmount } from "../utils";
 import type { Currency, Stats, Activity } from "../types/domain";
 import { StatIcon } from "../components/StatIcon";
 import { EntityRegistry } from "../services";
+import { ObfuscatedLifespan } from "../components/ObfuscatedLifespan";
+import { HeavenlyVeil } from "../components/HeavenlyVeil";
 
 function renderMoney(amount: number): JSX.Element[] | JSX.Element {
   const currencyArray: Currency[] = ["Bronze", "Silver", "Gold", "Platinum"];
@@ -152,7 +154,9 @@ export function Sidebar() {
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-slate-500">Age</span>
-            <span className="text-accent-jade font-mono font-bold">{lerpAge}/{lifespan}</span>
+            <span className="text-accent-jade font-mono font-bold">
+              {lerpAge}/<ObfuscatedLifespan value={lifespan} />
+            </span>
           </div>
           <StatBar label="HP" value={vitality.current} max={vitality.max} color="green" />
           <StatBar label="Satiety" value={satiety.current} max={satiety.max} color="orange" />
@@ -215,6 +219,7 @@ export function Sidebar() {
         </>
       )}
 
+      <HeavenlyVeil />
     </aside>
   );
 }

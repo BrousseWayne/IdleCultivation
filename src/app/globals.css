@@ -325,6 +325,90 @@
   }
 }
 
+@keyframes crt-scanlines {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(2px);
+  }
+}
+
+@keyframes phosphor-glow {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-100%);
+    opacity: 0.8;
+  }
+}
+
+@keyframes chromatic-drift {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-1.5px);
+  }
+  75% {
+    transform: translateX(1.5px);
+  }
+}
+
+@keyframes void-flash {
+  0%, 85% {
+    opacity: 0;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes reality-tear {
+  0%, 100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleY(0.98);
+    opacity: 0.85;
+  }
+}
+
+@keyframes fate-shatter {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-1.5px, 0.8px);
+  }
+  40% {
+    transform: translate(1.5px, -0.8px);
+  }
+  60% {
+    transform: translate(-0.8px, 1.5px);
+  }
+  80% {
+    transform: translate(0.8px, -1.5px);
+  }
+}
+
+@keyframes void-breathe {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.92;
+    transform: scale(1.015);
+  }
+}
+
 .progress-striped {
   background-image: repeating-linear-gradient(
     45deg,

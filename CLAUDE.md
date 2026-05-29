@@ -4,7 +4,7 @@
 
 Genre blend: roguelike prestige loop + idle/incremental scaling + xianxia RPG life sim. Easy to learn, hard to master.
 
-Full game design document: `docs/game-vision.md`
+Full game design document: `docs/vision/game-vision.md`
 
 ### The Core Loop
 
@@ -114,7 +114,11 @@ src/app/
 ├── pages/           # Route pages
 ├── layout/          # Layout components
 ├── components/      # Reusable UI components
-docs/                # Game design documents (game-vision.md)
+docs/
+├── vision/          # Durable design intent (game-vision, context-brief, analysis)
+├── design/          # Active gameplay design (scaling, activity design system)
+├── meta-design/     # Parked fourth-wall layer (meta-design brief, usecase catalog, karma)
+└── archive/         # Superseded / scratch references
 ```
 
 ### Naming Conventions

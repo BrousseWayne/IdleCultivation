@@ -16,6 +16,8 @@ interface Particle {
 const HEAVENLY_RUNES = ["天", "地", "玄", "黄", "宇", "宙", "洪", "荒", "日", "月", "盈", "昃", "辰", "宿", "列", "張", "寒", "來", "暑", "往"];
 const JADE = { r: 45, g: 212, b: 191 };
 const GOLD = { r: 255, g: 215, b: 0 };
+const MIN_PARTICLES = 12;
+const MAX_PARTICLES_ZOOM_MULTIPLIER = 45;
 
 export function HeavenlyVeil() {
   const { normalizedZoom } = useZoomDetector();
@@ -38,7 +40,7 @@ export function HeavenlyVeil() {
     resize();
     window.addEventListener("resize", resize);
 
-    const targetCount = Math.floor(12 + normalizedZoom * 45);
+    const targetCount = Math.floor(MIN_PARTICLES + normalizedZoom * MAX_PARTICLES_ZOOM_MULTIPLIER);
     while (particlesRef.current.length < targetCount) {
       particlesRef.current.push({
         x: Math.random() * canvas.width,
@@ -204,7 +206,6 @@ export function HeavenlyVeil() {
               rgba(30, 255, 255, ${corruption * 0.08}) 3px,
               transparent 4px
             )`,
-            transform: `translateX(${Math.sin(Date.now() / 150) * corruption * 3}px)`,
             animation: "chromatic-drift 0.25s ease-in-out infinite",
           }}
         />

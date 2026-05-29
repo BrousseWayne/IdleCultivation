@@ -35,7 +35,7 @@ export const initialNavigationUnlockState: NavigationUnlockState = {
   Activities: true,
   Quests: true,
   Lifestyle: true,
-  Travel: true,
+  Travel: false,
   Stats: true,
   Recap: true,
   Story: true,

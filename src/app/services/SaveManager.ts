@@ -34,6 +34,8 @@ class SaveManagerService {
         ticks: game.ticks,
         day: game.day,
         gameSpeed: game.gameSpeed,
+        introComplete: game.introComplete,
+        runBackground: game.runBackground,
         timeScale: game.timeScale,
         timePoints: game.timePoints,
         maxTimePoints: game.maxTimePoints,
@@ -122,6 +124,10 @@ class SaveManagerService {
     if (!data.version) throw new Error("Invalid save format");
     this.restore(data);
     this.save();
+  }
+
+  clearSave(): void {
+    localStorage.removeItem(SAVE_KEY);
   }
 
   wipeSave(): void {

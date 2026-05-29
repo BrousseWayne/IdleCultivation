@@ -21,6 +21,7 @@ import { activityData } from "./app/data/activity";
 import { items } from "./app/data/items";
 import { locations } from "./app/data/locations";
 import { sidebarData } from "./app/data/navigation";
+import { useGameStore } from "./app/stores/gameStore";
 
 activityData.forEach((a) => EntityRegistry.register("activity", a.key, a));
 items.forEach((i) => EntityRegistry.register("item", String(i.id), i));
@@ -30,6 +31,10 @@ sidebarData.forEach((n) => EntityRegistry.register("navigation", n.name, n));
 initializeGameEventListeners();
 SaveManager.load();
 SaveManager.startAutoSave();
+
+if (useGameStore.getState().introComplete) {
+  useGameStore.getState().startGameLoop();
+}
 
 if (typeof window !== "undefined") {
   (window as any).EntityRegistry = EntityRegistry;

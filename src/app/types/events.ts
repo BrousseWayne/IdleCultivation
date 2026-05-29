@@ -1,4 +1,4 @@
-import type { Stats } from "./domain";
+import type { Stats, NotificationType } from "./domain";
 
 export type GameEvent =
   | {
@@ -7,6 +7,12 @@ export type GameEvent =
     }
   | { type: "activity:completed"; payload: { activityKey: string } }
   | { type: "game:tick"; payload: { ticks: number; day: number } }
-  | { type: "player:peered_at_fate"; zoomLevel: number };
+  | { type: "player:peered_at_fate"; zoomLevel: number }
+  | { type: "cultivator:death"; payload: { age: number } }
+  | { type: "cultivator:reincarnated" }
+  | {
+      type: "notification:push";
+      payload: { message: string; notificationType: NotificationType };
+    };
 
 export type EventHandler<T = any> = (event: T) => void;

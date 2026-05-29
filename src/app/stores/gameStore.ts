@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import {
   ALL_CATEGORIES,
+  type Background,
   type NavigationItem,
   type NavigationUnlockState,
 } from "../types/domain";
@@ -32,6 +33,8 @@ interface GameState {
   isPlaying: boolean;
   gameSpeed: number;
   intervalId: ReturnType<typeof setInterval> | null;
+  introComplete: boolean;
+  runBackground: Background | null;
 
   timeScale: TimeScale;
   timePoints: number;
@@ -56,6 +59,8 @@ interface GameState {
   stopGameLoop: () => void;
   tick: () => void;
   setGameSpeed: (speed: number) => void;
+  startRun: (background: Background) => void;
+  reincarnate: () => void;
 
   setTimeScale: (scale: TimeScale) => void;
   allocateTime: (amount: number) => void;
@@ -83,31 +88,33 @@ interface GameState {
   getTimeScaleConfig: () => (typeof TIME_SCALES)[TimeScale];
 }
 
-export const useGameStore = create<GameState>((set, get) => ({
+const createInitialGameState = () => ({
   ticks: 0,
   day: 0,
   isPlaying: false,
   gameSpeed: 1,
-  intervalId: null,
-
-  timeScale: "day",
+  intervalId: null as ReturnType<typeof setInterval> | null,
+  introComplete: false,
+  runBackground: null as Background | null,
+  timeScale: "day" as TimeScale,
   timePoints: 24,
   maxTimePoints: 24,
-
   selectedTimeScale: "Day",
   selectedYear: 1,
   selectedMonth: 1,
   selectedEra: 1,
   selectedDecade: 1,
-  calendarView: "month",
-
+  calendarView: "month" as CalendarView,
   navigationUnlocks: initialNavigationUnlockState,
   activityCategoryUnlocks: createInitialActivityUnlockState(),
-
   currentExploreLocation: "Whispering Forest",
-  eventLog: [],
-  selectedDate: null,
+  eventLog: [] as string[],
+  selectedDate: null as number | null,
   showDetailedView: false,
+});
+
+export const useGameStore = create<GameState>((set, get) => ({
+  ...createInitialGameState(),
 
   startGameLoop: () => {
     const { intervalId, gameSpeed } = get();
@@ -222,4 +229,15 @@ export const useGameStore = create<GameState>((set, get) => ({
   setShowDetailedView: (show) => set({ showDetailedView: show }),
 
   getTimeScaleConfig: () => TIME_SCALES[get().timeScale],
+
+  startRun: (background) => {
+    set({ introComplete: true, runBackground: background });
+    get().startGameLoop();
+  },
+
+  reincarnate: () => {
+    get().stopGameLoop();
+    EventBus.emit({ type: "cultivator:reincarnated" });
+    set({ ...createInitialGameState() });
+  },
 }));

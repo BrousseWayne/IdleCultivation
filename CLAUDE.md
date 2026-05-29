@@ -6,14 +6,6 @@ Genre blend: roguelike prestige loop + idle/incremental scaling + xianxia RPG li
 
 Full game design document: `docs/game-vision.md`
 
-### Inspirations
-
-- **Antimatter Dimensions**: Number scaling, stacked prestige layers, big numbers
-- **Universal Paperclip**: Story unfolds through mechanics, new systems reveal as you progress
-- **Increlution**: Queue-based action management, instinct levels
-- **Progress Knight**: Life sim structure, skills/jobs, XP multipliers persist across runs
-- **Xianxia novels (Top Tier Providence)**: Cultivation realms, alchemy, artifacts, tropes
-
 ### The Core Loop
 
 - Each run = one life, starting at ~1 min/year (~80 min for a mortal life)
@@ -21,12 +13,6 @@ Full game design document: `docs/game-vision.md`
 - Player directs the life through choices, action queues, event reactions
 - Death = end of run. Reincarnation = prestige. Bonuses carry over.
 - Next life is faster/richer. The incremental game IS the reincarnation cycle.
-
-### Run Types (Non exhaustive)
-
-- **Grind runs**: set up queue, go idle, farm a specific resource
-- **Push runs**: active play, trying to reach new thresholds
-- Automation unlocks progressively (even in mortal phase)
 
 ### Game Phases (There will be micro phases in each macro phases)
 
@@ -45,6 +31,12 @@ Full game design document: `docs/game-vision.md`
 - Xianxia tropes are features: young masters, jade beauties, heavenly tribulations
 - **Story text**: xianxia novel tone ("broken English" cultivation novel style)
 - **UI text**: always clear and unambiguous
+
+---
+
+## Source of Truth
+
+When this document conflicts with the actual codebase, the codebase wins. This document describes intent and conventions — the code is the real state of things.
 
 ---
 
@@ -191,34 +183,3 @@ Use xianxia terms everywhere (code, data, UI):
 - **Don't scatter unlock logic** — Register unlockables in gameEventListeners.ts
 - **Don't mix concerns** — Stores = state + actions, Components = UI only
 - **Don't add features without unlocks** — Everything should be unlockable
-
----
-
-## Next Steps
-
-**Phase 3: Effect System + Data Layer (COMPLETED)**
-
-1. [x] Effect System: `Effect[]` discriminated union + `EffectExecutor` service
-2. [x] Migrated `ActivityModel.reward` → `ActivityModel.effects: Effect[]`
-3. [x] EffectExecutor calls stores directly (replaced `activity:reward-earned` event)
-4. [x] Unlocks migrated to JSON (`unlockables.json` + Zod schema)
-5. [x] Unlock conditions wired into lifestyle, navigation, explore data
-6. [x] Explore locations cleaned up: types → domain.ts, reward → Effect[]
-7. [x] All entities with `unlockConditions` auto-registered in gameEventListeners
-
-**Phase 4: Advanced Systems (FUTURE)**
-
-1. [ ] Cultivation system (qi, realms, breakthroughs)
-2. [ ] Reincarnation/prestige mechanics (run state vs meta state)
-3. [ ] Combat system
-4. [ ] Procedural background generation
-
----
-
-## Testing Changes
-
-- `npm run dev` — verify UI works
-- Check browser console for errors
-- Verify state updates propagate correctly
-- Test activity queue execution
-- Confirm navigation between pages works

@@ -20,6 +20,7 @@ interface CultivatorState {
   satiety: ResourceBar;
   mortality: ResourceBar;
   stats: Record<Stats, number>;
+  hasFallen: boolean;
 
   setAge: (age: number) => void;
   setLifespan: (lifespan: number) => void;
@@ -27,23 +28,27 @@ interface CultivatorState {
   setSatiety: (satiety: ResourceBar) => void;
   setMortality: (mortality: ResourceBar) => void;
   setStats: (stats: Record<Stats, number>) => void;
+  setHasFallen: (hasFallen: boolean) => void;
 
   incrementStat: (stat: Stats, amount: number) => void;
   takeDamage: (amount: number) => void;
   heal: (amount: number) => void;
   incrementAge: () => void;
+  reset: () => void;
 }
 
-export const useCultivatorStore = create<CultivatorState>((set) => ({
+const initialCultivatorState = {
   age: initialPlayerAge,
   lifespan: initialPlayerLifespan,
   vitality: initialPlayerHp,
   satiety: initialPlayerSatiety,
   mortality: initialPlayerMortality,
-  stats: {
-    Strength: 0,
-    Dexterity: 0,
-  },
+  stats: { Strength: 0, Dexterity: 0 } as Record<Stats, number>,
+  hasFallen: false,
+};
+
+export const useCultivatorStore = create<CultivatorState>((set) => ({
+  ...initialCultivatorState,
 
   setAge: (age) => set({ age }),
   setLifespan: (lifespan) => set({ lifespan }),
@@ -51,6 +56,7 @@ export const useCultivatorStore = create<CultivatorState>((set) => ({
   setSatiety: (satiety) => set({ satiety }),
   setMortality: (mortality) => set({ mortality }),
   setStats: (stats) => set({ stats }),
+  setHasFallen: (hasFallen) => set({ hasFallen }),
 
   incrementStat: (stat, amount) =>
     set((state) => ({
@@ -77,4 +83,6 @@ export const useCultivatorStore = create<CultivatorState>((set) => ({
     set((state) => ({
       age: state.age + 1,
     })),
+
+  reset: () => set(initialCultivatorState),
 }));

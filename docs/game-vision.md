@@ -42,7 +42,7 @@ Easy to learn, hard to master.
 
 ## Design Philosophy
 
-- Diegetic mechanics: everything explainable in-world (automation = disciples/formations)
+- Diegetic mechanics: everything explainable in-world
 - Story unfolds through mechanics, not exposition. New systems reveal as thresholds are hit.
 - Freedom in progression: checkpoints exist, how you reach them is up to you.
 - Cultivation IS grinding — lean into it. Prestige acceleration + roguelike variance prevent monotony.

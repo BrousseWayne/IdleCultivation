@@ -28,6 +28,7 @@ interface InventoryState {
 
   setDailyExpenses: (amount: number) => void;
   setDailyIncome: (amount: number) => void;
+  reset: () => void;
 }
 
 const initialEquippedItems: EquippedItems = {
@@ -39,12 +40,16 @@ const initialEquippedItems: EquippedItems = {
   amulet: null,
 };
 
-export const useInventoryStore = create<InventoryState>((set, get) => ({
+const initialInventoryState = {
   spiritStones: initialPlayerMoney,
   inventoryItems: initialItems,
   equippedItems: initialEquippedItems,
   dailyExpenses: 0,
   dailyIncome: 0,
+};
+
+export const useInventoryStore = create<InventoryState>((set, get) => ({
+  ...initialInventoryState,
 
   addSpiritStones: (amount) =>
     set((state) => ({ spiritStones: state.spiritStones + amount })),
@@ -98,4 +103,5 @@ export const useInventoryStore = create<InventoryState>((set, get) => ({
 
   setDailyExpenses: (amount) => set({ dailyExpenses: amount }),
   setDailyIncome: (amount) => set({ dailyIncome: amount }),
+  reset: () => set(initialInventoryState),
 }));

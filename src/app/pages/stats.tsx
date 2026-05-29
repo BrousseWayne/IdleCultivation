@@ -58,7 +58,6 @@ export const RenderStatsPage = () => {
   const satiety = useCultivatorStore((s) => s.satiety);
   const mortality = useCultivatorStore((s) => s.mortality);
   const age = useCultivatorStore((s) => s.age);
-  const lifespan = useCultivatorStore((s) => s.lifespan);
   const { getEffect } = useEtherealShimmer();
 
   return (
@@ -78,9 +77,9 @@ export const RenderStatsPage = () => {
           </h3>
           <div className="bg-card/30 border border-border/30 rounded-md px-4 py-1">
             <div className="flex justify-between items-center py-1.5">
-              <span className="text-sm text-slate-400">Age / Lifespan</span>
+              <span className="text-sm text-slate-400">Age</span>
               <span className="font-mono text-sm text-accent-jade">
-                <EtherealEffect effect={getEffect("age")}>{age}</EtherealEffect> / {lifespan}
+                <EtherealEffect effect={getEffect("age")}>{age}</EtherealEffect>
               </span>
             </div>
             <div className="h-px bg-gradient-to-r from-transparent via-slate-700/30 to-transparent" />

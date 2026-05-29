@@ -28,16 +28,21 @@ interface ActivityState {
   setCurrentActivityStartTick: (tick: number | null) => void;
 
   completeCurrentActivity: () => void;
+  reset: () => void;
 }
 
-export const useActivityStore = create<ActivityState>((set, get) => ({
-  activityQueue: [],
-  allocatedActivities: {},
-  completionCounts: {},
-  activityXp: {},
+const initialActivityState = {
+  activityQueue: [] as Activity[],
+  allocatedActivities: {} as Record<string, number>,
+  completionCounts: {} as Record<string, number>,
+  activityXp: {} as Record<string, number>,
   repeatActivities: true,
   selectedLocation: "Eastern Continent",
-  currentActivityStartTick: null,
+  currentActivityStartTick: null as number | null,
+};
+
+export const useActivityStore = create<ActivityState>((set, get) => ({
+  ...initialActivityState,
   setCurrentActivityStartTick: (tick) => set({ currentActivityStartTick: tick }),
 
   enqueueActivity: (activity) =>
@@ -120,4 +125,6 @@ export const useActivityStore = create<ActivityState>((set, get) => ({
       payload: { activityKey: currentActivity.key },
     });
   },
+
+  reset: () => set(initialActivityState),
 }));

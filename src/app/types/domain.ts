@@ -35,10 +35,19 @@ export type LifestyleCategoryData = {
   options: LifestyleOption[];
 };
 
+export type Background = "farmer" | "orphan" | "soldier";
+
+export type NotificationType =
+  | "narrative"
+  | "discovery"
+  | "journey"
+  | "achievement"
+  | "combat";
+
 export type StoryEntry = {
   time: string;
   entry: string;
-  type: "narrative" | "discovery" | "journey" | "achievement" | "combat";
+  type: NotificationType;
 };
 
 export type NavigationItem =

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 type ElementKey =
   | "age"
   | "day"
-  | "spiritStones"
+  | "currency"
   | "stat_Strength"
   | "stat_Wisdom"
   | "stat_Charisma"
@@ -18,7 +18,7 @@ type EffectType = "sparkle" | "holographic" | "prismatic";
 const SHIMMER_ELEMENTS: ElementKey[] = [
   "age",
   "day",
-  "spiritStones",
+  "currency",
   "stat_Strength",
   "stat_Wisdom",
   "stat_Charisma",
@@ -32,7 +32,7 @@ const SHIMMER_ELEMENTS: ElementKey[] = [
 const ELEMENT_WEIGHTS: Record<ElementKey, number> = {
   age: 3,
   day: 5,
-  spiritStones: 4,
+  currency: 4,
   stat_Strength: 2,
   stat_Wisdom: 2,
   stat_Charisma: 2,

@@ -7,6 +7,6 @@ export const CURRENCY_VALUE: Record<Currency, number> = {
   Platinum: 1_000_000,
 };
 
-export function toSpiritStones(currency: Currency, amount: number): number {
+export function toCurrency(currency: Currency, amount: number): number {
   return amount * CURRENCY_VALUE[currency];
 }

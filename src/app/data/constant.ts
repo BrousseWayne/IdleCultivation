@@ -19,7 +19,7 @@ export const initialPlayerMortality = {
   current: 1,
 };
 
-export const initialPlayerMoney = 10;
+export const initialCurrency = 10;
 
 export const storyEntryColors: Record<StoryEntry["type"], string> = {
   narrative: "border-accent-violet/50 text-accent-violet",

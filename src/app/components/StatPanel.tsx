@@ -9,33 +9,33 @@ import { EtherealEffect } from "./EtherealEffect";
 
 export function StatPanel() {
   const stats = useCultivatorStore((s) => s.stats);
-  const spiritStones = useInventoryStore((s) => s.spiritStones);
+  const currency = useInventoryStore((s) => s.currency);
   const { getEffect } = useEtherealShimmer();
 
   const statEntries = (Object.entries(stats) as [Stats, number][]).filter(
     ([_, value]) => value > 0
   );
 
-  const hasResources = spiritStones > 0 || statEntries.length > 0;
+  const hasResources = currency > 0 || statEntries.length > 0;
   if (!hasResources) return null;
 
   return (
     <div className="flex items-center gap-3 px-3 py-1.5 bg-slate-900/30 border border-slate-800/40 rounded">
-      {spiritStones > 0 && (
+      {currency > 0 && (
         <div className="flex items-center gap-1.5">
           <BronzeIcon
             className={CURRENCY_COLORS.Bronze}
             size={14}
           />
-          <EtherealEffect effect={getEffect("spiritStones")}>
+          <EtherealEffect effect={getEffect("currency")}>
             <span className={`text-xs font-mono font-bold ${CURRENCY_COLORS.Bronze}`}>
-              {formatNumber(spiritStones)}
+              {formatNumber(currency)}
             </span>
           </EtherealEffect>
         </div>
       )}
 
-      {spiritStones > 0 && statEntries.length > 0 && (
+      {currency > 0 && statEntries.length > 0 && (
         <div className="w-px h-3 bg-slate-700/50" />
       )}
 

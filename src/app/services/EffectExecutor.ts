@@ -2,7 +2,7 @@ import type { Effect } from "../types/effects";
 import { useInventoryStore } from "../stores/inventoryStore";
 import { useCultivatorStore } from "../stores/cultivatorStore";
 import { useGameStore } from "../stores/gameStore";
-import { toSpiritStones } from "../data/currency";
+import { toCurrency } from "../data/currency";
 import { EventBus } from "./EventBus";
 
 class EffectExecutorService {
@@ -17,13 +17,13 @@ class EffectExecutorService {
       case "grant_currency":
         useInventoryStore
           .getState()
-          .addSpiritStones(toSpiritStones(effect.currency, effect.amount));
+          .addCurrency(toCurrency(effect.currency, effect.amount));
         break;
 
       case "spend_currency":
         useInventoryStore
           .getState()
-          .subtractSpiritStones(toSpiritStones(effect.currency, effect.amount));
+          .subtractCurrency(toCurrency(effect.currency, effect.amount));
         break;
 
       case "grant_stat": {

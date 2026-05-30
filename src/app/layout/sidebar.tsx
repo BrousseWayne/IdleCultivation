@@ -80,7 +80,7 @@ export function Sidebar() {
   const mortality = useCultivatorStore((s) => s.mortality);
   const stats = useCultivatorStore((s) => s.stats);
 
-  const spiritStones = useInventoryStore((s) => s.spiritStones);
+  const currency = useInventoryStore((s) => s.currency);
   const allocatedActivities = useActivityStore((s) => s.allocatedActivities);
   const activityXp = useActivityStore((s) => s.activityXp);
 
@@ -107,7 +107,7 @@ export function Sidebar() {
   const dailyExpenses = 0;
 
   const lerpAge = useLerpNumber(age);
-  const lerpMoney = useLerpNumber(spiritStones);
+  const lerpMoney = useLerpNumber(currency);
   const net = dailyIncome - dailyExpenses;
 
   const statEntries = Object.entries(stats) as [Stats, number][];

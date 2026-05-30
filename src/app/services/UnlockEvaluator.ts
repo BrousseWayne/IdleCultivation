@@ -50,9 +50,9 @@ class UnlockEvaluatorService {
           0;
         return completions >= condition.count;
       }
-      case "spirit_stones": {
-        const stones = useInventoryStore.getState().spiritStones;
-        return this.compareValues(stones, condition.operator, condition.value);
+      case "currency": {
+        const amount = useInventoryStore.getState().currency;
+        return this.compareValues(amount, condition.operator, condition.value);
       }
       case "day": {
         const day = useGameStore.getState().day;

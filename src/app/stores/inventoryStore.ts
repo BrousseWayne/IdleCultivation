@@ -2,21 +2,21 @@ import { create } from "zustand";
 import type { InventoryItem } from "../types/domain";
 import type { EquippedItems } from "../types/states";
 import { items as initialItems } from "../data/items";
-import { initialPlayerMoney } from "../data/constant";
+import { initialCurrency } from "../data/constant";
 import { EntityRegistry } from "../services";
 
 type EquipmentSlot = keyof EquippedItems;
 
 interface InventoryState {
-  spiritStones: number;
+  currency: number;
   inventoryItems: InventoryItem[];
   equippedItems: EquippedItems;
   dailyExpenses: number;
   dailyIncome: number;
 
-  addSpiritStones: (amount: number) => void;
-  subtractSpiritStones: (amount: number) => void;
-  setSpiritStones: (amount: number) => void;
+  addCurrency: (amount: number) => void;
+  subtractCurrency: (amount: number) => void;
+  setCurrency: (amount: number) => void;
 
   addItem: (item: InventoryItem) => void;
   removeItem: (itemId: number) => void;
@@ -41,7 +41,7 @@ const initialEquippedItems: EquippedItems = {
 };
 
 const initialInventoryState = {
-  spiritStones: initialPlayerMoney,
+  currency: initialCurrency,
   inventoryItems: initialItems,
   equippedItems: initialEquippedItems,
   dailyExpenses: 0,
@@ -51,13 +51,13 @@ const initialInventoryState = {
 export const useInventoryStore = create<InventoryState>((set) => ({
   ...initialInventoryState,
 
-  addSpiritStones: (amount) =>
-    set((state) => ({ spiritStones: state.spiritStones + amount })),
+  addCurrency: (amount) =>
+    set((state) => ({ currency: state.currency + amount })),
 
-  subtractSpiritStones: (amount) =>
-    set((state) => ({ spiritStones: state.spiritStones - amount })),
+  subtractCurrency: (amount) =>
+    set((state) => ({ currency: state.currency - amount })),
 
-  setSpiritStones: (amount) => set({ spiritStones: amount }),
+  setCurrency: (amount) => set({ currency: amount }),
 
   addItem: (item) =>
     set((state) => ({ inventoryItems: [...state.inventoryItems, item] })),

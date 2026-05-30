@@ -63,7 +63,7 @@ class SaveManagerService {
         currentActivityStartTick: activity.currentActivityStartTick,
       },
       inventory: {
-        spiritStones: inventory.spiritStones,
+        currency: inventory.currency,
         inventoryItems: inventory.inventoryItems,
         equippedItems: inventory.equippedItems,
         dailyExpenses: inventory.dailyExpenses,

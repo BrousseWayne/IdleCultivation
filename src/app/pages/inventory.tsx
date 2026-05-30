@@ -25,7 +25,7 @@ const RARITY_COLORS: Record<string, string> = {
 };
 
 export function RenderInventoryPage() {
-  const spiritStones = useInventoryStore((s) => s.spiritStones);
+  const currency = useInventoryStore((s) => s.currency);
   const inventoryItems = useInventoryStore((s) => s.inventoryItems);
   const [activeLocation, setActiveLocation] = useState<StorageLocation>("personal");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -253,7 +253,7 @@ export function RenderInventoryPage() {
                       fontSize: "0.7rem"
                     }}
                   >
-                    Spirit Stones
+                    Currency
                   </div>
                   <div
                     className="text-3xl font-bold"
@@ -262,14 +262,14 @@ export function RenderInventoryPage() {
                       fontFamily: "'Cinzel', serif"
                     }}
                   >
-                    {spiritStones.toLocaleString()}
+                    {currency.toLocaleString()}
                   </div>
                 </div>
               </div>
 
               {/* Physical representation */}
               <div className="flex gap-2">
-                {Array.from({ length: Math.min(Math.floor(spiritStones / 100), 5) }).map((_, i) => (
+                {Array.from({ length: Math.min(Math.floor(currency / 100), 5) }).map((_, i) => (
                   <div
                     key={i}
                     className="seal-stamp"

@@ -1,4 +1,5 @@
-import { Outlet } from "react-router";
+import { useEffect } from "react";
+import { Outlet, useNavigate } from "react-router";
 import { GameStateProvider } from "../contexts/gameStateContext";
 import { Header } from "./layoutHeader";
 import { Sidebar } from "./sidebar";
@@ -9,6 +10,11 @@ import { useCultivatorStore } from "../stores/cultivatorStore";
 
 export function Layout() {
   const hasFallen = useCultivatorStore((s) => s.hasFallen);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    navigate("/Explore", { replace: true });
+  }, [navigate]);
 
   return (
     <div className="h-screen bg-black flex flex-col text-foreground dark bg-vignette-jade overflow-hidden">

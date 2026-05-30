@@ -1,6 +1,5 @@
 import { type JSX, useMemo } from "react";
 import { Link, useLocation } from "react-router";
-import { User, Coins, TrendingUp } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { sidebarData } from "../data/navigation";
 import { SECTION_COLORS, CURRENCY_COLORS, STAT_COLORS } from "../data/sectionColors";
@@ -11,7 +10,7 @@ import { useActivityStore } from "../stores/activityStore";
 import { useLerpNumber } from "../utils/useLerpNumber";
 import { formatNumber } from "../utils/formatNumber";
 import { getActivityXpProgress, scaleEffectAmount } from "../utils";
-import type { Currency, Stats, Activity } from "../types/domain";
+import type { Currency, Stats } from "../types/domain";
 import { StatIcon } from "../components/StatIcon";
 import { EntityRegistry } from "../services";
 import { ObfuscatedLifespan } from "../components/ObfuscatedLifespan";
@@ -91,7 +90,7 @@ export function Sidebar() {
     let income = 0;
     for (const [activityKey, allocatedHours] of Object.entries(allocatedActivities)) {
       if (allocatedHours <= 0) continue;
-      const activity = EntityRegistry.get<Activity>("activity", activityKey);
+      const activity = EntityRegistry.get("activity", activityKey);
       if (!activity) continue;
       const completions = Math.floor(allocatedHours / activity.timeCost);
       if (completions <= 0) continue;

@@ -35,7 +35,7 @@ export function ActivityCard({
   const activityProgress = isRunning && startTick !== null
     ? Math.min((ticks - startTick) / activity.timeCost, 1)
     : 0;
-  const xpGain = activity.baseXp;
+  const xpGain = activity.xpScalingFn();
   const interpolatedXp = totalXp + (xpGain * activityProgress);
   const { level, currentXp, xpForNext } = getActivityXpProgress(interpolatedXp);
   const xpPct = xpForNext > 0 ? (currentXp / xpForNext) * 100 : 0;

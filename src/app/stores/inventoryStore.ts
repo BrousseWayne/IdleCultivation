@@ -48,7 +48,7 @@ const initialInventoryState = {
   dailyIncome: 0,
 };
 
-export const useInventoryStore = create<InventoryState>((set, get) => ({
+export const useInventoryStore = create<InventoryState>((set) => ({
   ...initialInventoryState,
 
   addSpiritStones: (amount) =>

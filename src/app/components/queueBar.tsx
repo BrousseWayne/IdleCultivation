@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
 import { useActivityStore } from "../stores/activityStore";
 import { useGameStore } from "../stores/gameStore";
 import { getCategoryHex } from "../data/sectionColors";

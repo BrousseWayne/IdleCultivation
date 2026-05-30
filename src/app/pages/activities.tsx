@@ -8,7 +8,6 @@ import { activityData } from "../data/activity";
 import type { Categories } from "../types/states";
 import {
   ALL_CATEGORIES,
-  type Activity as ActivityType,
   type ActivityCategory,
 } from "../types/domain";
 import { EntityRegistry } from "../services";
@@ -77,7 +76,7 @@ export function RenderActivitiesPage() {
 
     for (const [activityKey, allocatedHours] of Object.entries(allocatedActivities)) {
       if (allocatedHours <= 0) continue;
-      const activity = EntityRegistry.get<ActivityType>("activity", activityKey);
+      const activity = EntityRegistry.get("activity", activityKey);
       if (!activity) continue;
       const completions = Math.floor(allocatedHours / activity.timeCost);
       if (completions <= 0) continue;
@@ -111,7 +110,7 @@ export function RenderActivitiesPage() {
     const breakdown: Record<string, number> = {};
     for (const [activityKey, hours] of Object.entries(allocatedActivities)) {
       if (hours <= 0) continue;
-      const activity = EntityRegistry.get<ActivityType>("activity", activityKey);
+      const activity = EntityRegistry.get("activity", activityKey);
       if (!activity) continue;
       breakdown[activity.category] = (breakdown[activity.category] || 0) + hours;
     }

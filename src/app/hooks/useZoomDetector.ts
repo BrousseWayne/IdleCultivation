@@ -5,7 +5,7 @@ const ZOOM_NORMALIZATION_FACTOR = 1.5;
 
 export function useZoomDetector() {
   const [zoomLevel, setZoomLevel] = useState(1);
-  const debounceTimerRef = useRef<number>();
+  const debounceTimerRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const updateZoom = () => {

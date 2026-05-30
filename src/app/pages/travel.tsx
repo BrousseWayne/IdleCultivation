@@ -9,7 +9,6 @@ import { PageHeader } from "../components/PageHeader";
 export const RenderTravelMap = () => {
   const selectedLocation = useActivityStore((s) => s.selectedLocation);
   const setSelectedLocation = useActivityStore((s) => s.setSelectedLocation);
-  const currentLoc = EntityRegistry.get("location", selectedLocation);
 
   return (
     <div className="space-y-6">

@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import "./app/globals.css";
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { Layout } from "./app/layout/layout";
 import { RenderExplorePage } from "./app/pages/explore";
 import { RenderInventoryPage } from "./app/pages/inventory";
@@ -46,6 +46,7 @@ createRoot(document.getElementById("root")!).render(
     <Routes>
       <Route path="/poc" element={<DesignPocPage />} />
       <Route path="/" element={<Layout />}>
+        <Route index element={<Navigate to="/Explore" replace />} />
         <Route path="/Explore" element={<RenderExplorePage />} />
         <Route path="/Inventory" element={<RenderInventoryPage />} />
         <Route path="/Activities" element={<RenderActivitiesPage />} />

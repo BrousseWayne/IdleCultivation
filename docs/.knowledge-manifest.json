@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "run": { "mode": "first", "phase": "applied", "taxonomyLocked": true, "appliedDate": "2026-05-30" },
+  "taxonomy": [
+    { "id": "vision", "title": "Vision & Identity", "doc": "docs/vision/identity.md", "description": "Genre, inspirations, design philosophy, the four macro phases." },
+    { "id": "core-loop", "title": "Core Loop & Run Structure", "doc": "docs/design/core-loop.md", "description": "Run = life, prestige via reincarnation, run vs meta state, run types, automation, time/aging." },
+    { "id": "scaling", "title": "Progression & Scaling Math", "doc": "docs/design/scaling.md", "description": "Cost/production curves, growth rates, prestige formulas, phase pacing." },
+    { "id": "meta-design", "title": "Meta-Design Layer (parked)", "doc": "docs/meta-design/meta-design.md", "description": "Fourth-wall layer: karma ledger, UI revelation, prestige/tribulation, narrative diegesis, behavior->response catalog." },
+    { "id": "ui-ux", "title": "UI/UX & Visual Language", "doc": "docs/design/ui-ux.md", "description": "Color tokens, typography, number formatting, animation tiers, navigation, per-page layouts, sidebar, activity design." },
+    { "id": "architecture", "title": "Architecture & Systems", "doc": "docs/architecture/architecture.md", "description": "Stores, services, data layer, effect/event/unlock systems, two-layer state." },
+    { "id": "conventions", "title": "Conventions & Working Agreements", "doc": "docs/architecture/conventions.md", "description": "Naming, domain terminology table, coding patterns, do-not list, communication style, tech stack." },
+    { "id": "roadmap", "title": "Roadmap & Sprints", "doc": "docs/design/roadmap.md", "description": "The 5-sprint UI/UX implementation plan." }
+  ],
+  "factSources": [
+    { "cluster": "vision", "facts": "inline-turn (vision extractor, ~130 facts)" },
+    { "cluster": "meta-design", "file": ".claude/projects/-Users-samy-Projects-IdleCultivationFront/2a0f4477-22ee-4429-a187-e6f90fb8c1e8/tool-results/toolu_01Gnz7DwLTMD4Cu2vZ5AHo7V.json" },
+    { "cluster": "design-impl", "file": ".claude/projects/-Users-samy-Projects-IdleCultivationFront/2a0f4477-22ee-4429-a187-e6f90fb8c1e8/tool-results/toolu_01Fn9yiThqJv3ahqbq9DrYzD.json" }
+  ],
+  "facts": [],
+  "mapping": [
+    { "from": "docs/vision/game-vision.md", "into": ["docs/vision/identity.md", "docs/design/core-loop.md"], "archivedTo": "../IdleCultivationFront-archive/docs/vision/game-vision.md" },
+    { "from": "docs/vision/project-context-brief.md", "into": ["docs/vision/identity.md", "docs/design/core-loop.md"], "archivedTo": "../IdleCultivationFront-archive/docs/vision/project-context-brief.md" },
+    { "from": "docs/vision/big-design-analysis.md", "into": ["docs/design/ui-ux.md", "docs/design/roadmap.md"], "archivedTo": "../IdleCultivationFront-archive/docs/vision/big-design-analysis.md", "note": "stale 'current UI' critique dropped per C4" },
+    { "from": "docs/design/scaling.md", "into": ["docs/design/scaling.md"], "archivedTo": "../IdleCultivationFront-archive/docs/design/scaling.md", "note": "recomposed in place" },
+    { "from": "docs/design/activity-design-system.md", "into": ["docs/design/ui-ux.md"], "archivedTo": "../IdleCultivationFront-archive/docs/design/activity-design-system.md", "note": "verified accurate (C7)" },
+    { "from": "docs/meta-design/xianxia-meta-design-brief.md", "into": ["docs/meta-design/meta-design.md"], "archivedTo": "../IdleCultivationFront-archive/docs/meta-design/xianxia-meta-design-brief.md" },
+    { "from": "docs/meta-design/xianxia-meta-usecase-catalog.md", "into": ["docs/meta-design/meta-design.md"], "archivedTo": "../IdleCultivationFront-archive/docs/meta-design/xianxia-meta-usecase-catalog.md" },
+    { "from": "docs/meta-design/karma_ledger.md", "into": ["docs/meta-design/meta-design.md"], "archivedTo": "../IdleCultivationFront-archive/docs/meta-design/karma_ledger.md" },
+    { "from": "README.md", "into": ["README.md", "docs/vision/identity.md", "docs/architecture/conventions.md"], "note": "rewritten in place as index/quickstart; detail facts folded into docs" },
+    { "from": "CLAUDE.md", "into": ["docs/architecture/architecture.md", "docs/architecture/conventions.md"], "deleted": true, "note": "hard-deleted per user; content folded; git history retains it" },
+    { "from": ".claude/CLAUDE.md", "into": ["docs/architecture/conventions.md"], "deleted": true, "note": "hard-deleted; comms-style folded" }
+  ],
+  "conflictQueue": [
+    { "id": "C1", "kind": "contradiction", "claim": "Docs state 'four Zustand stores'.", "codeReality": "Five stores: cultivator, game, activity, inventory, notification.", "resolution": "Canonical = 5 stores (flat). notification listed alongside the others." },
+    { "id": "C2", "kind": "aspirational-vs-stale", "claim": "Meta state persists across death (prestige currencies, hidden stats karma/luck).", "codeReality": "Not implemented; reincarnate() wipes all state and clears save.", "resolution": "Record as INTENDED (not yet built) — core vision, tagged unimplemented." },
+    { "id": "C3", "kind": "contradiction", "claim": "Resource system tracks Bronze/Silver/Gold/Platinum currencies.", "codeReality": "Single spiritStones integer; effect.currency ignored; sidebar base-100 display only.", "resolution": "Record as INTENDED (distinct currencies not yet built); current single-int is interim; flag ignored effect.currency as a known gap." },
+    { "id": "C4", "kind": "stale", "claim": "UI analysis critiques 'current' UI (identical pages, purple gradient, no formatting/animation).", "codeReality": "Superseded: accent colors, formatNumber, lerp, EtherealEffect now exist.", "resolution": "DROP the stale critique; migrate only the forward recommendations (palette, typography, layouts)." },
+    { "id": "C5", "kind": "aspirational-vs-contradiction", "claim": "Recommended nav = horizontal tab bar + progressive tab-unlock schedule.", "codeReality": "Sidebar grid nav; nav starts mostly all-unlocked; Travel hidden.", "resolution": "Sidebar = canonical layout (tab-bar parked as rejected alt). Progressive unlock = INTENDED (gated start is the goal; current all-unlocked is interim to fix)." },
+    { "id": "C6", "kind": "stale", "claim": "5-sprint UI roadmap lists Sprint 1/2 as future work.", "codeReality": "Several items already shipped.", "resolution": "Keep roadmap as live planning doc; ANNOTATE shipped items done, rest pending." },
+    { "id": "C7", "kind": "verified", "claim": "activity-design-system.md tokens/spec.", "codeReality": "Matches activityDesignTokens.ts exactly (icons, typography, spacing, bars, states, transitions).", "resolution": "VERIFIED accurate — no conflict. Migrate as canonical." }
+  ],
+  "progress": { "phase": "applied", "note": "First run complete. 8 SoT docs written; README rewritten as index; 8 sources archived to ../IdleCultivationFront-archive/; CLAUDE.md + .claude/CLAUDE.md hard-deleted. Not committed (left staged for user). Delta re-runs reuse the locked taxonomy. Per-fact entries not hand-populated; provenance lives in factSources extraction files." }
+}

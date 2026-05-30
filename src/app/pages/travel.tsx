@@ -5,6 +5,7 @@ import { useActivityStore } from "../stores/activityStore";
 import { locations } from "../data/locations";
 import { EntityRegistry } from "../services";
 import { PageHeader } from "../components/PageHeader";
+import { text, K } from "../content/text";
 
 export const RenderTravelMap = () => {
   const selectedLocation = useActivityStore((s) => s.selectedLocation);
@@ -183,9 +184,9 @@ export const RenderTravelPage = () => {
     <div className="space-y-6">
       <PageHeader
         icon={MapPin}
-        title="Travel the World"
+        title={text(K.pageTravelTitle)}
         color="text-accent-sky"
-        subtitle="Explore different locations and unlock new opportunities"
+        subtitle={text(K.pageTravelSubtitle)}
       />
 
       {RenderTravelMap()}

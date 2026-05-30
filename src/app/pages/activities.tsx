@@ -15,6 +15,7 @@ import { formatNumber, getActivityXpProgress, scaleEffectAmount } from "../utils
 import { StatIcon, CurrencyIcon } from "../components/StatIcon";
 import { ActivityCard, QueueItem } from "../components/activities";
 import { PageHeader } from "../components/PageHeader";
+import { text, K } from "../content/text";
 
 export function RenderActivitiesPage() {
   const [collapsedCategories, setCollapsedCategories] = useState<
@@ -122,9 +123,9 @@ export function RenderActivitiesPage() {
       <div className="flex-[3] min-w-0 space-y-4">
         <PageHeader
           icon={Activity}
-          title="Daily Activities"
+          title={text(K.pageActivitiesTitle)}
           color="text-accent-jade"
-          subtitle="Manage your time wisely"
+          subtitle={text(K.pageActivitiesSubtitle)}
         />
 
         <div className="flex items-center gap-4 text-sm">

@@ -3,6 +3,7 @@ import { activeQuests, completedQuests } from "../data/quests";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "../components/PageHeader";
+import { text, K } from "../content/text";
 
 export function RenderQuestsPage() {
   const hasContent = activeQuests.length > 0 || completedQuests.length > 0;
@@ -11,7 +12,7 @@ export function RenderQuestsPage() {
     <div className="space-y-4">
       <PageHeader
         icon={Target}
-        title="Quests"
+        title={text(K.pageQuestsTitle)}
         color="text-accent-violet"
       />
 

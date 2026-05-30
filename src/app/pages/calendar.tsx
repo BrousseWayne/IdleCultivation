@@ -6,6 +6,7 @@ import { useGameStore } from "../stores/gameStore";
 import { events } from "../data/story";
 import { currentDay, daysInMonth } from "../data/constant";
 import { PageHeader } from "../components/PageHeader";
+import { text, K } from "../content/text";
 
 const getCalendarTitle = (
   calendarView: string,
@@ -110,9 +111,9 @@ export const RenderCalendarPage = () => {
     <div className="space-y-4">
       <PageHeader
         icon={Calendar}
-        title="Cultivation Chronicle"
+        title={text(K.pageRecapTitle)}
         color="text-accent-sky"
-        subtitle="Navigate through eons of your immortal journey"
+        subtitle={text(K.pageRecapSubtitle)}
       />
 
       <div className="flex items-center gap-2 mb-4 flex-wrap">

@@ -2,11 +2,12 @@ import { create } from "zustand";
 import {
   ALL_CATEGORIES,
   type Background,
+  type GamePhase,
   type NavigationItem,
   type NavigationUnlockState,
 } from "../types/domain";
 import type { ActivityUnlockState } from "../types/states";
-import { initialNavigationUnlockState } from "../data/constant";
+import { initialNavigationUnlockState, initialPhase } from "../data/constant";
 import { INITIALLY_UNLOCKED } from "../data/activity";
 import { EventBus } from "../services";
 
@@ -34,6 +35,7 @@ interface GameState {
   gameSpeed: number;
   introComplete: boolean;
   runBackground: Background | null;
+  phase: GamePhase;
 
   timeScale: TimeScale;
   timePoints: number;
@@ -90,6 +92,7 @@ const createInitialGameState = () => ({
   gameSpeed: 1,
   introComplete: false,
   runBackground: null as Background | null,
+  phase: initialPhase,
   timeScale: "day" as TimeScale,
   timePoints: 24,
   maxTimePoints: 24,

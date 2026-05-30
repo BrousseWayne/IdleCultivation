@@ -37,6 +37,8 @@ export type LifestyleCategoryData = {
 
 export type Background = "farmer" | "orphan" | "soldier";
 
+export type GamePhase = "mortal" | "immortal" | "supreme" | "cosmic";
+
 export type NotificationType =
   | "narrative"
   | "discovery"

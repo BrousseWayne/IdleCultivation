@@ -3,21 +3,22 @@ import { BookOpen } from "lucide-react";
 import { storyEntries } from "../data/story";
 import { storyEntryColors } from "../data/constant";
 import { PageHeader } from "../components/PageHeader";
+import { text, K } from "../content/text";
 
 export const RenderStoryPage = () => {
   return (
     <div className="space-y-4">
       <PageHeader
         icon={BookOpen}
-        title="Your Story"
+        title={text(K.pageStoryTitle)}
         color="text-accent-violet"
-        subtitle="Your journey so far"
+        subtitle={text(K.pageStorySubtitle)}
       />
 
       {storyEntries.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 text-slate-500">
           <BookOpen className="w-12 h-12 mb-3 opacity-30" />
-          <p className="text-sm">Your story has not yet begun.</p>
+          <p className="text-sm">{text(K.pageStoryEmpty)}</p>
         </div>
       )}
 

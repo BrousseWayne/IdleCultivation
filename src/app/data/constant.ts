@@ -1,4 +1,6 @@
-import type { NavigationUnlockState, StoryEntry } from "../types/domain";
+import type { GamePhase, NavigationUnlockState, StoryEntry } from "../types/domain";
+
+export const initialPhase: GamePhase = "mortal";
 
 export const currentDay = 20;
 export const daysInMonth = 30;

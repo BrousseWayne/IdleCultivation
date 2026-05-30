@@ -3,6 +3,7 @@ import { lifestyleOptions } from "../data/lifestyle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Cost } from "../types/domain";
 import { PageHeader } from "../components/PageHeader";
+import { text, K } from "../content/text";
 
 function formatCosts(costs: Cost[]): string {
   return costs
@@ -17,12 +18,12 @@ export function RenderLifestylePage() {
       <div className="space-y-4">
         <PageHeader
           icon={Home}
-          title="Lifestyle Management"
+          title={text(K.pageLifestyleTitle)}
           color="text-accent-lotus"
         />
         <div className="flex flex-col items-center justify-center py-16 text-slate-500">
           <Home className="w-12 h-12 mb-3 opacity-30" />
-          <p className="text-sm">No lifestyle options available yet.</p>
+          <p className="text-sm">{text(K.pageLifestyleEmpty)}</p>
         </div>
       </div>
     );

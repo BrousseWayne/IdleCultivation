@@ -13,6 +13,7 @@ import { getActivityXpProgress, scaleEffectAmount } from "../utils";
 import type { Currency, Stats } from "../types/domain";
 import { StatIcon } from "../components/StatIcon";
 import { EntityRegistry } from "../services";
+import { text, K, navKey } from "../content/text";
 
 function renderMoney(amount: number): JSX.Element[] | JSX.Element {
   const currencyArray: Currency[] = ["Bronze", "Silver", "Gold", "Platinum"];
@@ -125,7 +126,7 @@ export function Sidebar() {
               <Link
                 key={item.name}
                 to={item.url}
-                title={item.name}
+                title={text(navKey(item.name))}
                 className={`relative flex items-center justify-center p-2.5 rounded-md transition-all ${
                   isActive
                     ? `bg-${color}/15 text-${color}`
@@ -145,19 +146,19 @@ export function Sidebar() {
         <div className="mb-3 pb-1.5 border-b border-accent-jade/30">
           <div className="flex items-center gap-2">
             <div className="w-1 h-4 bg-accent-jade rounded-full" />
-            <span className="text-sm font-bold text-accent-jade uppercase tracking-wider">Status</span>
+            <span className="text-sm font-bold text-accent-jade uppercase tracking-wider">{text(K.sidebarSectionStatus)}</span>
           </div>
         </div>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-slate-500">Age</span>
+            <span className="text-slate-500">{text(K.sidebarLabelAge)}</span>
             <span className="text-accent-jade font-mono font-bold">
               {lerpAge}/{lifespan}
             </span>
           </div>
-          <StatBar label="HP" value={vitality.current} max={vitality.max} color="green" />
-          <StatBar label="Satiety" value={satiety.current} max={satiety.max} color="orange" />
-          <StatBar label="Mortality" value={mortality.current} max={mortality.max} color="red" danger={mortality.current / mortality.max > 0.7} />
+          <StatBar label={text(K.statHp)} value={vitality.current} max={vitality.max} color="green" />
+          <StatBar label={text(K.statSatiety)} value={satiety.current} max={satiety.max} color="orange" />
+          <StatBar label={text(K.statMortality)} value={mortality.current} max={mortality.max} color="red" danger={mortality.current / mortality.max > 0.7} />
         </div>
       </div>
 
@@ -165,24 +166,24 @@ export function Sidebar() {
         <div className="mb-3 pb-1.5 border-b border-accent-gold/30">
           <div className="flex items-center gap-2">
             <div className="w-1 h-4 bg-accent-gold rounded-full" />
-            <span className="text-sm font-bold text-accent-gold uppercase tracking-wider">Resources</span>
+            <span className="text-sm font-bold text-accent-gold uppercase tracking-wider">{text(K.sidebarSectionResources)}</span>
           </div>
         </div>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-slate-500">Money</span>
+            <span className="text-slate-500">{text(K.sidebarLabelMoney)}</span>
             <span className="font-bold flex gap-1">{renderMoney(lerpMoney)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-slate-500">Income</span>
+            <span className="text-slate-500">{text(K.sidebarLabelIncome)}</span>
             <span className="text-accent-emerald font-mono">+{formatNumber(dailyIncome)}g</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-slate-500">Expenses</span>
+            <span className="text-slate-500">{text(K.sidebarLabelExpenses)}</span>
             <span className="text-accent-cinnabar font-mono">-{formatNumber(dailyExpenses)}g</span>
           </div>
           <div className="flex justify-between font-bold">
-            <span className="text-slate-200">Net</span>
+            <span className="text-slate-200">{text(K.sidebarLabelNet)}</span>
             <span className={`font-mono ${net >= 0 ? "text-accent-emerald" : "text-accent-cinnabar"}`}>
               {net >= 0 ? "+" : ""}{formatNumber(net)}g
             </span>
@@ -196,7 +197,7 @@ export function Sidebar() {
             <div className="mb-3 pb-1.5 border-b border-accent-violet/30">
               <div className="flex items-center gap-2">
                 <div className="w-1 h-4 bg-accent-violet rounded-full" />
-                <span className="text-sm font-bold text-accent-violet uppercase tracking-wider">Attributes</span>
+                <span className="text-sm font-bold text-accent-violet uppercase tracking-wider">{text(K.sidebarSectionAttributes)}</span>
               </div>
             </div>
             <div className="space-y-2 text-sm">

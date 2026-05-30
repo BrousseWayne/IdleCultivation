@@ -17,6 +17,7 @@ import {
 import { useGameStore } from "../stores/gameStore";
 import { gameLoop } from "../engine/gameLoop";
 import { SaveManager } from "../services";
+import { text, K } from "../content/text";
 import { useLerpNumber } from "../utils/useLerpNumber";
 import { StatPanel } from "../components/StatPanel";
 import { useEtherealShimmer } from "../hooks/useEtherealShimmer";
@@ -75,14 +76,14 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 h-12 bg-black/95 backdrop-blur-sm border-b border-slate-800/30 flex items-center px-4 gap-6">
       <h1 className="text-lg font-bold font-[family-name:var(--font-display)] text-accent-emerald whitespace-nowrap">
-        Immortal Cultivation
+        {text(K.appTitle)}
       </h1>
       <Badge
         variant="secondary"
         className="flex items-center gap-1 bg-slate-900 text-accent-jade border-accent-jade/20 text-[10px] px-1.5 py-0"
       >
         <Mountain className="w-2.5 h-2.5" />
-        Mortal
+        {text(K.appRank)}
       </Badge>
 
       <div className="flex-1" />

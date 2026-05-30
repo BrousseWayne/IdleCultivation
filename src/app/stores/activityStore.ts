@@ -83,7 +83,7 @@ export const useActivityStore = create<ActivityState>((set, get) => ({
   setSelectedLocation: (location) => set({ selectedLocation: location }),
 
   completeCurrentActivity: () => {
-    const { activityQueue, deallocateTime, dequeueActivity, enqueueActivity, repeatActivities, allocatedActivities } =
+    const { activityQueue, deallocateTime, dequeueActivity, enqueueActivity, repeatActivities } =
       get();
     if (activityQueue.length === 0) return;
 
@@ -116,7 +116,8 @@ export const useActivityStore = create<ActivityState>((set, get) => ({
     dequeueActivity();
 
     // Re-queue if repeat is enabled and there are still allocated hours
-    if (repeatActivities && allocatedActivities[currentActivity.key] >= currentActivity.timeCost) {
+    const remaining = get().allocatedActivities[currentActivity.key] || 0;
+    if (repeatActivities && remaining >= currentActivity.timeCost) {
       enqueueActivity(currentActivity);
     }
 

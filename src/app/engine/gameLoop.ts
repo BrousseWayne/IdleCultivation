@@ -3,10 +3,13 @@ import { useActivityStore } from "../stores/activityStore";
 import { useCultivatorStore } from "../stores/cultivatorStore";
 import { EventBus } from "../services/EventBus";
 import { UnlockEvaluator } from "../services/UnlockEvaluator";
+import { backgroundDefinitions } from "../data/intro";
+import type { Background } from "../types/domain";
 
 const TICKS_PER_SECOND = 24;
 const TICKS_PER_DAY = 24;
 const DAYS_PER_YEAR = 60;
+const DEFAULT_BACKGROUND: Background = "orphan";
 
 let lastAgeDay = 0;
 
@@ -102,3 +105,12 @@ class GameLoop {
 }
 
 export const gameLoop = new GameLoop();
+
+export function bootRun(): void {
+  const game = useGameStore.getState();
+  if (!game.introComplete) {
+    game.addEventLog(backgroundDefinitions[DEFAULT_BACKGROUND].openingNarration);
+    game.startRun(DEFAULT_BACKGROUND);
+  }
+  gameLoop.start();
+}

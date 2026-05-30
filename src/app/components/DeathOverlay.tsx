@@ -2,6 +2,7 @@ import { useCultivatorStore } from "../stores/cultivatorStore";
 import { useGameStore } from "../stores/gameStore";
 import { useActivityStore } from "../stores/activityStore";
 import { backgroundDefinitions } from "../data/intro";
+import { bootRun } from "../engine/gameLoop";
 
 export const DeathOverlay = () => {
   const age = useCultivatorStore((s) => s.age);
@@ -9,6 +10,11 @@ export const DeathOverlay = () => {
   const reincarnate = useGameStore((s) => s.reincarnate);
   const runBackground = useGameStore((s) => s.runBackground);
   const completionCounts = useActivityStore((s) => s.completionCounts);
+
+  const beginNewCycle = () => {
+    reincarnate();
+    bootRun();
+  };
 
   const totalActivities = Object.values(completionCounts).reduce(
     (sum, n) => sum + n,
@@ -58,7 +64,7 @@ export const DeathOverlay = () => {
         </div>
 
         <button
-          onClick={reincarnate}
+          onClick={beginNewCycle}
           className="self-start px-6 py-3 border border-accent-violet/40 text-accent-violet text-sm rounded-md hover:bg-accent-violet/10 transition-colors"
         >
           Begin a new cycle

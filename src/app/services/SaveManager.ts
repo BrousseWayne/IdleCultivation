@@ -3,6 +3,7 @@ import { useGameStore } from "../stores/gameStore";
 import { useActivityStore } from "../stores/activityStore";
 import { useInventoryStore } from "../stores/inventoryStore";
 import { EntityRegistry } from "./EntityRegistry";
+import { gameLoop } from "../engine/gameLoop";
 import type { Activity } from "../types/domain";
 
 const SAVE_KEY = "cultivation-save";
@@ -74,7 +75,7 @@ class SaveManagerService {
   private restore(data: Record<string, unknown>): void {
     if (!data?.version) return;
 
-    useGameStore.getState().stopGameLoop();
+    gameLoop.stop();
 
     if (data.cultivator) {
       useCultivatorStore.setState(data.cultivator as Partial<ReturnType<typeof useCultivatorStore.getState>>);
@@ -131,7 +132,7 @@ class SaveManagerService {
   }
 
   wipeSave(): void {
-    useGameStore.getState().stopGameLoop();
+    gameLoop.stop();
     localStorage.removeItem(SAVE_KEY);
     window.location.reload();
   }

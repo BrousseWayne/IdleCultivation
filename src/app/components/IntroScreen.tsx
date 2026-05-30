@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useGameStore } from "../stores/gameStore";
+import { gameLoop } from "../engine/gameLoop";
 import {
   introDialogue,
   introClosingText,
@@ -44,6 +45,7 @@ export const IntroScreen = () => {
     const def = backgroundDefinitions[background];
     addEventLog(def.openingNarration);
     startRun(background);
+    gameLoop.start();
   };
 
   return (

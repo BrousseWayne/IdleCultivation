@@ -15,6 +15,7 @@ import {
   Upload,
 } from "lucide-react";
 import { useGameStore } from "../stores/gameStore";
+import { gameLoop } from "../engine/gameLoop";
 import { SaveManager } from "../services";
 import { useLerpNumber } from "../utils/useLerpNumber";
 import { StatPanel } from "../components/StatPanel";
@@ -28,9 +29,6 @@ export function Header() {
   const isPlaying = useGameStore((s) => s.isPlaying);
   const gameSpeed = useGameStore((s) => s.gameSpeed);
   const day = useGameStore((s) => s.day);
-  const startGameLoop = useGameStore((s) => s.startGameLoop);
-  const stopGameLoop = useGameStore((s) => s.stopGameLoop);
-  const setGameSpeed = useGameStore((s) => s.setGameSpeed);
 
   const lerpTimePoints = useLerpNumber(timePoints);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -38,12 +36,12 @@ export function Header() {
   const { getEffect } = useEtherealShimmer();
 
   const togglePlaying = () => {
-    if (isPlaying) stopGameLoop();
-    else startGameLoop();
+    if (isPlaying) gameLoop.stop();
+    else gameLoop.start();
   };
 
   const cycleSpeed = () => {
-    setGameSpeed(gameSpeed === 1 ? 2 : gameSpeed === 2 ? 4 : 1);
+    gameLoop.setSpeed(gameSpeed === 1 ? 2 : gameSpeed === 2 ? 4 : 1);
   };
 
   const handleExport = () => {

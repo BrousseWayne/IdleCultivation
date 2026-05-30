@@ -1,6 +1,7 @@
 import { EventBus } from "./EventBus";
 import { UnlockEvaluator } from "./UnlockEvaluator";
 import { SaveManager } from "./SaveManager";
+import { gameLoop, resetAging } from "../engine/gameLoop";
 import { useGameStore } from "../stores/gameStore";
 import { useCultivatorStore } from "../stores/cultivatorStore";
 import { useActivityStore } from "../stores/activityStore";
@@ -63,30 +64,11 @@ export function initializeGameEventListeners() {
   });
 
   EventBus.on("cultivator:reincarnated", () => {
+    gameLoop.stop();
+    resetAging();
     useCultivatorStore.getState().reset();
     useActivityStore.getState().reset();
     useInventoryStore.getState().reset();
-    lastAgeDay = 0;
     SaveManager.clearSave();
-  });
-
-  let lastAgeDay = useGameStore.getState().day;
-
-  EventBus.on("game:tick", ({ payload }) => {
-    const daysSinceLastAge = payload.day - lastAgeDay;
-    if (daysSinceLastAge >= 60) {
-      useCultivatorStore.getState().incrementAge();
-      lastAgeDay = payload.day;
-      UnlockEvaluator.checkAll();
-
-      const { age, lifespan, hasFallen } = useCultivatorStore.getState();
-      if (!hasFallen && age >= lifespan) {
-        useCultivatorStore.getState().setHasFallen(true);
-        useGameStore.getState().stopGameLoop();
-        EventBus.emit({ type: "cultivator:death", payload: { age } });
-      }
-    } else if (payload.day % 10 === 0) {
-      UnlockEvaluator.checkAll();
-    }
   });
 }

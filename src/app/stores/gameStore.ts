@@ -32,7 +32,6 @@ interface GameState {
   day: number;
   isPlaying: boolean;
   gameSpeed: number;
-  intervalId: ReturnType<typeof setInterval> | null;
   introComplete: boolean;
   runBackground: Background | null;
 
@@ -55,10 +54,6 @@ interface GameState {
   selectedDate: number | null;
   showDetailedView: boolean;
 
-  startGameLoop: () => void;
-  stopGameLoop: () => void;
-  tick: () => void;
-  setGameSpeed: (speed: number) => void;
   startRun: (background: Background) => void;
   reincarnate: () => void;
 
@@ -93,7 +88,6 @@ const createInitialGameState = () => ({
   day: 0,
   isPlaying: false,
   gameSpeed: 1,
-  intervalId: null as ReturnType<typeof setInterval> | null,
   introComplete: false,
   runBackground: null as Background | null,
   timeScale: "day" as TimeScale,
@@ -115,60 +109,6 @@ const createInitialGameState = () => ({
 
 export const useGameStore = create<GameState>((set, get) => ({
   ...createInitialGameState(),
-
-  startGameLoop: () => {
-    const { intervalId, gameSpeed } = get();
-    if (intervalId !== null) return;
-
-    const ticksPerSecond = 24;
-    const interval = 1000 / (ticksPerSecond * gameSpeed);
-
-    const id = setInterval(() => {
-      get().tick();
-    }, interval);
-
-    set({ intervalId: id, isPlaying: true });
-  },
-
-  stopGameLoop: () => {
-    const { intervalId } = get();
-    if (intervalId !== null) {
-      clearInterval(intervalId);
-    }
-    set({ intervalId: null, isPlaying: false });
-  },
-
-  tick: () => {
-    set((state) => {
-      const nextTicks = state.ticks + 1;
-      const newDay = nextTicks % 24 === 0 ? state.day + 1 : state.day;
-
-      EventBus.emit({
-        type: "game:tick",
-        payload: { ticks: nextTicks, day: newDay },
-      });
-
-      return { ticks: nextTicks, day: newDay };
-    });
-  },
-
-  setGameSpeed: (speed) => {
-    const { isPlaying, intervalId } = get();
-    if (intervalId !== null) {
-      clearInterval(intervalId);
-    }
-
-    if (isPlaying) {
-      const ticksPerSecond = 24;
-      const interval = 1000 / (ticksPerSecond * speed);
-      const id = setInterval(() => {
-        get().tick();
-      }, interval);
-      set({ gameSpeed: speed, intervalId: id });
-    } else {
-      set({ gameSpeed: speed });
-    }
-  },
 
   setTimeScale: (scale) => {
     const newMax = 24 * TIME_SCALES[scale].multiplier;
@@ -232,11 +172,9 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   startRun: (background) => {
     set({ introComplete: true, runBackground: background });
-    get().startGameLoop();
   },
 
   reincarnate: () => {
-    get().stopGameLoop();
     EventBus.emit({ type: "cultivator:reincarnated" });
     set({ ...createInitialGameState() });
   },

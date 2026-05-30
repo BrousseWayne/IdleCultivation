@@ -17,6 +17,7 @@ import {
   SaveManager,
   initializeGameEventListeners,
 } from "./app/services";
+import { gameLoop } from "./app/engine/gameLoop";
 import { activityData } from "./app/data/activity";
 import { items } from "./app/data/items";
 import { locations } from "./app/data/locations";
@@ -33,7 +34,7 @@ SaveManager.load();
 SaveManager.startAutoSave();
 
 if (useGameStore.getState().introComplete) {
-  useGameStore.getState().startGameLoop();
+  gameLoop.start();
 }
 
 if (typeof window !== "undefined") {

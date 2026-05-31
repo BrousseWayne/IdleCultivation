@@ -1,5 +1,16 @@
 import type { UnlockableDefinition } from "@/game/types/domain";
-import { UnlockablesArraySchema } from "@/game/data/schemas/index.ts";
-import rawUnlockables from "@/game/data/json/unlockables.json";
 
-export const unlockables: UnlockableDefinition[] = UnlockablesArraySchema.parse(rawUnlockables) as UnlockableDefinition[];
+export const unlockables: UnlockableDefinition[] = [
+  {
+    id: "category:study",
+    type: "activity_category",
+    target: "study",
+    unlockConditions: [{ type: "age", operator: ">=", value: 15 }],
+  },
+  {
+    id: "category:social",
+    type: "activity_category",
+    target: "social",
+    unlockConditions: [{ type: "stat", stat: "Strength", operator: ">=", value: 20 }],
+  },
+];

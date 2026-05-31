@@ -1,10 +1,14 @@
 import { useGameStore } from "../stores/gameStore";
 import { useActivityStore } from "../stores/activityStore";
 import { useCultivatorStore } from "../stores/cultivatorStore";
+import { useInventoryStore } from "../stores/inventoryStore";
 import { EventBus } from "../services/EventBus";
+import { EffectExecutor } from "../services/EffectExecutor";
 import { UnlockEvaluator } from "../services/UnlockEvaluator";
+import { getActivityXpProgress, scaleEffectAmount } from "../utils/activityXp";
 import { backgroundDefinitions } from "../data/intro";
-import type { Background } from "../types/domain";
+import type { Activity, Background } from "../types/domain";
+import type { Effect } from "../types/effects";
 
 const TICKS_PER_SECOND = 24;
 const TICKS_PER_DAY = 24;
@@ -25,6 +29,37 @@ function timeSystem(): { ticks: number; day: number } {
   return { ticks: nextTicks, day: nextDay };
 }
 
+function completeActivity(activity: Activity): void {
+  const act = useActivityStore.getState();
+
+  const xpGain = activity.xpScalingFn();
+  const newXp = (act.activityXp[activity.key] || 0) + xpGain;
+  const { level } = getActivityXpProgress(newXp);
+
+  act.addCompletion(activity.key);
+  act.addXp(activity.key, xpGain);
+
+  const scaledEffects: Effect[] = activity.effects.map((effect) =>
+    effect.type === "grant_currency" || effect.type === "grant_stat"
+      ? { ...effect, amount: scaleEffectAmount(effect.amount, level) }
+      : effect
+  );
+  EffectExecutor.execute(scaledEffects);
+
+  act.deallocateTime(activity.key, activity.timeCost);
+  act.dequeueActivity();
+
+  const remaining = useActivityStore.getState().allocatedActivities[activity.key] || 0;
+  if (act.repeatActivities && remaining >= activity.timeCost) {
+    act.enqueueActivity(activity);
+  }
+
+  EventBus.emit({
+    type: "activity:completed",
+    payload: { activityKey: activity.key },
+  });
+}
+
 function activitySystem(ticks: number): void {
   const act = useActivityStore.getState();
   if (act.activityQueue.length === 0) return;
@@ -38,7 +73,7 @@ function activitySystem(ticks: number): void {
   }
 
   if (ticks - startTick >= current.timeCost) {
-    act.completeCurrentActivity();
+    completeActivity(current);
     useActivityStore.getState().setCurrentActivityStartTick(null);
 
     const after = useActivityStore.getState();
@@ -113,4 +148,15 @@ export function bootRun(): void {
     game.startRun(DEFAULT_BACKGROUND);
   }
   gameLoop.start();
+}
+
+export function reincarnate(): void {
+  gameLoop.stop();
+  resetAging();
+  useCultivatorStore.getState().reset();
+  useActivityStore.getState().reset();
+  useInventoryStore.getState().reset();
+  useGameStore.getState().reset();
+  EventBus.emit({ type: "cultivator:reincarnated" });
+  bootRun();
 }

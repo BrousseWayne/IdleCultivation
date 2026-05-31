@@ -1,11 +1,7 @@
 import { EventBus } from "./EventBus";
 import { UnlockEvaluator } from "./UnlockEvaluator";
 import { SaveManager } from "./SaveManager";
-import { gameLoop, resetAging } from "../engine/gameLoop";
 import { useGameStore } from "../stores/gameStore";
-import { useCultivatorStore } from "../stores/cultivatorStore";
-import { useActivityStore } from "../stores/activityStore";
-import { useInventoryStore } from "../stores/inventoryStore";
 import { useNotificationStore } from "../stores/notificationStore";
 import { unlockables } from "../data/unlocks";
 import { activityData } from "../data/activity";
@@ -64,11 +60,6 @@ export function initializeGameEventListeners() {
   });
 
   EventBus.on("cultivator:reincarnated", () => {
-    gameLoop.stop();
-    resetAging();
-    useCultivatorStore.getState().reset();
-    useActivityStore.getState().reset();
-    useInventoryStore.getState().reset();
     SaveManager.clearSave();
   });
 }

@@ -9,7 +9,6 @@ import {
 import type { ActivityUnlockState } from "../types/states";
 import { initialNavigationUnlockState, initialPhase } from "../data/constant";
 import { INITIALLY_UNLOCKED } from "../data/activity";
-import { EventBus } from "../services";
 
 type TimeScale = "day" | "week" | "month";
 type CalendarView = "month" | "year" | "decade" | "era";
@@ -57,7 +56,7 @@ interface GameState {
   showDetailedView: boolean;
 
   startRun: (background: Background) => void;
-  reincarnate: () => void;
+  reset: () => void;
 
   setTimeScale: (scale: TimeScale) => void;
   allocateTime: (amount: number) => void;
@@ -177,8 +176,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     set({ introComplete: true, runBackground: background });
   },
 
-  reincarnate: () => {
-    EventBus.emit({ type: "cultivator:reincarnated" });
+  reset: () => {
     set({ ...createInitialGameState() });
   },
 }));

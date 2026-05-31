@@ -48,7 +48,7 @@ class SaveManagerService {
         calendarView: game.calendarView,
         navigationUnlocks: game.navigationUnlocks,
         activityCategoryUnlocks: game.activityCategoryUnlocks,
-        currentExploreLocation: game.currentExploreLocation,
+        currentPlaceKey: game.currentPlaceKey,
         eventLog: game.eventLog.slice(-MAX_EVENT_LOG),
         selectedDate: game.selectedDate,
         showDetailedView: game.showDetailedView,

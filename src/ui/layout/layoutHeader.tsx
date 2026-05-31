@@ -18,13 +18,15 @@ import { useGameStore } from "@/game/stores/gameStore";
 import { gameLoop } from "@/game/engine/gameLoop";
 import { SaveManager } from "@/game/services";
 import { text } from "@/game/content/text";
+import { getPlace } from "@/game/data/places";
 import { useLerpNumber } from "@/ui/hooks/useLerpNumber";
 import { StatPanel } from "@/ui/components/StatPanel";
 import { useEtherealShimmer } from "@/ui/hooks/useEtherealShimmer";
 import { EtherealEffect } from "@/ui/components/EtherealEffect";
 
 export function Header() {
-  const currentExploreLocation = useGameStore((s) => s.currentExploreLocation);
+  const currentPlaceKey = useGameStore((s) => s.currentPlaceKey);
+  const currentPlaceName = getPlace(currentPlaceKey)?.name ?? "";
   const timePoints = useGameStore((s) => s.timePoints);
   const maxTimePoints = useGameStore((s) => s.maxTimePoints);
   const isPlaying = useGameStore((s) => s.isPlaying);
@@ -90,7 +92,7 @@ export function Header() {
 
       <div className="flex items-center gap-1 text-xs text-slate-400">
         <MapPin className="w-3 h-3 text-accent-cinnabar" />
-        <span className="text-accent-cinnabar font-semibold">{currentExploreLocation}</span>
+        <span className="text-accent-cinnabar font-semibold">{currentPlaceName}</span>
       </div>
 
       <StatPanel />

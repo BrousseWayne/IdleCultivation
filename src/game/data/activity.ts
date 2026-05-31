@@ -140,4 +140,4 @@ export const activityData: Activity[] = [
   },
 ];
 
-export const INITIALLY_UNLOCKED: ActivityCategory[] = ["work", "training"];
+export const INITIALLY_UNLOCKED: ActivityCategory[] = ["work"];

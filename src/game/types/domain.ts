@@ -103,6 +103,15 @@ export type ActivityCategory = (typeof ALL_CATEGORIES)[number];
 
 export type Activity = ActivityModel & ActivityView;
 
+export type Place = {
+  key: string;
+  name: string;
+  description: string;
+  activityKeys: string[];
+  connections: string[];
+  unlocked: boolean;
+};
+
 export type InventoryItem = {
   id: number;
   name: string;

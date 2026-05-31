@@ -9,6 +9,7 @@ import {
 import type { ActivityUnlockState } from "@/game/types/states";
 import { initialNavigationUnlockState, initialPhase } from "@/game/data/constant";
 import { INITIALLY_UNLOCKED } from "@/game/data/activity";
+import { STARTING_PLACE } from "@/game/data/places";
 
 type TimeScale = "day" | "week" | "month";
 type CalendarView = "month" | "year" | "decade" | "era";
@@ -50,7 +51,7 @@ interface GameState {
   navigationUnlocks: NavigationUnlockState;
   activityCategoryUnlocks: ActivityUnlockState;
 
-  currentExploreLocation: string;
+  currentPlaceKey: string;
   eventLog: string[];
   selectedDate: number | null;
   showDetailedView: boolean;
@@ -75,7 +76,7 @@ interface GameState {
     category: (typeof ALL_CATEGORIES)[number]
   ) => void;
 
-  setCurrentExploreLocation: (location: string) => void;
+  setCurrentPlace: (placeKey: string) => void;
   addEventLog: (entry: string) => void;
   setEventLog: (entries: string[]) => void;
   setSelectedDate: (date: number | null) => void;
@@ -103,7 +104,7 @@ const createInitialGameState = () => ({
   calendarView: "month" as CalendarView,
   navigationUnlocks: initialNavigationUnlockState,
   activityCategoryUnlocks: createInitialActivityUnlockState(),
-  currentExploreLocation: "Whispering Forest",
+  currentPlaceKey: STARTING_PLACE,
   eventLog: [] as string[],
   selectedDate: null as number | null,
   showDetailedView: false,
@@ -159,8 +160,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       },
     })),
 
-  setCurrentExploreLocation: (location) =>
-    set({ currentExploreLocation: location }),
+  setCurrentPlace: (placeKey) => set({ currentPlaceKey: placeKey }),
   addEventLog: (entry) =>
     set((state) => {
       const log = [...state.eventLog, entry];

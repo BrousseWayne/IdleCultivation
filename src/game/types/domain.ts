@@ -39,6 +39,15 @@ export type Background = "farmer" | "orphan" | "soldier";
 
 export type GamePhase = "mortal" | "immortal" | "supreme" | "cosmic";
 
+export type StreamTheme = "ambient" | "income" | "event" | "dialogue" | "travel";
+
+export type LogEntry = {
+  text: string;
+  theme: StreamTheme;
+  tone?: "narration" | "npc" | "self";
+  speaker?: string;
+};
+
 export type NotificationType =
   | "narrative"
   | "discovery"

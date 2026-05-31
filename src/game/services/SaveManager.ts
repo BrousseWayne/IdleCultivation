@@ -49,7 +49,7 @@ class SaveManagerService {
         navigationUnlocks: game.navigationUnlocks,
         activityCategoryUnlocks: game.activityCategoryUnlocks,
         currentPlaceKey: game.currentPlaceKey,
-        eventLog: game.eventLog.slice(-MAX_EVENT_LOG),
+        streamLog: game.streamLog.slice(-MAX_EVENT_LOG),
         selectedDate: game.selectedDate,
         showDetailedView: game.showDetailedView,
       },

@@ -3,8 +3,10 @@ import {
   ALL_CATEGORIES,
   type Background,
   type GamePhase,
+  type LogEntry,
   type NavigationItem,
   type NavigationUnlockState,
+  type StreamTheme,
 } from "@/game/types/domain";
 import type { ActivityUnlockState } from "@/game/types/states";
 import { initialNavigationUnlockState, initialPhase } from "@/game/data/constant";
@@ -52,7 +54,7 @@ interface GameState {
   activityCategoryUnlocks: ActivityUnlockState;
 
   currentPlaceKey: string;
-  eventLog: string[];
+  streamLog: LogEntry[];
   selectedDate: number | null;
   showDetailedView: boolean;
 
@@ -77,8 +79,9 @@ interface GameState {
   ) => void;
 
   setCurrentPlace: (placeKey: string) => void;
-  addEventLog: (entry: string) => void;
-  setEventLog: (entries: string[]) => void;
+  pushLog: (entry: LogEntry) => void;
+  addEventLog: (text: string, theme?: StreamTheme) => void;
+  clearLog: () => void;
   setSelectedDate: (date: number | null) => void;
   setShowDetailedView: (show: boolean) => void;
 
@@ -105,7 +108,7 @@ const createInitialGameState = () => ({
   navigationUnlocks: initialNavigationUnlockState,
   activityCategoryUnlocks: createInitialActivityUnlockState(),
   currentPlaceKey: STARTING_PLACE,
-  eventLog: [] as string[],
+  streamLog: [] as LogEntry[],
   selectedDate: null as number | null,
   showDetailedView: false,
 });
@@ -161,12 +164,17 @@ export const useGameStore = create<GameState>((set, get) => ({
     })),
 
   setCurrentPlace: (placeKey) => set({ currentPlaceKey: placeKey }),
-  addEventLog: (entry) =>
+  pushLog: (entry) =>
     set((state) => {
-      const log = [...state.eventLog, entry];
-      return { eventLog: log.length > 200 ? log.slice(-200) : log };
+      const log = [...state.streamLog, entry];
+      return { streamLog: log.length > 200 ? log.slice(-200) : log };
     }),
-  setEventLog: (entries) => set({ eventLog: entries }),
+  addEventLog: (text, theme = "ambient") =>
+    set((state) => {
+      const log = [...state.streamLog, { text, theme } as LogEntry];
+      return { streamLog: log.length > 200 ? log.slice(-200) : log };
+    }),
+  clearLog: () => set({ streamLog: [] }),
   setSelectedDate: (date) => set({ selectedDate: date }),
   setShowDetailedView: (show) => set({ showDetailedView: show }),
 

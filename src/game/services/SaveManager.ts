@@ -1,0 +1,153 @@
+import { useCultivatorStore } from "@/game/stores/cultivatorStore";
+import { useGameStore } from "@/game/stores/gameStore";
+import { useActivityStore } from "@/game/stores/activityStore";
+import { useInventoryStore } from "@/game/stores/inventoryStore";
+import { EntityRegistry } from "@/game/services/EntityRegistry";
+import { gameLoop } from "@/game/engine/gameLoop";
+import type { Activity } from "@/game/types/domain";
+
+const SAVE_KEY = "cultivation-save";
+const SAVE_VERSION = 1;
+const AUTO_SAVE_INTERVAL = 30_000;
+const MAX_EVENT_LOG = 200;
+
+class SaveManagerService {
+  private intervalId: ReturnType<typeof setInterval> | null = null;
+
+  private snapshot() {
+    const cultivator = useCultivatorStore.getState();
+    const game = useGameStore.getState();
+    const activity = useActivityStore.getState();
+    const inventory = useInventoryStore.getState();
+
+    return {
+      version: SAVE_VERSION,
+      timestamp: Date.now(),
+      cultivator: {
+        age: cultivator.age,
+        lifespan: cultivator.lifespan,
+        vitality: cultivator.vitality,
+        satiety: cultivator.satiety,
+        mortality: cultivator.mortality,
+        stats: cultivator.stats,
+      },
+      game: {
+        ticks: game.ticks,
+        day: game.day,
+        gameSpeed: game.gameSpeed,
+        introComplete: game.introComplete,
+        runBackground: game.runBackground,
+        timeScale: game.timeScale,
+        timePoints: game.timePoints,
+        maxTimePoints: game.maxTimePoints,
+        selectedTimeScale: game.selectedTimeScale,
+        selectedYear: game.selectedYear,
+        selectedMonth: game.selectedMonth,
+        selectedEra: game.selectedEra,
+        selectedDecade: game.selectedDecade,
+        calendarView: game.calendarView,
+        navigationUnlocks: game.navigationUnlocks,
+        activityCategoryUnlocks: game.activityCategoryUnlocks,
+        currentExploreLocation: game.currentExploreLocation,
+        eventLog: game.eventLog.slice(-MAX_EVENT_LOG),
+        selectedDate: game.selectedDate,
+        showDetailedView: game.showDetailedView,
+      },
+      activity: {
+        activityQueueKeys: activity.activityQueue.map((a) => a.key),
+        allocatedActivities: activity.allocatedActivities,
+        completionCounts: activity.completionCounts,
+        activityXp: activity.activityXp,
+        repeatActivities: activity.repeatActivities,
+        selectedLocation: activity.selectedLocation,
+        currentActivityStartTick: activity.currentActivityStartTick,
+      },
+      inventory: {
+        currency: inventory.currency,
+        inventoryItems: inventory.inventoryItems,
+        equippedItems: inventory.equippedItems,
+        dailyExpenses: inventory.dailyExpenses,
+        dailyIncome: inventory.dailyIncome,
+      },
+    };
+  }
+
+  private restore(data: Record<string, unknown>): void {
+    if (!data?.version) return;
+
+    gameLoop.stop();
+
+    if (data.cultivator) {
+      useCultivatorStore.setState(data.cultivator as Partial<ReturnType<typeof useCultivatorStore.getState>>);
+    }
+
+    if (data.game) {
+      useGameStore.setState(data.game as Partial<ReturnType<typeof useGameStore.getState>>);
+    }
+
+    if (data.activity) {
+      const { activityQueueKeys, ...rest } = data.activity as Record<string, unknown>;
+      const activityQueue = ((activityQueueKeys as string[]) || [])
+        .map((key) => EntityRegistry.get("activity", key))
+        .filter((a): a is Activity => a !== undefined);
+      useActivityStore.setState({ ...rest, activityQueue } as Partial<ReturnType<typeof useActivityStore.getState>>);
+    }
+
+    if (data.inventory) {
+      useInventoryStore.setState(data.inventory as Partial<ReturnType<typeof useInventoryStore.getState>>);
+    }
+  }
+
+  save(): void {
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(this.snapshot()));
+    } catch (err) {
+      console.error("[SaveManager] Save failed:", err);
+    }
+  }
+
+  load(): void {
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return;
+      this.restore(JSON.parse(raw));
+    } catch (err) {
+      console.error("[SaveManager] Load failed:", err);
+    }
+  }
+
+  exportSave(): string {
+    return JSON.stringify(this.snapshot());
+  }
+
+  importSave(json: string): void {
+    const data = JSON.parse(json);
+    if (!data.version) throw new Error("Invalid save format");
+    this.restore(data);
+    this.save();
+  }
+
+  clearSave(): void {
+    localStorage.removeItem(SAVE_KEY);
+  }
+
+  wipeSave(): void {
+    gameLoop.stop();
+    localStorage.removeItem(SAVE_KEY);
+    window.location.reload();
+  }
+
+  startAutoSave(): void {
+    if (this.intervalId) return;
+    this.intervalId = setInterval(() => this.save(), AUTO_SAVE_INTERVAL);
+  }
+
+  stopAutoSave(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
+  }
+}
+
+export const SaveManager = new SaveManagerService();

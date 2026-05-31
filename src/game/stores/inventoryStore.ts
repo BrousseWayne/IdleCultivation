@@ -1,0 +1,107 @@
+import { create } from "zustand";
+import type { InventoryItem } from "@/game/types/domain";
+import type { EquippedItems } from "@/game/types/states";
+import { items as initialItems } from "@/game/data/items";
+import { initialCurrency } from "@/game/data/constant";
+import { EntityRegistry } from "@/game/services";
+
+type EquipmentSlot = keyof EquippedItems;
+
+interface InventoryState {
+  currency: number;
+  inventoryItems: InventoryItem[];
+  equippedItems: EquippedItems;
+  dailyExpenses: number;
+  dailyIncome: number;
+
+  addCurrency: (amount: number) => void;
+  subtractCurrency: (amount: number) => void;
+  setCurrency: (amount: number) => void;
+
+  addItem: (item: InventoryItem) => void;
+  removeItem: (itemId: number) => void;
+  setInventoryItems: (items: InventoryItem[]) => void;
+
+  equipItem: (itemId: number, slot: EquipmentSlot) => void;
+  unequipItem: (slot: EquipmentSlot) => void;
+  setEquippedItems: (equipped: EquippedItems) => void;
+
+  setDailyExpenses: (amount: number) => void;
+  setDailyIncome: (amount: number) => void;
+  reset: () => void;
+}
+
+const initialEquippedItems: EquippedItems = {
+  weapon: initialItems.find((i) => i.type === "weapon") ?? null,
+  armor: initialItems.find((i) => i.type === "armor") ?? null,
+  helmet: null,
+  boots: null,
+  ring: null,
+  amulet: null,
+};
+
+const initialInventoryState = {
+  currency: initialCurrency,
+  inventoryItems: initialItems,
+  equippedItems: initialEquippedItems,
+  dailyExpenses: 0,
+  dailyIncome: 0,
+};
+
+export const useInventoryStore = create<InventoryState>((set) => ({
+  ...initialInventoryState,
+
+  addCurrency: (amount) =>
+    set((state) => ({ currency: state.currency + amount })),
+
+  subtractCurrency: (amount) =>
+    set((state) => ({ currency: state.currency - amount })),
+
+  setCurrency: (amount) => set({ currency: amount }),
+
+  addItem: (item) =>
+    set((state) => ({ inventoryItems: [...state.inventoryItems, item] })),
+
+  removeItem: (itemId) =>
+    set((state) => {
+      const newEquipped = { ...state.equippedItems };
+      for (const slot of Object.keys(newEquipped) as EquipmentSlot[]) {
+        if (newEquipped[slot]?.id === itemId) {
+          newEquipped[slot] = null;
+        }
+      }
+      return {
+        inventoryItems: state.inventoryItems.filter((i) => i.id !== itemId),
+        equippedItems: newEquipped,
+      };
+    }),
+
+  setInventoryItems: (items) => set({ inventoryItems: items }),
+
+  equipItem: (itemId, slot) => {
+    const item = EntityRegistry.get("item", String(itemId));
+    if (!item) return;
+
+    set((state) => ({
+      equippedItems: {
+        ...state.equippedItems,
+        [slot]: item,
+      },
+    }));
+  },
+
+  unequipItem: (slot) => {
+    set((state) => ({
+      equippedItems: {
+        ...state.equippedItems,
+        [slot]: null,
+      },
+    }));
+  },
+
+  setEquippedItems: (equipped) => set({ equippedItems: equipped }),
+
+  setDailyExpenses: (amount) => set({ dailyExpenses: amount }),
+  setDailyIncome: (amount) => set({ dailyIncome: amount }),
+  reset: () => set(initialInventoryState),
+}));

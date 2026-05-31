@@ -6,7 +6,7 @@ import { useGameStore } from "../stores/gameStore";
 import { events } from "../data/story";
 import { currentDay, daysInMonth } from "../data/constant";
 import { PageHeader } from "../components/PageHeader";
-import { text, K } from "../content/text";
+import { text } from "../content/text";
 
 const getCalendarTitle = (
   calendarView: string,
@@ -63,9 +63,9 @@ export const RenderCalendarPage = () => {
             onClick={() => setShowDetailedView(false)}
           >
             <ChevronLeft className="w-4 h-4 mr-1" />
-            Back to Calendar
+            {text("page.recap.backToCalendar")}
           </Button>
-          <h3 className="text-lg font-semibold">Day {selectedDate} Events</h3>
+          <h3 className="text-lg font-semibold">{text("page.recap.dayEvents", { day: selectedDate ?? 0 })}</h3>
         </div>
         <div className="space-y-2">
           {dayEvents.length > 0 ? (
@@ -91,7 +91,7 @@ export const RenderCalendarPage = () => {
                         event.type === "future" ? "secondary" : "outline"
                       }
                     >
-                      {event.type === "future" ? "Upcoming" : "Completed"}
+                      {event.type === "future" ? text("page.recap.badge.upcoming") : text("page.recap.badge.completed")}
                     </Badge>
                   </div>
                 </CardContent>
@@ -99,7 +99,7 @@ export const RenderCalendarPage = () => {
             ))
           ) : (
             <p className="text-muted-foreground text-center py-8">
-              No events recorded for this day
+              {text("page.recap.empty")}
             </p>
           )}
         </div>
@@ -111,9 +111,9 @@ export const RenderCalendarPage = () => {
     <div className="space-y-4">
       <PageHeader
         icon={Calendar}
-        title={text(K.pageRecapTitle)}
+        title={text("page.recap.title")}
         color="text-accent-sky"
-        subtitle={text(K.pageRecapSubtitle)}
+        subtitle={text("page.recap.subtitle")}
       />
 
       <div className="flex items-center gap-2 mb-4 flex-wrap">
@@ -124,7 +124,7 @@ export const RenderCalendarPage = () => {
             onClick={() => setCalendarView("era")}
             className="text-xs"
           >
-            Era
+            {text("page.recap.view.era")}
           </Button>
           <Button
             variant={calendarView === "decade" ? "default" : "outline"}
@@ -132,7 +132,7 @@ export const RenderCalendarPage = () => {
             onClick={() => setCalendarView("decade")}
             className="text-xs"
           >
-            Decade
+            {text("page.recap.view.decade")}
           </Button>
           <Button
             variant={calendarView === "year" ? "default" : "outline"}
@@ -140,7 +140,7 @@ export const RenderCalendarPage = () => {
             onClick={() => setCalendarView("year")}
             className="text-xs"
           >
-            Year
+            {text("page.recap.view.year")}
           </Button>
           <Button
             variant={calendarView === "month" ? "default" : "outline"}
@@ -148,7 +148,7 @@ export const RenderCalendarPage = () => {
             onClick={() => setCalendarView("month")}
             className="text-xs"
           >
-            Month
+            {text("page.recap.view.month")}
           </Button>
         </div>
 
@@ -225,7 +225,15 @@ export const RenderCalendarPage = () => {
         </CardHeader>
         <CardContent className="p-3">
           <div className="grid grid-cols-7 gap-1 mb-2">
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+            {[
+              text("page.recap.weekday.sun"),
+              text("page.recap.weekday.mon"),
+              text("page.recap.weekday.tue"),
+              text("page.recap.weekday.wed"),
+              text("page.recap.weekday.thu"),
+              text("page.recap.weekday.fri"),
+              text("page.recap.weekday.sat"),
+            ].map((day) => (
               <div
                 key={day}
                 className="text-center text-xs font-semibold text-slate-400 p-1"

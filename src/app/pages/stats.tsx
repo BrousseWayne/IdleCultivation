@@ -4,7 +4,7 @@ import { useCultivatorStore } from "../stores/cultivatorStore";
 import { useEtherealShimmer } from "../hooks/useEtherealShimmer";
 import { EtherealEffect } from "../components/EtherealEffect";
 import { PageHeader } from "../components/PageHeader";
-import { text, K } from "../content/text";
+import { text } from "../content/text";
 
 const StatRow = ({
   label,
@@ -65,20 +65,20 @@ export const RenderStatsPage = () => {
     <div className="space-y-6">
       <PageHeader
         icon={BarChart3}
-        title={text(K.pageStatsTitle)}
+        title={text("page.stats.title")}
         color="text-accent-silver"
-        subtitle={text(K.pageStatsSubtitle)}
+        subtitle={text("page.stats.subtitle")}
       />
 
       <div className="space-y-6">
         <section>
           <h3 className="flex items-center gap-2 text-base font-semibold text-slate-200 mb-2">
             <User className="w-4 h-4 text-accent-silver" />
-            {text(K.statsSectionCore)}
+            {text("stats.section.core")}
           </h3>
           <div className="bg-card/30 border border-border/30 rounded-md px-4 py-1">
             <div className="flex justify-between items-center py-1.5">
-              <span className="text-sm text-slate-400">{text(K.statAge)}</span>
+              <span className="text-sm text-slate-400">{text("stat.age")}</span>
               <span className="font-mono text-sm text-accent-jade">
                 <EtherealEffect effect={getEffect("age")}>{age}</EtherealEffect>
               </span>
@@ -87,9 +87,9 @@ export const RenderStatsPage = () => {
             {Object.entries(stats).map(([stat, value]) => (
               <StatRow key={stat} label={stat} value={String(value)} colorClass="text-accent-cinnabar" />
             ))}
-            <ProgressRow label={text(K.statHp)} current={vitality.current} max={vitality.max} colorClass="text-accent-emerald" effect={getEffect("vitality")} />
-            <ProgressRow label={text(K.statSatiety)} current={satiety.current} max={satiety.max} colorClass="text-accent-gold" effect={getEffect("satiety")} />
-            <ProgressRow label={text(K.statMortality)} current={mortality.current} max={mortality.max} colorClass="text-accent-cinnabar" effect={getEffect("mortality")} />
+            <ProgressRow label={text("stat.hp")} current={vitality.current} max={vitality.max} colorClass="text-accent-emerald" effect={getEffect("vitality")} />
+            <ProgressRow label={text("stat.satiety")} current={satiety.current} max={satiety.max} colorClass="text-accent-gold" effect={getEffect("satiety")} />
+            <ProgressRow label={text("stat.mortality")} current={mortality.current} max={mortality.max} colorClass="text-accent-cinnabar" effect={getEffect("mortality")} />
           </div>
         </section>
 

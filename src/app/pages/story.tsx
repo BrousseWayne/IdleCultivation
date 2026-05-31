@@ -3,22 +3,22 @@ import { BookOpen } from "lucide-react";
 import { storyEntries } from "../data/story";
 import { storyEntryColors } from "../data/constant";
 import { PageHeader } from "../components/PageHeader";
-import { text, K } from "../content/text";
+import { text } from "../content/text";
 
 export const RenderStoryPage = () => {
   return (
     <div className="space-y-4">
       <PageHeader
         icon={BookOpen}
-        title={text(K.pageStoryTitle)}
+        title={text("page.story.title")}
         color="text-accent-violet"
-        subtitle={text(K.pageStorySubtitle)}
+        subtitle={text("page.story.subtitle")}
       />
 
       {storyEntries.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 text-slate-500">
           <BookOpen className="w-12 h-12 mb-3 opacity-30" />
-          <p className="text-sm">{text(K.pageStoryEmpty)}</p>
+          <p className="text-sm">{text("page.story.empty")}</p>
         </div>
       )}
 

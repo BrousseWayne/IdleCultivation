@@ -2,20 +2,26 @@ import { Coins, Warehouse, Home, Lock } from "lucide-react";
 import { useInventoryStore } from "../stores/inventoryStore";
 import type { InventoryItem } from "../types/domain";
 import { useState } from "react";
+import { text, type ContentKey } from "../content/text";
 
 type StorageLocation = "personal" | "bank" | "barn";
 
 const CATEGORY_ORDER = ["currency", "herbs", "minerals", "consumable", "artifact", "book", "material"];
 
-const CATEGORY_LABELS: Record<string, string> = {
-  currency: "Currency & Valuables",
-  herbs: "Medicinal Herbs",
-  minerals: "Ores & Minerals",
-  consumable: "Consumables",
-  artifact: "Artifacts & Tools",
-  book: "Books & Scrolls",
-  material: "Raw Materials",
+const CATEGORY_LABEL_KEYS: Record<string, ContentKey> = {
+  currency: "inventory.category.currency",
+  herbs: "inventory.category.herbs",
+  minerals: "inventory.category.minerals",
+  consumable: "inventory.category.consumable",
+  artifact: "inventory.category.artifact",
+  book: "inventory.category.book",
+  material: "inventory.category.material",
 };
+
+function categoryLabel(category: string): string {
+  const key = CATEGORY_LABEL_KEYS[category];
+  return key ? text(key) : category;
+}
 
 const RARITY_COLORS: Record<string, string> = {
   common: "#8B7355",
@@ -164,7 +170,7 @@ export function RenderInventoryPage() {
               letterSpacing: "0.05em"
             }}
           >
-            Possessions
+            {text("page.inventory.title")}
           </h1>
           <p
             className="text-lg ink-bleed"
@@ -174,16 +180,16 @@ export function RenderInventoryPage() {
               fontFamily: "'Ma Shan Zheng', cursive"
             }}
           >
-            What Fortune Has Bestowed
+            {text("page.inventory.subtitle")}
           </p>
         </div>
 
         {/* Storage Location Tabs */}
         <div className="flex gap-3 mb-6 justify-center">
           {[
-            { id: "personal", label: "Personal", icon: Home, unlocked: true },
-            { id: "bank", label: "Bank Vault", icon: Warehouse, unlocked: bankUnlocked },
-            { id: "barn", label: "Barn Storage", icon: Warehouse, unlocked: barnUnlocked },
+            { id: "personal", label: text("inventory.location.personal"), icon: Home, unlocked: true },
+            { id: "bank", label: text("inventory.location.bank"), icon: Warehouse, unlocked: bankUnlocked },
+            { id: "barn", label: text("inventory.location.barn"), icon: Warehouse, unlocked: barnUnlocked },
           ].map((location, idx) => (
             <button
               key={location.id}
@@ -253,7 +259,7 @@ export function RenderInventoryPage() {
                       fontSize: "0.7rem"
                     }}
                   >
-                    Currency
+                    {text("inventory.label.currency")}
                   </div>
                   <div
                     className="text-3xl font-bold"
@@ -307,7 +313,7 @@ export function RenderInventoryPage() {
                 fontFamily: "'Cinzel', serif"
               }}
             >
-              Categories
+              {text("inventory.label.categories")}
             </div>
             <div className="flex flex-wrap gap-2">
               {sortedCategories.map((category, idx) => (
@@ -330,7 +336,7 @@ export function RenderInventoryPage() {
                     animationDelay: `${idx * 0.05 + 0.3}s`,
                   }}
                 >
-                  {CATEGORY_LABELS[category] || category}
+                  {categoryLabel(category)}
                   <span
                     className="ml-2 px-1.5 py-0.5 rounded text-[10px]"
                     style={{
@@ -356,14 +362,14 @@ export function RenderInventoryPage() {
                   fontFamily: "'Cinzel', serif"
                 }}
               >
-                {CATEGORY_LABELS[displayCategory] || displayCategory}
+                {categoryLabel(displayCategory)}
               </div>
               {activeLocation === "personal" && (
                 <div
                   className="text-sm"
                   style={{ color: "#A0826D" }}
                 >
-                  {inventoryItems.length} / {PERSONAL_CAPACITY} carried
+                  {inventoryItems.length} / {PERSONAL_CAPACITY} {text("inventory.label.carried")}
                 </div>
               )}
             </div>

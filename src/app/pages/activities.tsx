@@ -15,7 +15,7 @@ import { formatNumber, getActivityXpProgress, scaleEffectAmount } from "../utils
 import { StatIcon, CurrencyIcon } from "../components/StatIcon";
 import { ActivityCard, QueueItem } from "../components/activities";
 import { PageHeader } from "../components/PageHeader";
-import { text, K } from "../content/text";
+import { text } from "../content/text";
 
 export function RenderActivitiesPage() {
   const [collapsedCategories, setCollapsedCategories] = useState<
@@ -123,14 +123,14 @@ export function RenderActivitiesPage() {
       <div className="flex-[3] min-w-0 space-y-4">
         <PageHeader
           icon={Activity}
-          title={text(K.pageActivitiesTitle)}
+          title={text("page.activities.title")}
           color="text-accent-jade"
-          subtitle={text(K.pageActivitiesSubtitle)}
+          subtitle={text("page.activities.subtitle")}
         />
 
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <span className="text-slate-500 text-xs">Scale:</span>
+            <span className="text-slate-500 text-xs">{text("page.activities.label.scale")}</span>
             <select
               value={timeScale}
               onChange={(e) => setTimeScale(e.target.value as "day" | "week" | "month")}
@@ -144,7 +144,7 @@ export function RenderActivitiesPage() {
             </select>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-slate-500 text-xs">Auto-Repeat:</span>
+            <span className="text-slate-500 text-xs">{text("page.activities.label.autoRepeat")}</span>
             <Switch
               checked={repeatActivities}
               onCheckedChange={setRepeatActivities}
@@ -195,12 +195,12 @@ export function RenderActivitiesPage() {
         <div className="bg-slate-900/40 border border-slate-800/40 rounded-lg p-4 space-y-3">
           <div className="flex items-center gap-2 text-xs text-slate-400 uppercase tracking-widest font-semibold">
             <Clock className="w-3.5 h-3.5" />
-            Time Budget
+            {text("page.activities.section.timeBudget")}
           </div>
 
           <div className="space-y-1.5">
             <div className="flex justify-between text-sm">
-              <span className="text-slate-500">Free</span>
+              <span className="text-slate-500">{text("page.activities.label.free")}</span>
               <span className="text-accent-jade font-mono font-bold">{timePoints}h / {maxTimePoints}h</span>
             </div>
             <div className="h-2 bg-slate-800/60 rounded-full overflow-hidden">
@@ -230,7 +230,7 @@ export function RenderActivitiesPage() {
           <div className="bg-slate-900/40 border border-slate-800/40 rounded-lg p-4 space-y-3">
             <div className="flex items-center gap-2 text-xs text-slate-400 uppercase tracking-widest font-semibold">
               <TrendingUp className="w-3.5 h-3.5" />
-              Projected Gains
+              {text("page.activities.section.projectedGains")}
             </div>
             <div className="space-y-1">
               {projectedGains.map((gain) => (
@@ -257,7 +257,7 @@ export function RenderActivitiesPage() {
           </div>
 
           {activityQueue.length === 0 ? (
-            <p className="text-xs text-slate-600 italic">No activities scheduled</p>
+            <p className="text-xs text-slate-600 italic">{text("page.activities.queue.empty")}</p>
           ) : (
             <div className="space-y-1">
               {(() => {

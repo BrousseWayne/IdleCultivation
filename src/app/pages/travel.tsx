@@ -5,7 +5,7 @@ import { useActivityStore } from "../stores/activityStore";
 import { locations } from "../data/locations";
 import { EntityRegistry } from "../services";
 import { PageHeader } from "../components/PageHeader";
-import { text, K } from "../content/text";
+import { text } from "../content/text";
 
 export const RenderTravelMap = () => {
   const selectedLocation = useActivityStore((s) => s.selectedLocation);
@@ -16,14 +16,14 @@ export const RenderTravelMap = () => {
       <div className="mb-2 p-2 bg-accent-sky/10 rounded-lg border border-accent-sky/20">
         <div className="flex items-center gap-2">
           <MapPin className="w-4 h-4 text-accent-sky" />
-          <span className="font-semibold text-sm">Current Location:</span>
+          <span className="font-semibold text-sm">{text("page.travel.label.currentLocation")}</span>
           <span className="text-accent-sky text-sm">{selectedLocation}</span>
         </div>
       </div>
 
       <Card className="bg-card border-border/50">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Cultivation World Map</CardTitle>
+          <CardTitle className="text-base">{text("page.travel.map.title")}</CardTitle>
         </CardHeader>
         <CardContent className="p-3">
           <div className="relative w-full h-80 bg-background rounded-lg border border-border/30 overflow-hidden">
@@ -162,7 +162,7 @@ export const RenderTravelMap = () => {
                 </p>
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
                   <Clock className="w-4 h-4" />
-                  <span>Travel Time: {location.travel} hours</span>
+                  <span>{text("page.travel.label.travelTime")} {location.travel} hours</span>
                 </div>
               </CardContent>
             </Card>
@@ -171,8 +171,7 @@ export const RenderTravelMap = () => {
 
       <div className="p-3 bg-muted rounded-lg">
         <p className="text-sm text-muted-foreground text-center">
-          Travel consumes time points and may unlock new activities and
-          opportunities
+          {text("page.travel.hint")}
         </p>
       </div>
     </div>
@@ -184,9 +183,9 @@ export const RenderTravelPage = () => {
     <div className="space-y-6">
       <PageHeader
         icon={MapPin}
-        title={text(K.pageTravelTitle)}
+        title={text("page.travel.title")}
         color="text-accent-sky"
-        subtitle={text(K.pageTravelSubtitle)}
+        subtitle={text("page.travel.subtitle")}
       />
 
       {RenderTravelMap()}

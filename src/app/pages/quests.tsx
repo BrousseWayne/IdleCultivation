@@ -3,7 +3,7 @@ import { activeQuests, completedQuests } from "../data/quests";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "../components/PageHeader";
-import { text, K } from "../content/text";
+import { text } from "../content/text";
 
 export function RenderQuestsPage() {
   const hasContent = activeQuests.length > 0 || completedQuests.length > 0;
@@ -12,14 +12,14 @@ export function RenderQuestsPage() {
     <div className="space-y-4">
       <PageHeader
         icon={Target}
-        title={text(K.pageQuestsTitle)}
+        title={text("page.quests.title")}
         color="text-accent-violet"
       />
 
       {!hasContent && (
         <div className="flex flex-col items-center justify-center py-16 text-slate-500">
           <Target className="w-12 h-12 mb-3 opacity-30" />
-          <p className="text-sm">No quests available yet.</p>
+          <p className="text-sm">{text("page.quests.empty")}</p>
         </div>
       )}
 
@@ -28,7 +28,7 @@ export function RenderQuestsPage() {
           <CardHeader>
             <CardTitle className="text-lg text-slate-200 flex items-center gap-2">
               <Clock className="w-5 h-5 text-accent-gold" />
-              Active Quests
+              {text("page.quests.section.active")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -40,9 +40,9 @@ export function RenderQuestsPage() {
                     <p className="text-sm text-slate-400 mt-1">{quest.description}</p>
                     <div className="flex items-center gap-4 mt-2">
                       <div className="text-xs text-slate-500">
-                        Progress: <span className="font-mono">{quest.progress}%</span>
+                        {text("page.quests.label.progress")} <span className="font-mono">{quest.progress}%</span>
                       </div>
-                      <div className="text-xs text-accent-gold">Reward: {quest.reward}</div>
+                      <div className="text-xs text-accent-gold">{text("page.quests.label.reward")} {quest.reward}</div>
                     </div>
                   </div>
                   <div className="text-xs text-slate-500">{quest.timeLeft}</div>
@@ -59,7 +59,7 @@ export function RenderQuestsPage() {
           <CardHeader>
             <CardTitle className="text-lg text-slate-200 flex items-center gap-2">
               <CheckCircle className="w-5 h-5 text-accent-emerald" />
-              Completed Quests
+              {text("page.quests.section.completed")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
@@ -68,7 +68,7 @@ export function RenderQuestsPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="font-semibold text-accent-emerald text-sm">{quest.title}</h3>
-                    <div className="text-xs text-slate-500">Completed: {quest.completedDate}</div>
+                    <div className="text-xs text-slate-500">{text("page.quests.label.completed")} {quest.completedDate}</div>
                   </div>
                   <div className="text-xs text-accent-emerald">{quest.reward}</div>
                 </div>

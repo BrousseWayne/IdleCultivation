@@ -3,13 +3,13 @@ import { lifestyleOptions } from "../data/lifestyle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Cost } from "../types/domain";
 import { PageHeader } from "../components/PageHeader";
-import { text, K } from "../content/text";
+import { text } from "../content/text";
 
 function formatCosts(costs: Cost[]): string {
   return costs
     .filter((c) => c.amount > 0)
     .map((c) => `${c.amount} ${c.currency}${c.period ? `/${c.period}` : ""}`)
-    .join(", ") || "Free";
+    .join(", ") || text("lifestyle.cost.free");
 }
 
 export function RenderLifestylePage() {
@@ -18,12 +18,12 @@ export function RenderLifestylePage() {
       <div className="space-y-4">
         <PageHeader
           icon={Home}
-          title={text(K.pageLifestyleTitle)}
+          title={text("page.lifestyle.title")}
           color="text-accent-lotus"
         />
         <div className="flex flex-col items-center justify-center py-16 text-slate-500">
           <Home className="w-12 h-12 mb-3 opacity-30" />
-          <p className="text-sm">{text(K.pageLifestyleEmpty)}</p>
+          <p className="text-sm">{text("page.lifestyle.empty")}</p>
         </div>
       </div>
     );
@@ -34,7 +34,7 @@ export function RenderLifestylePage() {
       <div className="flex items-center gap-2">
         <Home className="w-6 h-6 text-accent-lotus" />
         <h2 className="text-2xl font-bold font-[family-name:var(--font-display)] text-accent-lotus">
-          Lifestyle Management
+          {text("page.lifestyle.title")}
         </h2>
       </div>
 

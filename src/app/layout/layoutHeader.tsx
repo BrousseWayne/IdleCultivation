@@ -17,7 +17,7 @@ import {
 import { useGameStore } from "../stores/gameStore";
 import { gameLoop } from "../engine/gameLoop";
 import { SaveManager } from "../services";
-import { text, K } from "../content/text";
+import { text } from "../content/text";
 import { useLerpNumber } from "../utils/useLerpNumber";
 import { StatPanel } from "../components/StatPanel";
 import { useEtherealShimmer } from "../hooks/useEtherealShimmer";
@@ -68,7 +68,7 @@ export function Header() {
   };
 
   const handleWipe = () => {
-    if (window.confirm("Wipe all save data? This cannot be undone.")) {
+    if (window.confirm(text("app.confirm.wipeSave"))) {
       SaveManager.wipeSave();
     }
   };
@@ -76,14 +76,14 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 h-12 bg-black/95 backdrop-blur-sm border-b border-slate-800/30 flex items-center px-4 gap-6">
       <h1 className="text-lg font-bold font-[family-name:var(--font-display)] text-accent-emerald whitespace-nowrap">
-        {text(K.appTitle)}
+        {text("app.title")}
       </h1>
       <Badge
         variant="secondary"
         className="flex items-center gap-1 bg-slate-900 text-accent-jade border-accent-jade/20 text-[10px] px-1.5 py-0"
       >
         <Mountain className="w-2.5 h-2.5" />
-        {text(K.appRank)}
+        {text("app.rank")}
       </Badge>
 
       <div className="flex-1" />
@@ -118,7 +118,7 @@ export function Header() {
       </div>
 
       <span className="text-xs text-accent-sky font-mono font-bold">
-        Day <EtherealEffect effect={getEffect("day")}>{day}</EtherealEffect>
+        {text("app.label.day")} <EtherealEffect effect={getEffect("day")}>{day}</EtherealEffect>
       </span>
 
       <div className="h-4 w-px bg-slate-800" />
@@ -145,13 +145,13 @@ export function Header() {
         {settingsOpen && (
           <div className="absolute right-0 top-full mt-1 w-44 bg-slate-900 border border-slate-700/50 rounded-md shadow-lg py-1 z-50">
             <button className="w-full px-3 py-1.5 text-xs text-left text-slate-300 hover:bg-slate-800 flex items-center gap-2" onClick={handleExport}>
-              <Download className="w-3.5 h-3.5" /> Export Save
+              <Download className="w-3.5 h-3.5" /> {text("app.settings.exportSave")}
             </button>
             <button className="w-full px-3 py-1.5 text-xs text-left text-slate-300 hover:bg-slate-800 flex items-center gap-2" onClick={() => { fileInputRef.current?.click(); setSettingsOpen(false); }}>
-              <Upload className="w-3.5 h-3.5" /> Import Save
+              <Upload className="w-3.5 h-3.5" /> {text("app.settings.importSave")}
             </button>
             <button className="w-full px-3 py-1.5 text-xs text-left text-accent-cinnabar hover:bg-slate-800 flex items-center gap-2" onClick={handleWipe}>
-              <Trash2 className="w-3.5 h-3.5" /> Wipe Save
+              <Trash2 className="w-3.5 h-3.5" /> {text("app.settings.wipeSave")}
             </button>
           </div>
         )}

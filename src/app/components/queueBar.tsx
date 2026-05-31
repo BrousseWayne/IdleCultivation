@@ -3,6 +3,7 @@ import { ChevronUp, ChevronDown } from "lucide-react";
 import { useActivityStore } from "../stores/activityStore";
 import { useGameStore } from "../stores/gameStore";
 import { getCategoryHex } from "../data/sectionColors";
+import { text } from "../content/text";
 
 export function QueueBar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -22,7 +23,7 @@ export function QueueBar() {
   if (activityQueue.length === 0) {
     return (
       <div className="fixed bottom-0 left-60 right-0 h-12 bg-black/95 backdrop-blur-sm border-t border-slate-800/30 z-40 flex items-center justify-center">
-        <span className="text-sm text-slate-500">No activities scheduled</span>
+        <span className="text-sm text-slate-500">{text("queue.empty")}</span>
       </div>
     );
   }

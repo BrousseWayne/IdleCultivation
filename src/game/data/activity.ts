@@ -57,6 +57,7 @@ export const activityData: Activity[] = [
     xpScalingFn: () => 200,
     timeCost: 4,
     unlocked: true,
+    scope: "self",
     effects: [{ type: "grant_stat", stat: "Strength", amount: 5 }],
   },
   {
@@ -67,6 +68,7 @@ export const activityData: Activity[] = [
     xpScalingFn: () => 180,
     timeCost: 4,
     unlocked: true,
+    scope: "self",
     effects: [
       { type: "grant_stat", stat: "Dexterity", amount: 3 },
       { type: "grant_stat", stat: "Strength", amount: 2 },
@@ -80,6 +82,7 @@ export const activityData: Activity[] = [
     xpScalingFn: () => 160,
     timeCost: 3,
     unlocked: true,
+    scope: "self",
     effects: [{ type: "grant_stat", stat: "Dexterity", amount: 5 }],
   },
   {
@@ -90,6 +93,7 @@ export const activityData: Activity[] = [
     xpScalingFn: () => 120,
     timeCost: 6,
     unlocked: true,
+    scope: "self",
     effects: [{ type: "grant_currency", currency: "Bronze", amount: 30 }],
   },
   {
@@ -100,6 +104,7 @@ export const activityData: Activity[] = [
     xpScalingFn: () => 250,
     timeCost: 8,
     unlocked: false,
+    scope: "self",
     effects: [{ type: "grant_stat", stat: "Dexterity", amount: 3 }],
     unlockConditions: [
       { type: "activity_completions", activityKey: "readClassics", count: 5 },
@@ -113,6 +118,7 @@ export const activityData: Activity[] = [
     xpScalingFn: () => 180,
     timeCost: 4,
     unlocked: true,
+    scope: "self",
     effects: [
       { type: "grant_currency", currency: "Bronze", amount: 60 },
       { type: "grant_stat", stat: "Dexterity", amount: 1 },

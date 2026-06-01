@@ -2,9 +2,7 @@ import { useCultivatorStore } from "@/game/stores/cultivatorStore";
 import { useGameStore } from "@/game/stores/gameStore";
 import { useActivityStore } from "@/game/stores/activityStore";
 import { useInventoryStore } from "@/game/stores/inventoryStore";
-import { EntityRegistry } from "@/game/services/EntityRegistry";
 import { gameLoop } from "@/game/engine/gameLoop";
-import type { Activity } from "@/game/types/domain";
 
 const SAVE_KEY = "cultivation-save";
 const SAVE_VERSION = 1;
@@ -54,13 +52,12 @@ class SaveManagerService {
         showDetailedView: game.showDetailedView,
       },
       activity: {
-        activityQueueKeys: activity.activityQueue.map((a) => a.key),
-        allocatedActivities: activity.allocatedActivities,
+        queue: activity.queue,
+        runningTicks: activity.runningTicks,
         completionCounts: activity.completionCounts,
         activityXp: activity.activityXp,
         repeatActivities: activity.repeatActivities,
         selectedLocation: activity.selectedLocation,
-        currentActivityStartTick: activity.currentActivityStartTick,
       },
       inventory: {
         currency: inventory.currency,
@@ -86,11 +83,7 @@ class SaveManagerService {
     }
 
     if (data.activity) {
-      const { activityQueueKeys, ...rest } = data.activity as Record<string, unknown>;
-      const activityQueue = ((activityQueueKeys as string[]) || [])
-        .map((key) => EntityRegistry.get("activity", key))
-        .filter((a): a is Activity => a !== undefined);
-      useActivityStore.setState({ ...rest, activityQueue } as Partial<ReturnType<typeof useActivityStore.getState>>);
+      useActivityStore.setState(data.activity as Partial<ReturnType<typeof useActivityStore.getState>>);
     }
 
     if (data.inventory) {

@@ -8,8 +8,12 @@ import { EntityRegistry } from "@/game/services/EntityRegistry";
 import { UnlockEvaluator } from "@/game/services/UnlockEvaluator";
 import { getActivityXpProgress, scaleEffectAmount } from "@/game/utils/activityXp";
 import { backgroundDefinitions } from "@/game/data/intro";
-import type { Activity, Background } from "@/game/types/domain";
+import type { Activity, Background, QueueBlock } from "@/game/types/domain";
 import type { Effect } from "@/game/types/effects";
+
+function totalUnits(queue: QueueBlock[]): number {
+  return queue.reduce((n, b) => n + b.units, 0);
+}
 
 const TICKS_PER_SECOND = 24;
 const TICKS_PER_DAY = 24;
@@ -54,12 +58,14 @@ function completeActivity(activity: Activity): void {
     useGameStore.getState().pushLog({ text: `${activity.name}: earned ${coin} coin.`, theme: "income" });
   }
 
-  act.deallocateTime(activity.key, activity.timeCost);
-  act.dequeueActivity();
+  // consume this unit from the head block
+  act.consumeHeadUnit();
 
-  const remaining = useActivityStore.getState().allocatedActivities[activity.key] || 0;
-  if (act.repeatActivities && remaining >= activity.timeCost) {
-    act.enqueueActivity(activity);
+  // repeat: re-commit one unit if the budget allows
+  const game = useGameStore.getState();
+  if (act.repeatActivities && game.timePoints - activity.timeCost >= 0) {
+    game.allocateTime(activity.timeCost);
+    act.pushUnit(activity.key);
   }
 
   EventBus.emit({
@@ -68,26 +74,26 @@ function completeActivity(activity: Activity): void {
   });
 }
 
-function activitySystem(ticks: number): void {
+function activitySystem(): void {
   const act = useActivityStore.getState();
-  if (act.activityQueue.length === 0) return;
+  const head = act.queue[0];
+  if (!head) return;
 
-  const current = act.activityQueue[0];
-  let startTick = act.currentActivityStartTick;
-
-  if (startTick === null) {
-    act.setCurrentActivityStartTick(ticks);
-    startTick = ticks;
+  const activity = EntityRegistry.get("activity", head.key);
+  if (!activity) {
+    act.consumeHeadUnit();
+    return;
   }
 
-  if (ticks - startTick >= current.timeCost) {
-    completeActivity(current);
-    useActivityStore.getState().setCurrentActivityStartTick(null);
-
+  const next = act.runningTicks + 1;
+  if (next >= activity.timeCost) {
+    completeActivity(activity);
     const after = useActivityStore.getState();
-    if (after.activityQueue.length === 0 && !after.repeatActivities) {
+    if (after.queue.length === 0 && !after.repeatActivities) {
       gameLoop.stop();
     }
+  } else {
+    act.setRunningTicks(next);
   }
 }
 
@@ -110,7 +116,7 @@ function agingSystem(day: number): void {
 
 export function runTick(): void {
   const { ticks, day } = timeSystem();
-  activitySystem(ticks);
+  activitySystem();
   agingSystem(day);
 
   EventBus.emit({ type: "game:tick", payload: { ticks, day } });
@@ -155,11 +161,23 @@ export function queueActivity(activityKey: string, units = 1): boolean {
   const game = useGameStore.getState();
   const cost = units * activity.timeCost;
   if (game.timePoints - cost < 0) return false;
-  const act = useActivityStore.getState();
-  act.allocateTime(activityKey, cost);
   game.allocateTime(cost);
-  for (let i = 0; i < units; i++) act.enqueueActivity(activity);
+  const act = useActivityStore.getState();
+  for (let i = 0; i < units; i++) act.pushUnit(activityKey);
   return true;
+}
+
+export function unqueueActivity(activityKey: string): boolean {
+  const activity = EntityRegistry.get("activity", activityKey);
+  if (!activity) return false;
+  const before = totalUnits(useActivityStore.getState().queue);
+  useActivityStore.getState().popUnit(activityKey);
+  const after = totalUnits(useActivityStore.getState().queue);
+  if (after < before) {
+    useGameStore.getState().deallocateTime(activity.timeCost);
+    return true;
+  }
+  return false;
 }
 
 export function bootRun(): void {

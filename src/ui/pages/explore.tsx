@@ -1,10 +1,8 @@
-import { Plus } from "lucide-react";
 import { useGameStore } from "@/game/stores/gameStore";
-import { useActivityStore } from "@/game/stores/activityStore";
 import { getPlace, places } from "@/game/data/places";
-import { queueActivity } from "@/game/engine/gameLoop";
 import { EntityRegistry } from "@/game/services";
-import { getActivityXpProgress } from "@/game/utils";
+import { activityData } from "@/game/data/activity";
+import { ActivityRow, useActivityActions } from "@/ui/components/ActivityRow";
 import type { Activity } from "@/game/types/domain";
 
 export function RenderExplorePage() {
@@ -13,8 +11,7 @@ export function RenderExplorePage() {
   const pushLog = useGameStore((s) => s.pushLog);
   const day = useGameStore((s) => s.day);
   const ticks = useGameStore((s) => s.ticks);
-  const allocatedActivities = useActivityStore((s) => s.allocatedActivities);
-  const activityXp = useActivityStore((s) => s.activityXp);
+  const { queue, unqueue } = useActivityActions();
 
   const place = getPlace(currentPlaceKey);
   if (!place) return null;
@@ -30,16 +27,11 @@ export function RenderExplorePage() {
     pushLog({ text: `You make your way to ${dest.name}.`, theme: "travel" });
   };
 
-  const queue = (key: string) => {
-    const a = EntityRegistry.get("activity", key);
-    if (a && queueActivity(key)) {
-      pushLog({ text: `You set out to ${a.name.toLowerCase()}.`, theme: "ambient" });
-    }
-  };
-
   const placeActivities = place.activityKeys
     .map((k) => EntityRegistry.get("activity", k))
     .filter((a): a is Activity => !!a && a.unlocked);
+
+  const selfActivities = activityData.filter((a) => a.scope === "self" && a.unlocked);
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -87,26 +79,23 @@ export function RenderExplorePage() {
       </header>
       <p className="text-[15px] leading-relaxed text-slate-300 font-[family-name:var(--font-sans)]">{place.description}</p>
 
-      <section className="space-y-1.5">
-        <div className="text-[11px] text-slate-600 uppercase tracking-widest">What you can do</div>
-        {placeActivities.map((a) => {
-          const allocated = allocatedActivities[a.key] || 0;
-          const { level } = getActivityXpProgress(activityXp[a.key] || 0);
-          return (
-            <button key={a.key} onClick={() => queue(a.key)}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md border border-slate-800/50 hover:border-accent-cinnabar/40 hover:bg-slate-900/40 transition-colors text-left">
-              <a.icon className="w-4 h-4 text-accent-jade" />
-              <span className="text-sm text-slate-200">{a.name}</span>
-              <span className="text-[10px] text-slate-600">Lv.{level}</span>
-              <span className="ml-auto flex items-center gap-2 text-xs text-slate-500">
-                {a.timeCost}h{allocated > 0 && <span className="text-accent-jade">· {allocated}h queued</span>}
-                <Plus className="w-3.5 h-3.5 text-slate-600" />
-              </span>
-            </button>
-          );
-        })}
-      </section>
+      {placeActivities.length > 0 && (
+        <section className="space-y-1.5">
+          <div className="text-[11px] text-slate-600 uppercase tracking-widest">What you can do here</div>
+          {placeActivities.map((a) => (
+            <ActivityRow key={a.key} activity={a} onQueue={queue} onUnqueue={unqueue} />
+          ))}
+        </section>
+      )}
 
+      {selfActivities.length > 0 && (
+        <section className="space-y-1.5">
+          <div className="text-[11px] text-slate-600 uppercase tracking-widest">On your own</div>
+          {selfActivities.map((a) => (
+            <ActivityRow key={a.key} activity={a} onQueue={queue} onUnqueue={unqueue} />
+          ))}
+        </section>
+      )}
     </div>
   );
 }

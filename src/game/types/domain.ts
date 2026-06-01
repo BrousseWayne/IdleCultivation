@@ -88,8 +88,12 @@ export type ActivityModel = {
   unlocked: boolean;
   effects: Effect[];
   unlockConditions?: UnlockCondition[];
-  queueId?: string;
+  // "self" = doable anywhere (meditate/train/study); undefined = place-bound
+  scope?: "self";
 };
+
+// An ordered run of N units of one activity. Adjacent same-key blocks merge.
+export type QueueBlock = { key: string; units: number };
 
 export type ActivityView = {
   key: string;

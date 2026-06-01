@@ -1,99 +1,95 @@
 import { create } from "zustand";
-import type { Activity } from "@/game/types/domain";
+import type { QueueBlock } from "@/game/types/domain";
 
 interface ActivityState {
-  activityQueue: Activity[];
-  allocatedActivities: Record<string, number>;
+  queue: QueueBlock[];
+  runningTicks: number; // ticks elapsed into the current head unit
   completionCounts: Record<string, number>;
   activityXp: Record<string, number>;
   repeatActivities: boolean;
   selectedLocation: string;
 
-  enqueueActivity: (activity: Activity) => void;
-  dequeueActivity: () => void;
+  pushUnit: (key: string) => void;
+  popUnit: (key: string) => void;
+  consumeHeadUnit: () => void; // one unit of the head block finished
+  setQueue: (queue: QueueBlock[]) => void;
   clearQueue: () => void;
-
-  setAllocatedActivities: (allocated: Record<string, number>) => void;
-  allocateTime: (activityKey: string, timeCost: number) => void;
-  deallocateTime: (activityKey: string, timeCost: number) => void;
+  setRunningTicks: (ticks: number) => void;
 
   setRepeatActivities: (repeat: boolean) => void;
   setSelectedLocation: (location: string) => void;
 
-  currentActivityStartTick: number | null;
-  setCurrentActivityStartTick: (tick: number | null) => void;
-
-  addCompletion: (activityKey: string) => void;
-  addXp: (activityKey: string, amount: number) => void;
+  addCompletion: (key: string) => void;
+  addXp: (key: string, amount: number) => void;
   reset: () => void;
 }
 
 const initialActivityState = {
-  activityQueue: [] as Activity[],
-  allocatedActivities: {} as Record<string, number>,
+  queue: [] as QueueBlock[],
+  runningTicks: 0,
   completionCounts: {} as Record<string, number>,
   activityXp: {} as Record<string, number>,
   repeatActivities: true,
   selectedLocation: "Eastern Continent",
-  currentActivityStartTick: null as number | null,
 };
+
+// --- pure helpers (also reused by UI/engine via the store snapshot) ---
+export function queuedUnits(queue: QueueBlock[], key: string): number {
+  return queue.reduce((n, b) => (b.key === key ? n + b.units : n), 0);
+}
+
+function pushUnit(queue: QueueBlock[], key: string): QueueBlock[] {
+  const last = queue[queue.length - 1];
+  if (last && last.key === key) {
+    return [...queue.slice(0, -1), { key, units: last.units + 1 }];
+  }
+  return [...queue, { key, units: 1 }];
+}
+
+// remove the last queued unit of key; never the unit currently running
+// (head block index 0, its first unit). Returns unchanged if nothing removable.
+function popUnit(queue: QueueBlock[], key: string): QueueBlock[] {
+  for (let i = queue.length - 1; i >= 0; i--) {
+    const block = queue[i];
+    if (block.key !== key) continue;
+    // the running unit is block 0's first unit; protect it
+    const isHead = i === 0;
+    const removableUnits = isHead ? block.units - 1 : block.units;
+    if (removableUnits <= 0) continue;
+    if (block.units === 1) return queue.filter((_, j) => j !== i);
+    return queue.map((b, j) => (j === i ? { ...b, units: b.units - 1 } : b));
+  }
+  return queue;
+}
 
 export const useActivityStore = create<ActivityState>((set) => ({
   ...initialActivityState,
-  setCurrentActivityStartTick: (tick) => set({ currentActivityStartTick: tick }),
 
-  enqueueActivity: (activity) =>
-    set((state) => ({
-      activityQueue: [...state.activityQueue, { ...activity, queueId: `${activity.key}-${Date.now()}-${Math.random()}` }],
-    })),
+  pushUnit: (key) => set((s) => ({ queue: pushUnit(s.queue, key) })),
+  popUnit: (key) => set((s) => ({ queue: popUnit(s.queue, key) })),
 
-  dequeueActivity: () =>
-    set((state) => ({
-      activityQueue: state.activityQueue.slice(1),
-    })),
+  consumeHeadUnit: () =>
+    set((s) => {
+      const head = s.queue[0];
+      if (!head) return s;
+      const queue =
+        head.units > 1
+          ? [{ key: head.key, units: head.units - 1 }, ...s.queue.slice(1)]
+          : s.queue.slice(1);
+      return { queue, runningTicks: 0 };
+    }),
 
-  clearQueue: () => set({ activityQueue: [] }),
-
-  setAllocatedActivities: (allocated) =>
-    set({ allocatedActivities: allocated }),
-
-  allocateTime: (activityKey, timeCost) =>
-    set((state) => ({
-      allocatedActivities: {
-        ...state.allocatedActivities,
-        [activityKey]: (state.allocatedActivities[activityKey] || 0) + timeCost,
-      },
-    })),
-
-  deallocateTime: (activityKey, timeCost) =>
-    set((state) => ({
-      allocatedActivities: {
-        ...state.allocatedActivities,
-        [activityKey]: Math.max(
-          0,
-          (state.allocatedActivities[activityKey] || 0) - timeCost
-        ),
-      },
-    })),
+  setQueue: (queue) => set({ queue }),
+  clearQueue: () => set({ queue: [], runningTicks: 0 }),
+  setRunningTicks: (ticks) => set({ runningTicks: ticks }),
 
   setRepeatActivities: (repeat) => set({ repeatActivities: repeat }),
   setSelectedLocation: (location) => set({ selectedLocation: location }),
 
-  addCompletion: (activityKey) =>
-    set((state) => ({
-      completionCounts: {
-        ...state.completionCounts,
-        [activityKey]: (state.completionCounts[activityKey] || 0) + 1,
-      },
-    })),
-
-  addXp: (activityKey, amount) =>
-    set((state) => ({
-      activityXp: {
-        ...state.activityXp,
-        [activityKey]: (state.activityXp[activityKey] || 0) + amount,
-      },
-    })),
+  addCompletion: (key) =>
+    set((s) => ({ completionCounts: { ...s.completionCounts, [key]: (s.completionCounts[key] || 0) + 1 } })),
+  addXp: (key, amount) =>
+    set((s) => ({ activityXp: { ...s.activityXp, [key]: (s.activityXp[key] || 0) + amount } })),
 
   reset: () => set(initialActivityState),
 }));

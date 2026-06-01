@@ -82,28 +82,23 @@ export function Sidebar() {
   const stats = useCultivatorStore((s) => s.stats);
 
   const currency = useInventoryStore((s) => s.currency);
-  const allocatedActivities = useActivityStore((s) => s.allocatedActivities);
+  const queue = useActivityStore((s) => s.queue);
   const activityXp = useActivityStore((s) => s.activityXp);
 
   const dailyIncome = useMemo(() => {
     let income = 0;
-    for (const [activityKey, allocatedHours] of Object.entries(allocatedActivities)) {
-      if (allocatedHours <= 0) continue;
-      const activity = EntityRegistry.get("activity", activityKey);
+    for (const block of queue) {
+      const activity = EntityRegistry.get("activity", block.key);
       if (!activity) continue;
-      const completions = Math.floor(allocatedHours / activity.timeCost);
-      if (completions <= 0) continue;
-      const { level } = getActivityXpProgress(activityXp[activityKey] || 0);
-
+      const { level } = getActivityXpProgress(activityXp[block.key] || 0);
       for (const effect of activity.effects) {
         if (effect.type === "grant_currency") {
-          const scaled = scaleEffectAmount(effect.amount, level);
-          income += scaled * completions;
+          income += scaleEffectAmount(effect.amount, level) * block.units;
         }
       }
     }
     return income;
-  }, [allocatedActivities, activityXp]);
+  }, [queue, activityXp]);
 
   const dailyExpenses = 0;
 

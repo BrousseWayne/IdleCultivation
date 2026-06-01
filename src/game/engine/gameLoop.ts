@@ -4,6 +4,7 @@ import { useCultivatorStore } from "@/game/stores/cultivatorStore";
 import { useInventoryStore } from "@/game/stores/inventoryStore";
 import { EventBus } from "@/game/services/EventBus";
 import { EffectExecutor } from "@/game/services/EffectExecutor";
+import { EntityRegistry } from "@/game/services/EntityRegistry";
 import { UnlockEvaluator } from "@/game/services/UnlockEvaluator";
 import { getActivityXpProgress, scaleEffectAmount } from "@/game/utils/activityXp";
 import { backgroundDefinitions } from "@/game/data/intro";
@@ -45,6 +46,13 @@ function completeActivity(activity: Activity): void {
       : effect
   );
   EffectExecutor.execute(scaledEffects);
+
+  const coin = scaledEffects
+    .filter((e) => e.type === "grant_currency")
+    .reduce((sum, e) => sum + (e as Extract<Effect, { type: "grant_currency" }>).amount, 0);
+  if (coin > 0) {
+    useGameStore.getState().pushLog({ text: `${activity.name}: earned ${coin} coin.`, theme: "income" });
+  }
 
   act.deallocateTime(activity.key, activity.timeCost);
   act.dequeueActivity();
@@ -140,6 +148,19 @@ class GameLoop {
 }
 
 export const gameLoop = new GameLoop();
+
+export function queueActivity(activityKey: string, units = 1): boolean {
+  const activity = EntityRegistry.get("activity", activityKey);
+  if (!activity) return false;
+  const game = useGameStore.getState();
+  const cost = units * activity.timeCost;
+  if (game.timePoints - cost < 0) return false;
+  const act = useActivityStore.getState();
+  act.allocateTime(activityKey, cost);
+  game.allocateTime(cost);
+  for (let i = 0; i < units; i++) act.enqueueActivity(activity);
+  return true;
+}
 
 export function bootRun(): void {
   const game = useGameStore.getState();

@@ -119,6 +119,10 @@ export type Place = {
   activityKeys: string[];
   connections: string[];
   unlocked: boolean;
+  x: number;
+  y: number;
+  icon: LucideIcon;
+  color: string;
 };
 
 export type InventoryItem = {

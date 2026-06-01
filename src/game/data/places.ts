@@ -1,4 +1,5 @@
 import type { Place } from "@/game/types/domain";
+import { Footprints, Hammer, Store } from "lucide-react";
 
 export const STARTING_PLACE = "cityStreets";
 
@@ -15,6 +16,10 @@ export const places: Place[] = [
     activityKeys: ["beg"],
     connections: ["laborYard", "marketSquare"],
     unlocked: true,
+    x: 32,
+    y: 55,
+    icon: Footprints,
+    color: "#E07856",
   },
   {
     key: "laborYard",
@@ -24,6 +29,10 @@ export const places: Place[] = [
     activityKeys: ["mineOre", "farmFields"],
     connections: ["cityStreets"],
     unlocked: true,
+    x: 20,
+    y: 24,
+    icon: Hammer,
+    color: "#5FB4A0",
   },
   {
     key: "marketSquare",
@@ -33,5 +42,9 @@ export const places: Place[] = [
     activityKeys: ["helpElders", "networkMerchants"],
     connections: ["cityStreets"],
     unlocked: true,
+    x: 64,
+    y: 36,
+    icon: Store,
+    color: "#D4AF6A",
   },
 ];

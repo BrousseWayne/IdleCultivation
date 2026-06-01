@@ -15,7 +15,8 @@ import {
   Upload,
 } from "lucide-react";
 import { useGameStore } from "@/game/stores/gameStore";
-import { gameLoop } from "@/game/engine/gameLoop";
+import { useActivityStore } from "@/game/stores/activityStore";
+import { gameLoop, scheduledHours } from "@/game/engine/gameLoop";
 import { SaveManager } from "@/game/services";
 import { text } from "@/game/content/text";
 import { getPlace } from "@/game/data/places";
@@ -27,12 +28,13 @@ import { EtherealEffect } from "@/ui/components/EtherealEffect";
 export function Header() {
   const currentPlaceKey = useGameStore((s) => s.currentPlaceKey);
   const currentPlaceName = getPlace(currentPlaceKey)?.name ?? "";
-  const timePoints = useGameStore((s) => s.timePoints);
   const maxTimePoints = useGameStore((s) => s.maxTimePoints);
   const isPlaying = useGameStore((s) => s.isPlaying);
   const gameSpeed = useGameStore((s) => s.gameSpeed);
   const day = useGameStore((s) => s.day);
+  const queue = useActivityStore((s) => s.queue);
 
+  const timePoints = Math.max(0, maxTimePoints - scheduledHours(queue));
   const lerpTimePoints = useLerpNumber(timePoints);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);

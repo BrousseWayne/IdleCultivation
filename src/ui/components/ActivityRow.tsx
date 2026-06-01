@@ -1,5 +1,5 @@
 import { Plus, Minus } from "lucide-react";
-import { useActivityStore, queuedUnits } from "@/game/stores/activityStore";
+import { useActivityStore, queuedUnits, unitKeyAt } from "@/game/stores/activityStore";
 import { useGameStore } from "@/game/stores/gameStore";
 import { queueActivity, unqueueActivity } from "@/game/engine/gameLoop";
 import { EntityRegistry } from "@/game/services";
@@ -27,13 +27,14 @@ export function ActivityRow({ activity, onQueue, onUnqueue }: {
   onUnqueue: (key: string) => void;
 }) {
   const queue = useActivityStore((s) => s.queue);
+  const scheduleIndex = useActivityStore((s) => s.scheduleIndex);
   const xp = useActivityStore((s) => s.activityXp[activity.key] || 0);
   const runningTicks = useActivityStore((s) => s.runningTicks);
   const completions = useActivityStore((s) => s.completionCounts[activity.key] || 0);
 
   const units = queuedUnits(queue, activity.key);
   const allocated = units * activity.timeCost;
-  const isRunning = queue[0]?.key === activity.key;
+  const isRunning = unitKeyAt(queue, scheduleIndex) === activity.key;
   const colors = CATEGORY_COLOR_CLASSES[activity.category];
 
   const progress = isRunning ? Math.min(runningTicks / activity.timeCost, 1) : 0;

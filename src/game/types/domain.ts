@@ -116,11 +116,23 @@ export type ActivityCategory = (typeof ALL_CATEGORIES)[number];
 
 export type Activity = ActivityModel & ActivityView;
 
+// A contextual non-activity verb at a place: talk to someone, enter a shop, etc.
+// Free (no time cost). Rewards must come gated/costed via the eventual event/shop
+// systems — for now `onSelect` is descriptive narration only.
+export type PlaceAction = {
+  key: string;
+  label: string;
+  detail: string;
+  icon: LucideIcon;
+  kind: "talk" | "shop" | "enter";
+};
+
 export type Place = {
   key: string;
   name: string;
   description: string;
   activityKeys: string[];
+  actions?: PlaceAction[];
   connections: string[];
   unlocked: boolean;
   x: number;

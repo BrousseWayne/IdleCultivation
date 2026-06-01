@@ -3,7 +3,8 @@ import type { QueueBlock } from "@/game/types/domain";
 
 interface ActivityState {
   queue: QueueBlock[];
-  runningTicks: number; // ticks elapsed into the current head unit
+  runningTicks: number;
+  scheduleIndex: number;
   completionCounts: Record<string, number>;
   activityXp: Record<string, number>;
   repeatActivities: boolean;
@@ -11,10 +12,11 @@ interface ActivityState {
 
   pushUnit: (key: string) => void;
   popUnit: (key: string) => void;
-  consumeHeadUnit: () => void; // one unit of the head block finished
   setQueue: (queue: QueueBlock[]) => void;
   clearQueue: () => void;
   setRunningTicks: (ticks: number) => void;
+  advanceSchedule: () => void;
+  resetSchedule: () => void;
 
   setRepeatActivities: (repeat: boolean) => void;
   setSelectedLocation: (location: string) => void;
@@ -27,6 +29,7 @@ interface ActivityState {
 const initialActivityState = {
   queue: [] as QueueBlock[],
   runningTicks: 0,
+  scheduleIndex: 0,
   completionCounts: {} as Record<string, number>,
   activityXp: {} as Record<string, number>,
   repeatActivities: true,
@@ -38,6 +41,30 @@ export function queuedUnits(queue: QueueBlock[], key: string): number {
   return queue.reduce((n, b) => (b.key === key ? n + b.units : n), 0);
 }
 
+export function totalUnits(queue: QueueBlock[]): number {
+  return queue.reduce((n, b) => n + b.units, 0);
+}
+
+// key of the flattened unit at `index`, or undefined if past the end (idle).
+export function unitKeyAt(queue: QueueBlock[], index: number): string | undefined {
+  let acc = 0;
+  for (const b of queue) {
+    if (index < acc + b.units) return b.key;
+    acc += b.units;
+  }
+  return undefined;
+}
+
+// block array index containing the flattened unit at `index`, or -1.
+export function blockAt(queue: QueueBlock[], index: number): number {
+  let acc = 0;
+  for (let i = 0; i < queue.length; i++) {
+    if (index < acc + queue[i].units) return i;
+    acc += queue[i].units;
+  }
+  return -1;
+}
+
 function pushUnit(queue: QueueBlock[], key: string): QueueBlock[] {
   const last = queue[queue.length - 1];
   if (last && last.key === key) {
@@ -46,16 +73,11 @@ function pushUnit(queue: QueueBlock[], key: string): QueueBlock[] {
   return [...queue, { key, units: 1 }];
 }
 
-// remove the last queued unit of key; never the unit currently running
-// (head block index 0, its first unit). Returns unchanged if nothing removable.
+// remove the last-queued unit of key (back-to-front). Returns unchanged if absent.
 function popUnit(queue: QueueBlock[], key: string): QueueBlock[] {
   for (let i = queue.length - 1; i >= 0; i--) {
     const block = queue[i];
     if (block.key !== key) continue;
-    // the running unit is block 0's first unit; protect it
-    const isHead = i === 0;
-    const removableUnits = isHead ? block.units - 1 : block.units;
-    if (removableUnits <= 0) continue;
     if (block.units === 1) return queue.filter((_, j) => j !== i);
     return queue.map((b, j) => (j === i ? { ...b, units: b.units - 1 } : b));
   }
@@ -66,22 +88,22 @@ export const useActivityStore = create<ActivityState>((set) => ({
   ...initialActivityState,
 
   pushUnit: (key) => set((s) => ({ queue: pushUnit(s.queue, key) })),
-  popUnit: (key) => set((s) => ({ queue: popUnit(s.queue, key) })),
-
-  consumeHeadUnit: () =>
+  popUnit: (key) =>
     set((s) => {
-      const head = s.queue[0];
-      if (!head) return s;
-      const queue =
-        head.units > 1
-          ? [{ key: head.key, units: head.units - 1 }, ...s.queue.slice(1)]
-          : s.queue.slice(1);
-      return { queue, runningTicks: 0 };
+      const oldKey = unitKeyAt(s.queue, s.scheduleIndex);
+      const queue = popUnit(s.queue, key);
+      const scheduleIndex = Math.min(s.scheduleIndex, totalUnits(queue));
+      if (unitKeyAt(queue, scheduleIndex) !== oldKey) {
+        return { queue, scheduleIndex, runningTicks: 0 };
+      }
+      return { queue, scheduleIndex };
     }),
 
   setQueue: (queue) => set({ queue }),
-  clearQueue: () => set({ queue: [], runningTicks: 0 }),
+  clearQueue: () => set({ queue: [], scheduleIndex: 0, runningTicks: 0 }),
   setRunningTicks: (ticks) => set({ runningTicks: ticks }),
+  advanceSchedule: () => set((s) => ({ scheduleIndex: s.scheduleIndex + 1, runningTicks: 0 })),
+  resetSchedule: () => set({ scheduleIndex: 0, runningTicks: 0 }),
 
   setRepeatActivities: (repeat) => set({ repeatActivities: repeat }),
   setSelectedLocation: (location) => set({ selectedLocation: location }),

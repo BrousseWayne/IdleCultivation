@@ -1,11 +1,11 @@
 import { Clock, TrendingUp, ListOrdered, Activity, X, ChevronDown } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useActivityStore } from "@/game/stores/activityStore";
-import { useGameStore, TIME_SCALES } from "@/game/stores/gameStore";
+import { useGameStore } from "@/game/stores/gameStore";
 import { useMemo, useState } from "react";
 import { CURRENCY_COLORS, STAT_COLORS, getCategoryHex, CATEGORY_COLOR_CLASSES } from "@/game/data/sectionColors";
 import { EntityRegistry } from "@/game/services";
-import { unqueueActivity } from "@/game/engine/gameLoop";
+import { unqueueActivity, scheduledHours } from "@/game/engine/gameLoop";
 import { getPlace } from "@/game/data/places";
 import { activityData } from "@/game/data/activity";
 import { formatNumber, getActivityXpProgress, scaleEffectAmount } from "@/game/utils";
@@ -20,10 +20,7 @@ export function RenderActivitiesPage() {
   const activityXp = useActivityStore((s) => s.activityXp);
   const repeatActivities = useActivityStore((s) => s.repeatActivities);
   const setRepeatActivities = useActivityStore((s) => s.setRepeatActivities);
-  const timePoints = useGameStore((s) => s.timePoints);
   const maxTimePoints = useGameStore((s) => s.maxTimePoints);
-  const timeScale = useGameStore((s) => s.timeScale);
-  const setTimeScale = useGameStore((s) => s.setTimeScale);
   const currentPlaceKey = useGameStore((s) => s.currentPlaceKey);
   const { queue: doQueue, unqueue } = useActivityActions();
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
@@ -65,14 +62,8 @@ export function RenderActivitiesPage() {
     return gains;
   }, [queue, activityXp]);
 
-  const committedHours = useMemo(
-    () => queue.reduce((sum, b) => {
-      const a = EntityRegistry.get("activity", b.key);
-      return sum + (a ? a.timeCost * b.units : 0);
-    }, 0),
-    [queue]
-  );
-  const usedPct = maxTimePoints > 0 ? (committedHours / maxTimePoints) * 100 : 0;
+  const freeHours = Math.max(0, maxTimePoints - scheduledHours(queue));
+  const freePct = maxTimePoints > 0 ? (freeHours / maxTimePoints) * 100 : 0;
 
   return (
     <div className="space-y-4">
@@ -82,18 +73,6 @@ export function RenderActivitiesPage() {
         {/* left: activities to do */}
         <div className="flex-[3] min-w-0 space-y-4">
           <div className="flex items-center gap-4 text-sm">
-            <div className="flex items-center gap-2">
-              <span className="text-slate-500 text-xs">{text("page.activities.label.scale")}</span>
-              <select
-                value={timeScale}
-                onChange={(e) => setTimeScale(e.target.value as "day" | "week" | "month")}
-                className="appearance-none bg-slate-900/50 border border-slate-700/30 rounded px-2 py-0.5 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-accent-jade/50"
-              >
-                {Object.entries(TIME_SCALES).map(([key, scale]) => (
-                  <option key={key} value={key}>{scale.label} ({24 * scale.multiplier}h)</option>
-                ))}
-              </select>
-            </div>
             <div className="flex items-center gap-2">
               <span className="text-slate-500 text-xs">{text("page.activities.label.autoRepeat")}</span>
               <Switch checked={repeatActivities} onCheckedChange={setRepeatActivities} className="data-[state=checked]:bg-green-500 scale-75" />
@@ -134,10 +113,10 @@ export function RenderActivitiesPage() {
         <div className="space-y-1.5">
           <div className="flex justify-between text-sm">
             <span className="text-slate-500">{text("page.activities.label.free")}</span>
-            <span className="text-accent-jade font-mono font-bold">{timePoints}h / {maxTimePoints}h</span>
+            <span className="text-accent-jade font-mono font-bold">{freeHours}h / {maxTimePoints}h</span>
           </div>
           <div className="h-2 bg-slate-800/60 rounded-full overflow-hidden">
-            <div className="h-full bg-accent-jade/80 rounded-full transition-all duration-300" style={{ width: `${100 - usedPct}%` }} />
+            <div className="h-full bg-accent-jade/80 rounded-full transition-all duration-300" style={{ width: `${freePct}%` }} />
           </div>
         </div>
       </div>

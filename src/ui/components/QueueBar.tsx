@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
-import { useActivityStore } from "@/game/stores/activityStore";
+import { useActivityStore, unitKeyAt } from "@/game/stores/activityStore";
 import { getCategoryHex } from "@/game/data/sectionColors";
 import { EntityRegistry } from "@/game/services";
 import { text } from "@/game/content/text";
@@ -9,6 +9,7 @@ export function QueueBar() {
   const [collapsed, setCollapsed] = useState(false);
   const queue = useActivityStore((s) => s.queue);
   const runningTicks = useActivityStore((s) => s.runningTicks);
+  const scheduleIndex = useActivityStore((s) => s.scheduleIndex);
 
   if (queue.length === 0) {
     return (
@@ -26,7 +27,8 @@ export function QueueBar() {
   });
   const totalQueueTime = segments.reduce((sum, a) => sum + a.timeCost, 0);
 
-  const head = EntityRegistry.get("activity", queue[0].key);
+  const currentKey = unitKeyAt(queue, scheduleIndex);
+  const head = currentKey ? EntityRegistry.get("activity", currentKey) : undefined;
   const headColor = head ? getCategoryHex(head.category) : "#888";
   const headHours = head ? head.timeCost - runningTicks : 0;
 
@@ -47,6 +49,9 @@ export function QueueBar() {
             </div>
           </div>
         )}
+        {!head && (
+          <span className="text-xs text-slate-500 italic">{text("queue.resting")}</span>
+        )}
         <div className="flex-1" />
         <span className="text-xs text-slate-500 font-mono">{segments.length} queued · {totalQueueTime}h</span>
         {collapsed ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
@@ -58,7 +63,7 @@ export function QueueBar() {
             {segments.map((activity, index) => {
               const percentage = totalQueueTime > 0 ? (activity.timeCost / totalQueueTime) * 100 : 0;
               const bgColor = getCategoryHex(activity.category);
-              const isCurrent = index === 0;
+              const isCurrent = index === scheduleIndex;
               const currentProgress = isCurrent ? Math.min((runningTicks / activity.timeCost) * 100, 100) : 0;
               return (
                 <div

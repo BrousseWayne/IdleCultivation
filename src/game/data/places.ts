@@ -1,5 +1,5 @@
 import type { Place } from "@/game/types/domain";
-import { Footprints, Hammer, Store } from "lucide-react";
+import { Footprints, Hammer, Store, Users, Utensils } from "lucide-react";
 
 export const STARTING_PLACE = "cityStreets";
 
@@ -14,6 +14,9 @@ export const places: Place[] = [
     description:
       "Mud and noise. The city churns past you without a glance. A beggar's bowl is the only thing the gate guards left you.",
     activityKeys: ["beg"],
+    actions: [
+      { key: "elder", label: "Speak to the ragged elder", detail: "he watches you from the gutter", icon: Users, kind: "talk" },
+    ],
     connections: ["laborYard", "marketSquare"],
     unlocked: true,
     x: 32,
@@ -40,6 +43,9 @@ export const places: Place[] = [
     description:
       "Merchants haggle beneath faded banners. There is money here, for those who can make themselves useful.",
     activityKeys: ["helpElders", "networkMerchants"],
+    actions: [
+      { key: "foodStall", label: "Food stall", detail: "spend coin to eat", icon: Utensils, kind: "shop" },
+    ],
     connections: ["cityStreets"],
     unlocked: true,
     x: 64,

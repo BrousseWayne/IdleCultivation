@@ -1,5 +1,5 @@
 import { useGameStore } from "@/game/stores/gameStore";
-import { useActivityStore } from "@/game/stores/activityStore";
+import { useActivityStore, totalUnits, unitKeyAt } from "@/game/stores/activityStore";
 import { useCultivatorStore } from "@/game/stores/cultivatorStore";
 import { useInventoryStore } from "@/game/stores/inventoryStore";
 import { EventBus } from "@/game/services/EventBus";
@@ -10,10 +10,6 @@ import { getActivityXpProgress, scaleEffectAmount } from "@/game/utils/activityX
 import { backgroundDefinitions } from "@/game/data/intro";
 import type { Activity, Background, QueueBlock } from "@/game/types/domain";
 import type { Effect } from "@/game/types/effects";
-
-function totalUnits(queue: QueueBlock[]): number {
-  return queue.reduce((n, b) => n + b.units, 0);
-}
 
 const TICKS_PER_SECOND = 24;
 const TICKS_PER_DAY = 24;
@@ -26,12 +22,21 @@ export function resetAging(): void {
   lastAgeDay = 0;
 }
 
-function timeSystem(): { ticks: number; day: number } {
-  const { ticks, day } = useGameStore.getState();
-  const nextTicks = ticks + 1;
-  const nextDay = nextTicks % TICKS_PER_DAY === 0 ? day + 1 : day;
+// total hours committed by the day's schedule.
+export function scheduledHours(queue: QueueBlock[]): number {
+  return queue.reduce((sum, b) => {
+    const a = EntityRegistry.get("activity", b.key);
+    return sum + (a ? a.timeCost * b.units : 0);
+  }, 0);
+}
+
+function timeSystem(): { ticks: number; day: number; rolledDay: boolean } {
+  const game = useGameStore.getState();
+  const nextTicks = game.ticks + 1;
+  const rolledDay = nextTicks % TICKS_PER_DAY === 0;
+  const nextDay = rolledDay ? game.day + 1 : game.day;
   useGameStore.setState({ ticks: nextTicks, day: nextDay });
-  return { ticks: nextTicks, day: nextDay };
+  return { ticks: nextTicks, day: nextDay, rolledDay };
 }
 
 function completeActivity(activity: Activity): void {
@@ -58,16 +63,6 @@ function completeActivity(activity: Activity): void {
     useGameStore.getState().pushLog({ text: `${activity.name}: earned ${coin} coin.`, theme: "income" });
   }
 
-  // consume this unit from the head block
-  act.consumeHeadUnit();
-
-  // repeat: re-commit one unit if the budget allows
-  const game = useGameStore.getState();
-  if (act.repeatActivities && game.timePoints - activity.timeCost >= 0) {
-    game.allocateTime(activity.timeCost);
-    act.pushUnit(activity.key);
-  }
-
   EventBus.emit({
     type: "activity:completed",
     payload: { activityKey: activity.key },
@@ -76,25 +71,28 @@ function completeActivity(activity: Activity): void {
 
 function activitySystem(): void {
   const act = useActivityStore.getState();
-  const head = act.queue[0];
-  if (!head) return;
+  const key = unitKeyAt(act.queue, act.scheduleIndex);
+  if (!key) return; // schedule done for the day → idle
 
-  const activity = EntityRegistry.get("activity", head.key);
+  const activity = EntityRegistry.get("activity", key);
   if (!activity) {
-    act.consumeHeadUnit();
+    act.advanceSchedule();
     return;
   }
 
   const next = act.runningTicks + 1;
   if (next >= activity.timeCost) {
     completeActivity(activity);
-    const after = useActivityStore.getState();
-    if (after.queue.length === 0 && !after.repeatActivities) {
-      gameLoop.stop();
-    }
+    useActivityStore.getState().advanceSchedule();
   } else {
     act.setRunningTicks(next);
   }
+}
+
+// new day: replay the schedule from the top if repeat is on.
+function dayRollSystem(): void {
+  const act = useActivityStore.getState();
+  if (act.repeatActivities) act.resetSchedule();
 }
 
 function agingSystem(day: number): void {
@@ -115,8 +113,9 @@ function agingSystem(day: number): void {
 }
 
 export function runTick(): void {
-  const { ticks, day } = timeSystem();
+  const { ticks, day, rolledDay } = timeSystem();
   activitySystem();
+  if (rolledDay) dayRollSystem();
   agingSystem(day);
 
   EventBus.emit({ type: "game:tick", payload: { ticks, day } });
@@ -158,26 +157,17 @@ export const gameLoop = new GameLoop();
 export function queueActivity(activityKey: string, units = 1): boolean {
   const activity = EntityRegistry.get("activity", activityKey);
   if (!activity) return false;
-  const game = useGameStore.getState();
-  const cost = units * activity.timeCost;
-  if (game.timePoints - cost < 0) return false;
-  game.allocateTime(cost);
   const act = useActivityStore.getState();
+  const max = useGameStore.getState().maxTimePoints;
+  if (scheduledHours(act.queue) + units * activity.timeCost > max) return false;
   for (let i = 0; i < units; i++) act.pushUnit(activityKey);
   return true;
 }
 
 export function unqueueActivity(activityKey: string): boolean {
-  const activity = EntityRegistry.get("activity", activityKey);
-  if (!activity) return false;
   const before = totalUnits(useActivityStore.getState().queue);
   useActivityStore.getState().popUnit(activityKey);
-  const after = totalUnits(useActivityStore.getState().queue);
-  if (after < before) {
-    useGameStore.getState().deallocateTime(activity.timeCost);
-    return true;
-  }
-  return false;
+  return totalUnits(useActivityStore.getState().queue) < before;
 }
 
 export function bootRun(): void {

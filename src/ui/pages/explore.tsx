@@ -1,9 +1,14 @@
 import { useGameStore } from "@/game/stores/gameStore";
 import { getPlace, places } from "@/game/data/places";
 import { EntityRegistry } from "@/game/services";
-import { activityData } from "@/game/data/activity";
 import { ActivityRow, useActivityActions } from "@/ui/components/ActivityRow";
-import type { Activity } from "@/game/types/domain";
+import type { Activity, PlaceAction } from "@/game/types/domain";
+
+const ACTION_KIND_COLOR: Record<PlaceAction["kind"], string> = {
+  talk: "text-accent-violet",
+  shop: "text-accent-gold",
+  enter: "text-accent-sky",
+};
 
 export function RenderExplorePage() {
   const currentPlaceKey = useGameStore((s) => s.currentPlaceKey);
@@ -27,11 +32,17 @@ export function RenderExplorePage() {
     pushLog({ text: `You make your way to ${dest.name}.`, theme: "travel" });
   };
 
+  // contextual non-activity actions are free; until the event/shop systems exist
+  // they only narrate. This is the plug point for events/dialogue.
+  const doAction = (action: PlaceAction) => {
+    pushLog({ text: `You ${action.label.toLowerCase()}.`, theme: action.kind === "talk" ? "dialogue" : "ambient" });
+  };
+
   const placeActivities = place.activityKeys
     .map((k) => EntityRegistry.get("activity", k))
     .filter((a): a is Activity => !!a && a.unlocked);
 
-  const selfActivities = activityData.filter((a) => a.scope === "self" && a.unlocked);
+  const actions = place.actions ?? [];
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -79,19 +90,24 @@ export function RenderExplorePage() {
       </header>
       <p className="text-[15px] leading-relaxed text-slate-300 font-[family-name:var(--font-sans)]">{place.description}</p>
 
-      {placeActivities.length > 0 && (
+      {actions.length > 0 && (
         <section className="space-y-1.5">
-          <div className="text-[11px] text-slate-600 uppercase tracking-widest">What you can do here</div>
-          {placeActivities.map((a) => (
-            <ActivityRow key={a.key} activity={a} onQueue={queue} onUnqueue={unqueue} />
+          <div className="text-[11px] text-slate-600 uppercase tracking-widest">Here</div>
+          {actions.map((action) => (
+            <button key={action.key} onClick={() => doAction(action)}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md border border-slate-800/50 hover:border-accent-cinnabar/40 hover:bg-slate-900/40 transition-colors text-left">
+              <action.icon className={`w-4 h-4 shrink-0 ${ACTION_KIND_COLOR[action.kind]}`} />
+              <span className="text-sm text-slate-200">{action.label}</span>
+              <span className="ml-auto text-xs text-slate-600">{action.detail}</span>
+            </button>
           ))}
         </section>
       )}
 
-      {selfActivities.length > 0 && (
+      {placeActivities.length > 0 && (
         <section className="space-y-1.5">
-          <div className="text-[11px] text-slate-600 uppercase tracking-widest">On your own</div>
-          {selfActivities.map((a) => (
+          <div className="text-[11px] text-slate-600 uppercase tracking-widest">What you can do here</div>
+          {placeActivities.map((a) => (
             <ActivityRow key={a.key} activity={a} onQueue={queue} onUnqueue={unqueue} />
           ))}
         </section>

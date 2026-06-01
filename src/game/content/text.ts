@@ -108,6 +108,7 @@ const CONTENT = {
   "lifestyle.cost.free": { default: "Free" },
 
   "queue.empty": { default: "No activities scheduled" },
+  "queue.resting": { default: "Day's work done — resting" },
 
   "death.title": { default: "Cultivation Ended" },
   "death.subtitle": { default: "The candle burns out. The flame remembers." },

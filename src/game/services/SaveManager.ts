@@ -35,8 +35,6 @@ class SaveManagerService {
         gameSpeed: game.gameSpeed,
         introComplete: game.introComplete,
         runBackground: game.runBackground,
-        timeScale: game.timeScale,
-        timePoints: game.timePoints,
         maxTimePoints: game.maxTimePoints,
         selectedTimeScale: game.selectedTimeScale,
         selectedYear: game.selectedYear,
@@ -54,6 +52,7 @@ class SaveManagerService {
       activity: {
         queue: activity.queue,
         runningTicks: activity.runningTicks,
+        scheduleIndex: activity.scheduleIndex,
         completionCounts: activity.completionCounts,
         activityXp: activity.activityXp,
         repeatActivities: activity.repeatActivities,

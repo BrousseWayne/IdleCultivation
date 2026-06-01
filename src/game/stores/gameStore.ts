@@ -13,14 +13,7 @@ import { initialNavigationUnlockState, initialPhase } from "@/game/data/constant
 import { INITIALLY_UNLOCKED } from "@/game/data/activity";
 import { STARTING_PLACE } from "@/game/data/places";
 
-type TimeScale = "day" | "week" | "month";
 type CalendarView = "month" | "year" | "decade" | "era";
-
-export const TIME_SCALES = {
-  day: { label: "Day", multiplier: 1, unit: "day" },
-  week: { label: "Week", multiplier: 7, unit: "week" },
-  month: { label: "Month", multiplier: 30, unit: "month" },
-} as const;
 
 const createInitialActivityUnlockState = (): ActivityUnlockState => {
   const state = {} as ActivityUnlockState;
@@ -39,8 +32,6 @@ interface GameState {
   runBackground: Background | null;
   phase: GamePhase;
 
-  timeScale: TimeScale;
-  timePoints: number;
   maxTimePoints: number;
 
   selectedTimeScale: string;
@@ -61,10 +52,6 @@ interface GameState {
   startRun: (background: Background) => void;
   reset: () => void;
 
-  setTimeScale: (scale: TimeScale) => void;
-  allocateTime: (amount: number) => void;
-  deallocateTime: (amount: number) => void;
-  resetTimePoints: () => void;
 
   setSelectedTimeScale: (scale: string) => void;
   setSelectedYear: (year: number) => void;
@@ -85,7 +72,6 @@ interface GameState {
   setSelectedDate: (date: number | null) => void;
   setShowDetailedView: (show: boolean) => void;
 
-  getTimeScaleConfig: () => (typeof TIME_SCALES)[TimeScale];
 }
 
 const createInitialGameState = () => ({
@@ -96,8 +82,6 @@ const createInitialGameState = () => ({
   introComplete: false,
   runBackground: null as Background | null,
   phase: initialPhase,
-  timeScale: "day" as TimeScale,
-  timePoints: 24,
   maxTimePoints: 24,
   selectedTimeScale: "Day",
   selectedYear: 1,
@@ -113,32 +97,8 @@ const createInitialGameState = () => ({
   showDetailedView: false,
 });
 
-export const useGameStore = create<GameState>((set, get) => ({
+export const useGameStore = create<GameState>((set) => ({
   ...createInitialGameState(),
-
-  setTimeScale: (scale) => {
-    const newMax = 24 * TIME_SCALES[scale].multiplier;
-    set({
-      timeScale: scale,
-      maxTimePoints: newMax,
-      timePoints: newMax,
-    });
-  },
-
-  allocateTime: (amount) =>
-    set((state) => ({
-      timePoints: Math.max(0, state.timePoints - amount),
-    })),
-
-  deallocateTime: (amount) =>
-    set((state) => ({
-      timePoints: Math.min(state.maxTimePoints, state.timePoints + amount),
-    })),
-
-  resetTimePoints: () =>
-    set((state) => ({
-      timePoints: state.maxTimePoints,
-    })),
 
   setSelectedTimeScale: (scale) => set({ selectedTimeScale: scale }),
   setSelectedYear: (year) => set({ selectedYear: year }),
@@ -177,8 +137,6 @@ export const useGameStore = create<GameState>((set, get) => ({
   clearLog: () => set({ streamLog: [] }),
   setSelectedDate: (date) => set({ selectedDate: date }),
   setShowDetailedView: (show) => set({ showDetailedView: show }),
-
-  getTimeScaleConfig: () => TIME_SCALES[get().timeScale],
 
   startRun: (background) => {
     set({ introComplete: true, runBackground: background });

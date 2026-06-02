@@ -1,42 +1,43 @@
 ---
 purpose: Source of truth for the wired runtime architecture — Zustand stores, services, the effect/event/unlock discriminated-union systems, and the run-vs-meta state model.
 status: active
-last-verified: 2026-05-30
+last-verified: 2026-06-02
 related: [docs/architecture/conventions.md, docs/design/core-loop.md]
 ---
 
 ## Key facts
 
-- WIRED: FIVE Zustand stores exist — `cultivatorStore`, `gameStore`, `activityStore`, `inventoryStore`, `notificationStore` (`src/app/stores/`). (Older docs said 4; `notificationStore` was added and is correct at 5.)
-- WIRED: Stores never import each other. Cross-store communication goes through `EventBus` (`src/app/services/EventBus.ts`), a synchronous in-memory pub-sub keyed by string event type.
-- WIRED: `EntityRegistry` (`src/app/services/EntityRegistry.ts`) is a singleton seeded imperatively in `src/main.tsx` BEFORE React mounts — `activity`, `item`, `location`, `navigation` maps. O(1) `get`/`getAll`/`has` by `type+id`.
-- WIRED: `UnlockEvaluator` (`src/app/services/UnlockEvaluator.ts`) — data-driven, event-driven (no polling). Unlockables registered in `gameEventListeners.ts`; `checkAll()` is called from EventBus handlers (`activity:completed`, `cultivator:stat-changed`, and periodically inside `game:tick`). A satisfied unlockable fires `onUnlock()` once, is added to `unlockedIds`, and is DELETED from the pool.
-- WIRED: `EffectExecutor` (`src/app/services/EffectExecutor.ts`) applies an `Effect[]` discriminated union by switching on `effect.type` and calling store actions directly.
-- KNOWN GAP (per ruling C3): `Effect` carries a `currency: Currency` field on `grant_currency`/`spend_currency`, but `EffectExecutor` IGNORES it and always routes to the single `inventory.spiritStones` integer via `addSpiritStones`/`subtractSpiritStones`.
-- INTENDED, NOT WIRED (C3): four distinct currency balances (Bronze/Silver/Gold/Platinum). The `Currency` type exists (`domain.ts`) and README advertises it, but the store holds ONE `spiritStones` number — no per-currency balances.
-- WIRED: `SaveManager` (`src/app/services/SaveManager.ts`) — localStorage key `cultivation-save`, `SAVE_VERSION = 1`, 30s autosave interval. Snapshots four stores (NOT `notificationStore`). Load/start-autosave called in `main.tsx`.
-- WIRED: Game tick loop lives in `gameStore` (`startGameLoop`/`tick`), driven by `setInterval` at 24 ticks/sec × `gameSpeed`; 24 ticks = 1 in-game day. Each tick emits `game:tick` on the EventBus.
-- WIRED: Activity completion timing is driven by a React effect `useActivityExecutor` inside `GameStateProvider` (`src/app/contexts/gameStateContext.tsx`) reacting to `ticks`, NOT by the EventBus.
-- WIRED: JSON + Zod schema layer is staged in `src/app/data/json/` + `src/app/data/schemas/`. SIX data files parse JSON through Zod at import: `items`, `locations`, `lifestyle`, `story`, `quests`, `unlocks(unlockables)`. (Ruling C noted "only unlockables.json wired" — verified reality is broader; documented below.) Activities remain pure TS (`activity.ts`) because they carry icons/functions.
-- INTENDED, NOT WIRED (C2): two-layer state model. Run-state stores are real. Meta-state (prestige currencies, karma/luck, permanent unlocks) does NOT exist in code — no `ascension`, `transcendence`, `immortalJade`, or meta store anywhere.
+- WIRED: code is split into `src/game/` (headless logic — stores, services, engine, data, types, utils) and `src/ui/` (React — pages, components, layout, hooks). `@/` → `src/`. (Older docs said `src/app/`; that layout no longer exists.)
+- WIRED: FIVE Zustand stores — `cultivatorStore`, `gameStore`, `activityStore`, `inventoryStore`, `notificationStore` (`src/game/stores/`).
+- WIRED: Stores never import each other. Cross-store communication goes through `EventBus` (`src/game/services/EventBus.ts`). The engine/service layer (`engine/gameLoop.ts`, `EffectExecutor`, `gameEventListeners`) is the orchestrator that IS allowed to read every store via `getState()` and emit on the bus.
+- WIRED: the tick loop lives in `src/game/engine/gameLoop.ts` — a `GameLoop` class (`setInterval` at 24 ticks/sec × `gameSpeed`) driving `runTick()`, NOT in `gameStore`. Each tick runs `timeSystem → activitySystem → (dayRollSystem on a day roll) → agingSystem`, then emits `game:tick`. 24 ticks = 1 in-game day.
+- WIRED: activities are an ordered **daily schedule**, not a draining queue. `activityStore.queue: QueueBlock[]` is a stable plan (adjacent same-key blocks merge); `scheduleIndex` tracks the unit currently running. `activitySystem` advances the index on completion and idles once it passes the end. On a day roll, if `repeatActivities`, `dayRollSystem` resets the index to 0 (replay the day). The queue does not get consumed.
+- WIRED: the time budget is **derived, not a resource**. `maxTimePoints = 24` (one day's hours). Free hours = `maxTimePoints − scheduledHours(queue)`. `queueActivity` rejects anything that would push the schedule past 24h. There is no allocate/deallocate/refill; the old draining `timePoints` and the `timeScale` multiplier were removed.
+- WIRED: `EntityRegistry` (`src/game/services/EntityRegistry.ts`) — singleton seeded imperatively in `src/main.tsx` BEFORE React mounts (`activity`/`item`/`location`/`navigation`). O(1) `get`/`getAll`/`has`.
+- WIRED: `UnlockEvaluator` — data-driven, event-driven (no polling). `checkAll()` runs on `activity:completed`, `cultivator:stat-changed`, and at aging/decade boundaries. A satisfied unlockable fires `onUnlock()` once, then is deleted from the pool.
+- WIRED: `EffectExecutor` applies an `Effect[]` discriminated union by switching on `effect.type` and calling store actions directly.
+- RESOLVED (was the C3 gap): currency is a single integer balance with a **denomination** system. `Effect.currency` ∈ {Bronze=1, Silver=100, Gold=10 000, Platinum=1 000 000} is converted to base coin by `toCurrency()` (`data/currency.ts`); the sidebar `renderMoney()` decomposes the integer back into denominations. There are NOT four separate balances. `UnlockEvaluator`'s old `spirit_stones` condition is now `currency`.
+- WIRED: `SaveManager` (`src/game/services/SaveManager.ts`) — localStorage `cultivation-save`, `SAVE_VERSION = 1`, 30s autosave. Snapshots cultivator/game/activity/inventory (NOT `notificationStore`); persists `scheduleIndex`.
+- REMOVED: the JSON + Zod data-staging layer. There is no `data/json/` or `data/schemas/`; ALL content is pure TS (commit "convert remaining JSON data to typed TS, drop zod").
+- INTENDED, NOT WIRED: the two-layer state model. Run-state stores are real; there is no meta-state layer (prestige currencies, karma/luck, permanent unlocks). `reincarnate()` full-wipes every store and auto-reboots a fresh run.
 
 ## State management: five Zustand stores
 
-State lives in five `create()` Zustand stores under `src/app/stores/`. Components subscribe to slices directly; services and other stores read via `useXxxStore.getState()` and write via actions or `setState`.
+State lives in five `create()` Zustand stores under `src/game/stores/`. Components subscribe to slices directly; services and the engine read via `useXxxStore.getState()` and write via actions or `setState`.
 
-- `cultivatorStore` — run-scoped player: `age`, `lifespan`, `vitality`/`satiety`/`mortality` (each a `{max,current}` ResourceBar), `stats` (`Record<Stats, number>` where `Stats = "Strength" | "Dexterity"`), `hasFallen`. Actions: `incrementStat`, `takeDamage`, `heal`, `incrementAge`, `reset`.
-- `gameStore` — the largest store: tick/time (`ticks`, `day`, `gameSpeed`, `intervalId`, `isPlaying`), intro/run flags (`introComplete`, `runBackground`), the time-budget system (`timePoints`/`maxTimePoints`/`timeScale`), calendar selection state, `navigationUnlocks` + `activityCategoryUnlocks`, `eventLog`, and the game-loop + unlock-application actions. Owns `startGameLoop`/`stopGameLoop`/`tick`, `startRun`, and `reincarnate`.
-- `activityStore` — `activityQueue` (Activity[]), `allocatedActivities`, `completionCounts`, `activityXp`, `repeatActivities`, `currentActivityStartTick`. `completeCurrentActivity()` computes XP via `xpScalingFn`, scales `grant_currency`/`grant_stat` effect amounts by level (`scaleEffectAmount`), runs them through `EffectExecutor`, re-queues if `repeatActivities` and budget remains, then emits `activity:completed`.
-- `inventoryStore` — single `spiritStones: number`, `inventoryItems`, `equippedItems` (six slots), `dailyExpenses`/`dailyIncome`. `equipItem` resolves the item through `EntityRegistry.get("item", ...)`.
+- `cultivatorStore` — run-scoped player: `age`, `lifespan`, `vitality`/`satiety`/`mortality` (each a `{max,current}` ResourceBar), `stats` (`Record<Stats, number>` where `Stats = "Strength" | "Dexterity"`), `hasFallen`. Actions: `incrementStat`, `takeDamage`, `heal`, `incrementAge`, `reset`. (The three ResourceBars are display-only today — nothing drains them yet.)
+- `gameStore` — tick/time (`ticks`, `day`, `gameSpeed`, `isPlaying`), intro/run flags (`introComplete`, `runBackground`), `maxTimePoints` (=24; free hours are derived from the schedule, not stored), the persistent `streamLog`, `currentPlaceKey`, calendar-selection state, and `navigationUnlocks` + `activityCategoryUnlocks` with their unlock actions. The tick loop and `reincarnate` live in `engine/gameLoop.ts`; `startRun` only sets `introComplete`/`runBackground`.
+- `activityStore` — `queue: QueueBlock[]` (the day's ordered schedule; adjacent same-key blocks merge), `scheduleIndex` (unit currently running), `runningTicks`, `completionCounts`, `activityXp`, `repeatActivities`. Editing actions `pushUnit`/`popUnit`/`clearQueue`; execution actions `advanceSchedule`/`resetSchedule`/`setRunningTicks`; pure helpers `queuedUnits`/`totalUnits`/`unitKeyAt`/`blockAt`. Completion logic (XP, level-scaled effects, `EffectExecutor`, `activity:completed`) lives in `engine/gameLoop.ts`.
+- `inventoryStore` — single `currency: number` (denomination-encoded; see currency note), `inventoryItems`, `equippedItems` (six slots), `dailyExpenses`/`dailyIncome`. `equipItem` resolves the item through `EntityRegistry.get("item", ...)`.
 - `notificationStore` — transient UI notifications with auto-dismiss timers. NOT persisted by SaveManager.
 
 ### Run-state vs meta-state (INTENDED, partially built)
 
-The intended model is two layers: run-state (resets on death/reincarnation) and meta-state (persists forever — prestige currencies, hidden stats, permanent unlocks). Verified in code: only run-state exists. `reincarnate()` in `gameStore` stops the loop, emits `cultivator:reincarnated`, and resets `gameStore` to initial; the `cultivator:reincarnated` handler in `gameEventListeners.ts` resets cultivator/activity/inventory stores and clears the save. There is no meta store and no prestige currency persistence — meta-state is planned, not implemented.
+The intended model is two layers: run-state (resets on death/reincarnation) and meta-state (persists forever — prestige currencies, hidden stats, permanent unlocks). Verified in code: only run-state exists. `reincarnate()` (in `engine/gameLoop.ts`) stops the loop, resets aging, resets all four stores, emits `cultivator:reincarnated` (whose handler clears the save), then calls `bootRun()` to start a fresh life immediately. There is no meta store and no prestige persistence — meta-state is planned, not implemented.
 
 ## Services layer
 
-Singletons under `src/app/services/`, re-exported from `index.ts` (`EntityRegistry`, `EventBus`, `UnlockEvaluator`, `EffectExecutor`, `SaveManager`, `initializeGameEventListeners`).
+Singletons under `src/game/services/`, re-exported from `index.ts` (`EntityRegistry`, `EventBus`, `UnlockEvaluator`, `EffectExecutor`, `SaveManager`, `initializeGameEventListeners`).
 
 ### EntityRegistry
 
@@ -44,42 +45,52 @@ Map-of-maps keyed by entity type (`activity`/`item`/`location`/`navigation`). Se
 
 ### EventBus
 
-`Map<string, Set<EventHandler>>` pub-sub. `emit` looks up handlers by `event.type` and calls each in a try/catch (a throwing handler is logged, others still run). Supports `on`/`off`/`once`/`clear`. Events are a discriminated union in `src/app/types/events.ts`: `cultivator:stat-changed`, `activity:completed`, `game:tick`, `player:peered_at_fate`, `cultivator:death`, `cultivator:reincarnated`, `notification:push`. Naming is `domain:action`.
+`Map<string, Set<EventHandler>>` pub-sub. `emit` looks up handlers by `event.type` and calls each in a try/catch (a throwing handler is logged, others still run). Supports `on`/`off`/`once`/`clear`. Events are a discriminated union in `src/game/types/events.ts`: `cultivator:stat-changed`, `activity:completed`, `game:tick`, `player:peered_at_fate`, `cultivator:death`, `cultivator:reincarnated`, `notification:push`. Naming is `domain:action`. (`player:peered_at_fate` and `notification:push` have no live emitter today.)
 
 ### UnlockEvaluator
 
-Holds `unlockables: Map<id, UnlockableEntity>` and an `unlockedIds` set. `evaluateCondition` recursively resolves the `UnlockCondition` union (`stat`, `age`, `activity_completions`, `spirit_stones`, `day`, and the composite `and`/`or`) by reading live store state via `getState()`. `evaluate` requires ALL top-level conditions true. `checkAll()` iterates the pool, fires `onUnlock()` once per satisfied entity, records it, and removes it from the pool so it's never re-evaluated. Evaluation is event-driven — there is no polling loop.
+Holds `unlockables: Map<id, UnlockableEntity>` and an `unlockedIds` set. `evaluateCondition` recursively resolves the `UnlockCondition` union (`stat`, `age`, `activity_completions`, `currency`, `day`, and the composite `and`/`or`) by reading live store state via `getState()`. `evaluate` requires ALL top-level conditions true. `checkAll()` iterates the pool, fires `onUnlock()` once per satisfied entity, records it, and removes it from the pool so it's never re-evaluated. Evaluation is event-driven — there is no polling loop.
 
 ### EffectExecutor
 
-`execute(Effect[])` loops and `apply`s each by `effect.type`. Mapped cases: `grant_currency`/`spend_currency` → `inventory.addSpiritStones`/`subtractSpiritStones`; `grant_stat` → `cultivator.incrementStat` plus emit `cultivator:stat-changed`; `log` → `gameStore.addEventLog`; `damage`/`heal` → cultivator; `unlock_category`/`unlock_nav` → gameStore unlock actions. The `currency` field on the two currency effects is read off the type but never used — all currency flows into the single `spiritStones` balance (the C3 gap).
+`execute(Effect[])` loops and `apply`s each by `effect.type`. Mapped cases: `grant_currency`/`spend_currency` → `inventory.addCurrency`/`subtractCurrency` after `toCurrency(currency, amount)` converts the denomination to base coin; `grant_stat` → `cultivator.incrementStat` plus emit `cultivator:stat-changed`; `log` → `gameStore.addEventLog`; `damage`/`heal` → cultivator; `unlock_category`/`unlock_nav` → gameStore unlock actions.
 
 ### SaveManager
 
-Serializes a versioned snapshot of cultivator/game/activity/inventory to `localStorage["cultivation-save"]`. The activity queue is persisted as activity KEYS and rehydrated on load by resolving each key through `EntityRegistry` (so the registry must be seeded first — which `main.tsx` guarantees by ordering registration before `SaveManager.load()`). `eventLog` is capped to the last 200 entries. `startAutoSave` runs `save()` every 30s. Also provides `exportSave`/`importSave`/`clearSave`/`wipeSave`. `notificationStore` is intentionally not saved.
+Serializes a versioned snapshot of cultivator/game/activity/inventory to `localStorage["cultivation-save"]`. The activity `queue` is persisted directly as `QueueBlock[]` (key + units) alongside `scheduleIndex` and `runningTicks`; load restores via `setState` (registry is still seeded first in `main.tsx`). `streamLog` is capped to the last 200 entries. `startAutoSave` runs `save()` every 30s. Also provides `exportSave`/`importSave`/`clearSave`/`wipeSave`. `notificationStore` is intentionally not saved.
 
 ## Boot sequence (src/main.tsx)
 
 1. Register all entities into `EntityRegistry` (activities, items, locations, navigation).
-2. `initializeGameEventListeners()` — registers unlockables (from `unlockables` JSON, plus per-activity and per-nav `unlockConditions`) and wires EventBus handlers (unlock checks on `activity:completed`/`cultivator:stat-changed`, notification push, reincarnation reset, and per-tick aging/death/unlock logic).
+2. `initializeGameEventListeners()` — registers unlockables (from `data/unlocks.ts`, plus per-activity and per-nav `unlockConditions`) and wires EventBus handlers (unlock checks on `activity:completed`/`cultivator:stat-changed`, notification push, reincarnation save-clear).
 3. `SaveManager.load()` then `SaveManager.startAutoSave()`.
-4. If `introComplete`, `startGameLoop()`.
+4. `bootRun()` — seeds the default background + opening narration when `!introComplete`, then `gameLoop.start()`.
 5. Mount React Router routes.
 
 ## Tick loop and aging
 
-`gameStore.tick()` increments `ticks`, rolls `day` every 24 ticks, and emits `game:tick`. The `game:tick` handler in `gameEventListeners.ts` ages the cultivator every 60 days, runs `UnlockEvaluator.checkAll()` on age/decade boundaries, and — when `age >= lifespan` — sets `hasFallen`, stops the loop, and emits `cultivator:death`. Activity progress is tracked separately by `useActivityExecutor` in `GameStateProvider`, which compares `ticks - currentActivityStartTick` against the activity's `timeCost`.
+`runTick()` (in `engine/gameLoop.ts`) runs four systems per tick:
 
-## Data layer and the JSON + Zod staging
+- `timeSystem` — advances `ticks`; rolls `day` every 24 ticks; reports `rolledDay`.
+- `activitySystem` — finds the unit at `scheduleIndex`, advances `runningTicks`, and on reaching the activity's `timeCost` completes it (effects + `activity:completed`) and bumps `scheduleIndex`. Past the end of the schedule it idles (does nothing).
+- `dayRollSystem` (only on a day roll) — if `repeatActivities`, resets `scheduleIndex` to 0, replaying the day's schedule.
+- `agingSystem` — ages the cultivator every 60 days, runs `UnlockEvaluator.checkAll()` at age/decade boundaries, and on `age >= lifespan` sets `hasFallen`, stops the loop, and emits `cultivator:death`.
 
-Game content lives in `src/app/data/`. Two formats coexist:
+The loop does NOT auto-stop on an empty or finished schedule — time keeps passing (needed for daily replay and, later, aging/survival pressure).
 
-- Pure TypeScript (carries icons/functions): `activity.ts`, `constant.ts`, `navigation.ts`, `sectionColors.ts`, `intro.ts`, `exploreLocations.ts`.
-- JSON validated by Zod at import time: `json/*.json` parsed through `schemas/*` via `XxxArraySchema.parse(...)`. Six consumers are wired — `items`, `locations`, `lifestyle`, `story`, `quests`, and `unlocks` (unlockables). Of these, `items` and `locations` flow into `EntityRegistry` at boot, and `unlockables` flow into `UnlockEvaluator`; `lifestyle`/`story`/`quests` are parsed and exported for page consumption. The discriminated-union types these JSON files conform to (`UnlockableDefinition`, `UnlockCondition`, etc.) live in `src/app/types/`. The long-term intent is to migrate remaining pure-data TS to JSON while keeping TS only for data needing functions/icons.
+## Data layer
+
+Game content lives in `src/game/data/`, all **pure TypeScript** — the earlier JSON + Zod staging layer was dropped (no `data/json/` or `data/schemas/`).
+
+- Live content: `activity.ts`, `places.ts`, `navigation.ts`, `unlocks.ts`, `currency.ts`, `constant.ts`, `intro.ts` (background/intro), `sectionColors.ts`.
+- Empty shells awaiting authoring: `lifestyle.ts`, `quests.ts`, `story.ts`.
+- Legacy mock data still read by scaffold pages: `items.ts`, `locations.ts` (the old cosmic Travel map).
+
+The discriminated-union types this data conforms to (`Effect`, `UnlockCondition`, `UnlockableDefinition`, etc.) live in `src/game/types/`.
 
 ## Discriminated-union systems
 
-Three core unions drive data-driven behavior, all in `src/app/types/`:
+Three core unions drive data-driven behavior, all in `src/game/types/`:
 
 - `Effect` (`effects.ts`) — what an activity/event does. Consumed by `EffectExecutor`.
 - `GameEvent` (`events.ts`) — what flows over the `EventBus`.

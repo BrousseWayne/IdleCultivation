@@ -1,7 +1,7 @@
 ---
 purpose: The mortal-phase survival loop — satiety, rest, lifestyle upkeep, and how they double as hidden progression boosts. Captures design intent ahead of implementation.
 status: planned (not yet implemented)
-last-verified: 2026-05-31
+last-verified: 2026-06-02
 related: [docs/design/core-loop.md, docs/design/ui-ux.md, docs/vision/identity.md]
 ---
 
@@ -19,9 +19,9 @@ related: [docs/design/core-loop.md, docs/design/ui-ux.md, docs/vision/identity.m
 
 - A day is NOT 24 freely-usable hours. Some hours are **sleep** and unavailable for activities. Usable hours < 24.
 - The player MAY forego sleep to reclaim those hours, at a cost (mortality / reduced output).
-- Current code: `timePoints`/`maxTimePoints` = 24 with no sleep reservation. Sleep hours are unimplemented.
+- Current code: a day is 24 schedulable hours, no sleep reservation; the schedule replays each dawn (see core-loop). Free hours = `24 − scheduledHours(queue)`. Unscheduled hours already sit idle — that idle block is the natural home for sleep, but no sleep reservation/mechanic exists yet.
 
 ## Status vs code
 
-- NOT IMPLEMENTED. satiety/vitality/mortality bars exist in `cultivatorStore` but nothing drains or reads them; no lifestyle data; no event system; day is a flat 24h. This doc is design intent to build against, not current behavior.
+- NOT IMPLEMENTED. satiety/vitality/mortality bars exist in `cultivatorStore` but nothing drains or reads them; no lifestyle data (`lifestyle.ts` is empty); no event system. The day cycle and daily-replaying schedule now exist (core-loop), but the day is still a flat 24h with no sleep carved out. This doc is design intent to build against, not current behavior.
 - Depends on: an event/interrupt system (does not exist), the lifestyle data+cost wiring (data types exist, empty), and qualitative-bar UI.

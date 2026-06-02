@@ -1,14 +1,15 @@
 ---
-purpose: The Explore tab as the "live" location hub — places, navigation, place-scoped activities, and the time/reward rule that prevents free-action exploits.
+purpose: The Explore tab as the "live" location hub — places, navigation, place-scoped activities, contextual actions (talk/shop/enter), and the time/reward rule that prevents free-action exploits.
 status: in-progress (first slice building)
-last-verified: 2026-05-31
+last-verified: 2026-06-02
 related: [docs/design/core-loop.md, docs/design/survival-and-lifestyle.md]
 ---
 
 ## What Explore is
 
-- Explore is the **live "you are here" tab**. It shows the player's current place: its description, the activities available there, the sub-places/things you can walk into (shop, person, building), and a running event log.
-- This is where the mortal-phase game is *played*: beg in the streets, enter a restaurant, talk to someone, browse a shop. Not a global menu — content is bound to where you physically are.
+- Explore is the **live "you are here" tab**. It renders: a small city graph (clickable place nodes + connections), the current place's name/description and time-of-day, a **Here** list of contextual actions (talk/shop/enter), and a **What you can do here** list of the place's activities. The persistent narrative stream ("the thread") hosts the running log.
+- This is where the mortal-phase game is *played*: beg in the streets, speak to someone, step into a shop. Content is bound to where you physically are, not a global menu.
+- Self-scoped activities (meditate/train/study — `scope: "self"`) are NOT shown here; they live in the Activities tab. Explore = place activities + contextual actions + walking.
 - The mortal phase is one city (Ironveil). No inter-region Travel yet (that tab is hidden).
 
 ## The time/reward rule (design law — prevents exploits)
@@ -25,15 +26,21 @@ The core tension: navigation must be free (entering a shop 100k times can't cost
 
 ## Model (fresh, replaces the abandoned cosmic-map LocationEntry scaffold)
 
-- A **Place** is a node in the city: `{ key, name, description, activityKeys[], connections[], unlocked }`.
-- `activityKeys` reference the single source of truth (`activityData`); placement is a layer over activities, NOT a copy (effect system stays intact).
-- `connections` are free-navigation edges to adjacent places.
-- Activities discovered/unlocked for a place appear there (per the player's wish: "activities should be visible on the map after you unlock them for the location").
-- Current place lives in game state; walking sets it. Old `currentExploreLocation` string is repurposed as the current place key.
+- A **Place** is a node in the city: `{ key, name, description, activityKeys[], actions?, connections[], unlocked, x, y, icon, color }` (`types/domain.ts`, data in `data/places.ts`). `x`/`y`/`icon`/`color` drive the city-graph node; `connections` are free-navigation edges to adjacent places.
+- `activityKeys` reference the single source of truth (`activityData`); placement is a layer over activities, NOT a copy (effect system stays intact). Only `unlocked` activities render.
+- `actions?: PlaceAction[]` are the place's contextual verbs (see below).
+- Current place lives in `gameStore.currentPlaceKey`; walking sets it.
+
+## Contextual actions (verbs)
+
+- A **PlaceAction** is `{ key, label, detail, icon, kind }` where `kind ∈ "talk" | "shop" | "enter"` (`types/domain.ts`). Kind only drives color today: talk → violet, shop → gold, enter → sky.
+- They render in the Explore **Here** section as free buttons. Per the time/reward law, an action is pure navigation: clicking it costs nothing and grants nothing.
+- **Current behavior is a stub.** `doAction` only narrates to the stream (talk → `dialogue` theme, else `ambient`). This is the deliberate plug point for the event/shop/dialogue systems — they will hang off the action click without changing the Place model.
+- Ironveil today: a `talk` action (the ragged elder) on the streets, a `shop` action (food stall) at the market.
 
 ## Deferred (not in first slice)
 
-- Events (gated, reward-bearing interrupts) — needs the event system.
-- Shop view (coin-costed purchases) — needs item pricing.
+- Events (gated, reward-bearing interrupts) — needs the event system. The `talk`/`enter` actions are the trigger surface.
+- Shop view (coin-costed purchases) — needs item pricing. The `shop` action (food stall) is the entry point.
 - Sleep hours / lifestyle first-night trigger — see survival-and-lifestyle.md.
 - The old mock had shop/conversation/combat sub-views (exploreView switch) — all mock (addEventLog only). Recovered for reference at commit 8302c41; not reused directly.

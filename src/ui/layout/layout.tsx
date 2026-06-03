@@ -15,12 +15,14 @@ export function Layout() {
       <Header />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <main className="flex-1 ml-60 p-6 pb-24 overflow-y-auto relative z-10">
-          <Outlet />
+        <main className="flex-1 ml-60 overflow-y-auto relative z-10 flex flex-col">
+          <QueueBar />
+          <div className="p-6 flex-1">
+            <Outlet />
+          </div>
         </main>
         <Stream />
       </div>
-      <QueueBar />
       {hasFallen && <DeathOverlay />}
       <NotificationFeed />
     </div>

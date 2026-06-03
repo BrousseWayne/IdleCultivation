@@ -13,7 +13,7 @@ export function QueueBar() {
 
   if (queue.length === 0) {
     return (
-      <div className="fixed bottom-0 left-60 right-0 h-12 bg-black/95 backdrop-blur-sm border-t border-slate-800/30 z-40 flex items-center justify-center">
+      <div className="sticky top-0 z-40 h-12 bg-black/95 backdrop-blur-sm border-b border-slate-800/30 flex items-center justify-center">
         <span className="text-sm text-slate-500">{text("queue.empty")}</span>
       </div>
     );
@@ -33,7 +33,7 @@ export function QueueBar() {
   const headHours = head ? head.timeCost - runningTicks : 0;
 
   return (
-    <div className="fixed bottom-0 left-60 right-0 bg-black/95 backdrop-blur-sm border-t border-slate-800/30 z-40">
+    <div className="sticky top-0 z-40 bg-black/95 backdrop-blur-sm border-b border-slate-800/30">
       <button
         onClick={() => setCollapsed(!collapsed)}
         className="w-full flex items-center gap-3 px-6 py-2.5 hover:bg-slate-900/30 transition-colors"

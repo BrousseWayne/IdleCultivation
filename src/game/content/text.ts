@@ -108,7 +108,9 @@ const CONTENT = {
   "lifestyle.cost.free": { default: "Free" },
 
   "queue.empty": { default: "No activities scheduled" },
-  "queue.resting": { default: "Day's work done — resting" },
+  "queue.resting": { default: "Resting" },
+  "queue.idleHint": { default: "day's work done" },
+  "queue.clear": { default: "Clear schedule" },
 
   "death.title": { default: "Cultivation Ended" },
   "death.subtitle": { default: "The candle burns out. The flame remembers." },

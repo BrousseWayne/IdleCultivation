@@ -30,7 +30,6 @@ export function ActivityRow({ activity, onQueue, onUnqueue }: {
   const scheduleIndex = useActivityStore((s) => s.scheduleIndex);
   const xp = useActivityStore((s) => s.activityXp[activity.key] || 0);
   const runningTicks = useActivityStore((s) => s.runningTicks);
-  const completions = useActivityStore((s) => s.completionCounts[activity.key] || 0);
 
   const units = queuedUnits(queue, activity.key);
   const allocated = units * activity.timeCost;
@@ -43,26 +42,25 @@ export function ActivityRow({ activity, onQueue, onUnqueue }: {
   const xpPct = xpForNext > 0 ? (currentXp / xpForNext) * 100 : 0;
 
   return (
-    <div className={`rounded-md border overflow-hidden transition-colors ${isRunning ? colors.border : "border-slate-800/50 hover:border-accent-cinnabar/40"}`}>
+    <div className={`rounded-md border overflow-hidden transition-colors ${isRunning ? colors.border : "border-line hover:border-line-2"}`}>
       <div className="w-full flex items-center gap-3 px-3 py-2.5">
         <activity.icon className={`w-4 h-4 shrink-0 ${colors.text}`} />
-        <span className="text-sm text-slate-200 shrink-0">{activity.name}</span>
-        <span className="text-[10px] text-slate-600 shrink-0">Lv.{level}</span>
-        {completions > 0 && <span className="text-[10px] text-slate-700 font-mono shrink-0">×{completions}</span>}
+        <span className="w-44 truncate text-sm text-ink shrink-0">{activity.name}</span>
+        <span className="w-12 shrink-0 text-[11px] font-bold text-ink-2">Lv {level}</span>
 
         <div className="flex flex-wrap gap-1 min-w-0">
           <EffectDisplay effects={activity.effects} level={level} />
         </div>
 
-        <span className="ml-auto flex items-center gap-3 text-xs text-slate-500 shrink-0">
+        <span className="ml-auto flex items-center gap-3 text-xs text-ink-3 shrink-0">
           <span>{activity.timeCost}h{allocated > 0 && <span className="text-accent-jade"> · {allocated}h</span>}</span>
           <span className="flex items-center gap-1">
             <button onClick={() => onUnqueue(activity.key)} disabled={allocated < activity.timeCost}
-              className="w-5 h-5 flex items-center justify-center rounded hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-transparent">
+              className="w-5 h-5 flex items-center justify-center rounded hover:bg-panel-2 disabled:opacity-30 disabled:hover:bg-transparent">
               <Minus className="w-3 h-3" />
             </button>
             <button onClick={() => onQueue(activity.key)}
-              className="w-5 h-5 flex items-center justify-center rounded hover:bg-slate-800 text-accent-jade">
+              className="w-5 h-5 flex items-center justify-center rounded hover:bg-panel-2 text-accent-jade">
               <Plus className="w-3 h-3" />
             </button>
           </span>

@@ -87,7 +87,7 @@ export const RenderStatsPage = () => {
             {Object.entries(stats).map(([stat, value]) => (
               <StatRow key={stat} label={stat} value={String(value)} colorClass="text-accent-cinnabar" />
             ))}
-            <ProgressRow label={text("stat.hp")} current={vitality.current} max={vitality.max} colorClass="text-accent-emerald" effect={getEffect("vitality")} />
+            <ProgressRow label={text("stat.hp")} current={vitality.current} max={vitality.max} colorClass="text-accent-jade" effect={getEffect("vitality")} />
             <ProgressRow label={text("stat.satiety")} current={satiety.current} max={satiety.max} colorClass="text-accent-gold" effect={getEffect("satiety")} />
             <ProgressRow label={text("stat.mortality")} current={mortality.current} max={mortality.max} colorClass="text-accent-cinnabar" effect={getEffect("mortality")} />
           </div>

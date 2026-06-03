@@ -79,7 +79,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 h-12 bg-black/95 backdrop-blur-sm border-b border-slate-800/30 flex items-center px-4 gap-6">
-      <h1 className="text-lg font-bold font-[family-name:var(--font-display)] text-accent-emerald whitespace-nowrap">
+      <h1 className="text-lg font-bold font-[family-name:var(--font-display)] text-accent-jade whitespace-nowrap">
         {text("app.title")}
       </h1>
       <Badge

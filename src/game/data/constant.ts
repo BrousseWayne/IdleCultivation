@@ -27,7 +27,7 @@ export const storyEntryColors: Record<StoryEntry["type"], string> = {
   narrative: "border-accent-violet/50 text-accent-violet",
   discovery: "border-accent-gold/50 text-accent-gold",
   journey: "border-accent-sky/50 text-accent-sky",
-  achievement: "border-accent-emerald/50 text-accent-emerald",
+  achievement: "border-accent-jade/50 text-accent-jade",
   combat: "border-accent-cinnabar/50 text-accent-cinnabar",
 };
 

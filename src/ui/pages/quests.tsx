@@ -58,7 +58,7 @@ export function RenderQuestsPage() {
         <Card className="bg-black border-slate-700/50">
           <CardHeader>
             <CardTitle className="text-lg text-slate-200 flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-accent-emerald" />
+              <CheckCircle className="w-5 h-5 text-accent-jade" />
               {text("page.quests.section.completed")}
             </CardTitle>
           </CardHeader>
@@ -67,10 +67,10 @@ export function RenderQuestsPage() {
               <div key={quest.id} className="p-2 rounded-lg bg-slate-900/30 border border-slate-700/30">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-semibold text-accent-emerald text-sm">{quest.title}</h3>
+                    <h3 className="font-semibold text-accent-jade text-sm">{quest.title}</h3>
                     <div className="text-xs text-slate-500">{text("page.quests.label.completed")} {quest.completedDate}</div>
                   </div>
-                  <div className="text-xs text-accent-emerald">{quest.reward}</div>
+                  <div className="text-xs text-accent-jade">{quest.reward}</div>
                 </div>
               </div>
             ))}

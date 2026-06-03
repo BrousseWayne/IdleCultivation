@@ -171,7 +171,7 @@ export function Sidebar() {
           </div>
           <div className="flex justify-between">
             <span className="text-slate-500">{text("sidebar.label.income")}</span>
-            <span className="text-accent-emerald font-mono">+{formatNumber(dailyIncome)}g</span>
+            <span className="text-accent-jade font-mono">+{formatNumber(dailyIncome)}g</span>
           </div>
           <div className="flex justify-between">
             <span className="text-slate-500">{text("sidebar.label.expenses")}</span>
@@ -179,7 +179,7 @@ export function Sidebar() {
           </div>
           <div className="flex justify-between font-bold">
             <span className="text-slate-200">{text("sidebar.label.net")}</span>
-            <span className={`font-mono ${net >= 0 ? "text-accent-emerald" : "text-accent-cinnabar"}`}>
+            <span className={`font-mono ${net >= 0 ? "text-accent-jade" : "text-accent-cinnabar"}`}>
               {net >= 0 ? "+" : ""}{formatNumber(net)}g
             </span>
           </div>

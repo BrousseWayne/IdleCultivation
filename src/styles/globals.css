@@ -73,13 +73,16 @@
   --sidebar-border: oklch(0.2 0 0);
   --sidebar-ring: oklch(0.7 0.12 175);
 
+  /* Palette — single source of truth (mirror of PALETTE in sectionColors.ts).
+     Reserved roles: jade=positive/brand, gold=caution, cinnabar=negative, silver=money.
+     Free/wayfinding: violet=mind, sky=world, lotus=people, indigo=body. */
   --accent-jade: #5FB4A0;
   --accent-cinnabar: #E07856;
   --accent-gold: #D4AF6A;
-  --accent-emerald: #52B788;
   --accent-violet: #B59ACF;
   --accent-sky: #6BA3D4;
-  --accent-lotus: #D88FB8;
+  --accent-lotus: #D98AA8;
+  --accent-indigo: #6E73C9;
   --accent-silver: #94A3B8;
 
   --bg-base: oklch(0 0 0);
@@ -131,10 +134,10 @@
   --color-accent-jade: var(--accent-jade);
   --color-accent-cinnabar: var(--accent-cinnabar);
   --color-accent-gold: var(--accent-gold);
-  --color-accent-emerald: var(--accent-emerald);
   --color-accent-violet: var(--accent-violet);
   --color-accent-sky: var(--accent-sky);
   --color-accent-lotus: var(--accent-lotus);
+  --color-accent-indigo: var(--accent-indigo);
   --color-accent-silver: var(--accent-silver);
 }
 

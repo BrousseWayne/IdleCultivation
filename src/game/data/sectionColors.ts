@@ -1,25 +1,55 @@
 import type { NavigationItem, ActivityCategory, Currency, Stats } from "@/game/types/domain";
 
-export const SECTION_COLORS: Record<NavigationItem, string> = {
-  Activities: "accent-jade",
-  Explore: "accent-cinnabar",
-  Inventory: "accent-gold",
-  Quests: "accent-violet",
-  Lifestyle: "accent-lotus",
-  Travel: "accent-sky",
-  Stats: "accent-silver",
-  Recap: "accent-sky",
-  Story: "accent-violet",
+// ---------------------------------------------------------------------------
+// Palette — single source of truth (mirror these hexes in globals.css).
+// Reserved roles (never decorative): jade=positive/brand, gold=caution,
+// cinnabar=negative, silver=money.
+// Free/wayfinding axes: violet=mind, sky=world, lotus=people, indigo=body.
+// ---------------------------------------------------------------------------
+export const PALETTE = {
+  jade: "#5FB4A0",
+  gold: "#D4AF6A",
+  cinnabar: "#E07856",
+  silver: "#94A3B8",
+  violet: "#B59ACF",
+  sky: "#6BA3D4",
+  lotus: "#D98AA8",
+  indigo: "#6E73C9",
+} as const;
+
+export const ACCENT_HEX: Record<string, string> = {
+  "accent-jade": PALETTE.jade,
+  "accent-gold": PALETTE.gold,
+  "accent-cinnabar": PALETTE.cinnabar,
+  "accent-silver": PALETTE.silver,
+  "accent-violet": PALETTE.violet,
+  "accent-sky": PALETTE.sky,
+  "accent-lotus": PALETTE.lotus,
+  "accent-indigo": PALETTE.indigo,
 };
 
+// Active nav uses the brand (jade); inactive is neutral. No per-section rainbow.
+export const SECTION_COLORS: Record<NavigationItem, string> = {
+  Activities: "accent-jade",
+  Explore: "accent-jade",
+  Inventory: "accent-jade",
+  Quests: "accent-jade",
+  Lifestyle: "accent-jade",
+  Travel: "accent-jade",
+  Stats: "accent-jade",
+  Recap: "accent-jade",
+  Story: "accent-jade",
+};
+
+// Category wayfinding draws ONLY from the free axes (mind/world/people/body).
 export const CATEGORY_COLORS: Record<ActivityCategory, string> = {
-  work: "accent-gold",
-  training: "accent-jade",
+  work: "accent-sky",
+  training: "accent-indigo",
   study: "accent-violet",
   social: "accent-lotus",
-  life: "accent-emerald",
+  life: "accent-sky",
   hobby: "accent-sky",
-  adventure: "accent-cinnabar",
+  adventure: "accent-indigo",
 };
 
 type ColorClasses = {
@@ -29,45 +59,31 @@ type ColorClasses = {
   progress: string;
 };
 
-const colorClasses = (token: string): ColorClasses => ({
-  text: `text-${token}`,
-  border: `border-l-${token}`,
-  borderFaded: `border-l-${token}/30 hover:border-l-${token}/60`,
-  progress: `[&>div]:bg-${token}`,
-});
-
+// Literal class strings (not templated) so Tailwind's JIT generates them.
 export const CATEGORY_COLOR_CLASSES: Record<ActivityCategory, ColorClasses> = {
-  work: colorClasses("accent-gold"),
-  training: colorClasses("accent-jade"),
-  study: colorClasses("accent-violet"),
-  social: colorClasses("accent-lotus"),
-  life: colorClasses("accent-emerald"),
-  hobby: colorClasses("accent-sky"),
-  adventure: colorClasses("accent-cinnabar"),
+  work: { text: "text-accent-sky", border: "border-l-accent-sky", borderFaded: "border-l-accent-sky/30 hover:border-l-accent-sky/60", progress: "[&>div]:bg-accent-sky" },
+  training: { text: "text-accent-indigo", border: "border-l-accent-indigo", borderFaded: "border-l-accent-indigo/30 hover:border-l-accent-indigo/60", progress: "[&>div]:bg-accent-indigo" },
+  study: { text: "text-accent-violet", border: "border-l-accent-violet", borderFaded: "border-l-accent-violet/30 hover:border-l-accent-violet/60", progress: "[&>div]:bg-accent-violet" },
+  social: { text: "text-accent-lotus", border: "border-l-accent-lotus", borderFaded: "border-l-accent-lotus/30 hover:border-l-accent-lotus/60", progress: "[&>div]:bg-accent-lotus" },
+  life: { text: "text-accent-sky", border: "border-l-accent-sky", borderFaded: "border-l-accent-sky/30 hover:border-l-accent-sky/60", progress: "[&>div]:bg-accent-sky" },
+  hobby: { text: "text-accent-sky", border: "border-l-accent-sky", borderFaded: "border-l-accent-sky/30 hover:border-l-accent-sky/60", progress: "[&>div]:bg-accent-sky" },
+  adventure: { text: "text-accent-indigo", border: "border-l-accent-indigo", borderFaded: "border-l-accent-indigo/30 hover:border-l-accent-indigo/60", progress: "[&>div]:bg-accent-indigo" },
 };
 
+// NOTE: currency is mid-collapse to a single silver unit (next commit).
 export const CURRENCY_COLORS: Record<Currency, string> = {
-  Bronze: "text-orange-400",
-  Silver: "text-slate-300",
-  Gold: "text-accent-gold",
-  Platinum: "text-cyan-400",
+  Bronze: "text-accent-silver",
+  Silver: "text-accent-silver",
+  Gold: "text-accent-silver",
+  Platinum: "text-accent-silver",
 };
 
+// Stats are rendered icon-first and neutral (see StatIcon); no chromatic accent.
 export const STAT_COLORS: Record<Stats, string> = {
-  Strength: "text-red-400",
-  Dexterity: "text-blue-400",
+  Strength: "text-slate-300",
+  Dexterity: "text-slate-300",
 };
 
 export function getCategoryHex(category: ActivityCategory): string {
-  return ACCENT_HEX[CATEGORY_COLORS[category]] || '#5FB4A0';
+  return ACCENT_HEX[CATEGORY_COLORS[category]] || PALETTE.jade;
 }
-
-export const ACCENT_HEX: Record<string, string> = {
-  'accent-jade': '#5FB4A0',
-  'accent-gold': '#D4AF6A',
-  'accent-cinnabar': '#E07856',
-  'accent-violet': '#B59ACF',
-  'accent-emerald': '#52B788',
-  'accent-lotus': '#D88FB8',
-  'accent-sky': '#6BA3D4',
-};

@@ -1,6 +1,5 @@
 import { type JSX, useMemo } from "react";
 import { Link, useLocation } from "react-router";
-import { Progress } from "@/components/ui/progress";
 import { sidebarData } from "@/game/data/navigation";
 import { SECTION_COLORS, CURRENCY_COLORS, STAT_COLORS } from "@/game/data/sectionColors";
 import { useCultivatorStore } from "@/game/stores/cultivatorStore";
@@ -38,32 +37,35 @@ function renderMoney(amount: number): JSX.Element[] | JSX.Element {
   return parts;
 }
 
-function StatBar({ label, value, max, color, danger }: {
-  label: string; value: number; max: number; color: "green" | "orange" | "red"; danger?: boolean;
-}) {
-  const lerpValue = useLerpNumber(value);
-  const pct = (value / max) * 100;
-  const lowVitality = color === "green" && pct < 30;
-  const styles = {
-    green: {
-      text: lowVitality ? "text-green-300 text-glow-danger" : "text-green-300",
-      bar: "[&>div]:bg-green-500"
-    },
-    orange: { text: "text-orange-300", bar: "[&>div]:bg-orange-500" },
-    red: {
-      text: danger ? "text-accent-cinnabar text-glow-danger" : "text-red-400",
-      bar: danger ? "[&>div]:bg-accent-cinnabar" : "[&>div]:bg-red-500",
-    },
-  };
-  const s = styles[color];
+// A mortal has no precise self-knowledge: resources read as words, not numbers.
+// (Numeric self-readouts are a later cultivation-perception unlock.)
+type Tier = { min: number; word: string; tone: string };
 
+const VITALITY_TIERS: Tier[] = [
+  { min: 90, word: "Healthy", tone: "text-emerald-300" },
+  { min: 70, word: "Bruised", tone: "text-green-300" },
+  { min: 45, word: "Wounded", tone: "text-amber-300" },
+  { min: 20, word: "Badly hurt", tone: "text-orange-300" },
+  { min: 0, word: "Near death", tone: "text-accent-cinnabar" },
+];
+
+const SATIETY_TIERS: Tier[] = [
+  { min: 90, word: "Full", tone: "text-emerald-300" },
+  { min: 65, word: "Sated", tone: "text-green-300" },
+  { min: 40, word: "Peckish", tone: "text-amber-300" },
+  { min: 15, word: "Hungry", tone: "text-orange-300" },
+  { min: 0, word: "Starving", tone: "text-accent-cinnabar" },
+];
+
+function pickTier(tiers: Tier[], pct: number): Tier {
+  return tiers.find((t) => pct >= t.min) ?? tiers[tiers.length - 1];
+}
+
+function StatWord({ label, tier }: { label: string; tier: Tier }) {
   return (
-    <div className="space-y-0.5">
-      <div className="flex justify-between">
-        <span className="text-slate-500">{label}</span>
-        <span className={`${s.text} font-mono font-bold`}>{lerpValue}/{max}</span>
-      </div>
-      <Progress value={pct} striped={danger} className={`h-1 bg-slate-800/50 ${s.bar} ${danger ? "animate-pulse-danger" : ""}`} />
+    <div className="flex justify-between">
+      <span className="text-slate-500">{label}</span>
+      <span className={`font-semibold ${tier.tone}`}>{tier.word}</span>
     </div>
   );
 }
@@ -75,10 +77,8 @@ export function Sidebar() {
   const navigationUnlocks = useGameStore((s) => s.navigationUnlocks);
 
   const age = useCultivatorStore((s) => s.age);
-  const lifespan = useCultivatorStore((s) => s.lifespan);
   const vitality = useCultivatorStore((s) => s.vitality);
   const satiety = useCultivatorStore((s) => s.satiety);
-  const mortality = useCultivatorStore((s) => s.mortality);
   const stats = useCultivatorStore((s) => s.stats);
 
   const currency = useInventoryStore((s) => s.currency);
@@ -105,6 +105,9 @@ export function Sidebar() {
   const lerpAge = useLerpNumber(age);
   const lerpMoney = useLerpNumber(currency);
   const net = dailyIncome - dailyExpenses;
+
+  const vitalityTier = pickTier(VITALITY_TIERS, (vitality.current / vitality.max) * 100);
+  const satietyTier = pickTier(SATIETY_TIERS, (satiety.current / satiety.max) * 100);
 
   const statEntries = Object.entries(stats) as [Stats, number][];
   const hasStats = statEntries.some(([_, value]) => value > 0);
@@ -147,13 +150,10 @@ export function Sidebar() {
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-slate-500">{text("sidebar.label.age")}</span>
-            <span className="text-accent-jade font-mono font-bold">
-              {lerpAge}/{lifespan}
-            </span>
+            <span className="text-accent-jade font-mono font-bold">{lerpAge}</span>
           </div>
-          <StatBar label={text("stat.hp")} value={vitality.current} max={vitality.max} color="green" />
-          <StatBar label={text("stat.satiety")} value={satiety.current} max={satiety.max} color="orange" />
-          <StatBar label={text("stat.mortality")} value={mortality.current} max={mortality.max} color="red" danger={mortality.current / mortality.max > 0.7} />
+          <StatWord label={text("stat.hp")} tier={vitalityTier} />
+          <StatWord label={text("stat.satiety")} tier={satietyTier} />
         </div>
       </div>
 

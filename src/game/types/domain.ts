@@ -3,13 +3,11 @@ import type { UnlockCondition } from "@/game/types/unlocks";
 import type { Effect } from "@/game/types/effects";
 
 export type Cost = {
-  currency: Currency;
   amount: number;
   period?: Period;
 };
 
 export type Period = "daily" | "weekly" | "monthly" | "annual" | "oneTime";
-export type Currency = "Bronze" | "Silver" | "Gold" | "Platinum";
 export type Stats = "Strength" | "Dexterity";
 export type LifestyleCategory = "Housing" | "Meals" | "Transportation";
 

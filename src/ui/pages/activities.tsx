@@ -3,7 +3,7 @@ import { Switch } from "@/components/ui/switch";
 import { useActivityStore } from "@/game/stores/activityStore";
 import { useGameStore } from "@/game/stores/gameStore";
 import { useMemo, useState } from "react";
-import { CURRENCY_COLORS, STAT_COLORS, getCategoryHex, CATEGORY_COLOR_CLASSES } from "@/game/data/sectionColors";
+import { STAT_COLORS, getCategoryHex, CATEGORY_COLOR_CLASSES } from "@/game/data/sectionColors";
 import { EntityRegistry } from "@/game/services";
 import { unqueueActivity, scheduledHours } from "@/game/engine/gameLoop";
 import { getPlace } from "@/game/data/places";
@@ -40,7 +40,7 @@ export function RenderActivitiesPage() {
 
   // projected gains across the whole queue
   const projectedGains = useMemo(() => {
-    const currencyTotals: Record<string, number> = {};
+    let coinTotal = 0;
     const statTotals: Record<string, number> = {};
     for (const block of queue) {
       const activity = EntityRegistry.get("activity", block.key);
@@ -48,17 +48,17 @@ export function RenderActivitiesPage() {
       const { level } = getActivityXpProgress(activityXp[block.key] || 0);
       for (const effect of activity.effects) {
         if (effect.type === "grant_currency") {
-          currencyTotals[effect.currency] = (currencyTotals[effect.currency] || 0) + scaleEffectAmount(effect.amount, level) * block.units;
+          coinTotal += scaleEffectAmount(effect.amount, level) * block.units;
         } else if (effect.type === "grant_stat") {
           statTotals[effect.stat] = (statTotals[effect.stat] || 0) + scaleEffectAmount(effect.amount, level) * block.units;
         }
       }
     }
     const gains: { label: string; amount: number; colorClass: string; type: "currency" | "stat" }[] = [];
-    for (const [c, amount] of Object.entries(currencyTotals))
-      gains.push({ label: c, amount, colorClass: CURRENCY_COLORS[c as keyof typeof CURRENCY_COLORS] || "text-gray-400", type: "currency" });
+    if (coinTotal > 0)
+      gains.push({ label: "Coin", amount: coinTotal, colorClass: "text-accent-silver", type: "currency" });
     for (const [s, amount] of Object.entries(statTotals))
-      gains.push({ label: s, amount, colorClass: STAT_COLORS[s as keyof typeof STAT_COLORS] || "text-gray-400", type: "stat" });
+      gains.push({ label: s, amount, colorClass: STAT_COLORS[s as keyof typeof STAT_COLORS] || "text-slate-300", type: "stat" });
     return gains;
   }, [queue, activityXp]);
 
@@ -132,7 +132,7 @@ export function RenderActivitiesPage() {
               <div key={gain.label} className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-1.5">
                   {gain.type === "currency"
-                    ? <CurrencyIcon currency={gain.label as any} className={gain.colorClass} size={14} />
+                    ? <CurrencyIcon className={gain.colorClass} size={14} />
                     : <StatIcon stat={gain.label as any} className={gain.colorClass} size={14} />}
                   <span className="text-slate-500">{gain.label}</span>
                 </div>

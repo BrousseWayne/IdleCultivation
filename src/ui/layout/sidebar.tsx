@@ -1,7 +1,7 @@
 import { type JSX, useMemo } from "react";
 import { Link, useLocation } from "react-router";
 import { sidebarData } from "@/game/data/navigation";
-import { SECTION_COLORS, CURRENCY_COLORS, STAT_COLORS } from "@/game/data/sectionColors";
+import { SECTION_COLORS, STAT_COLORS } from "@/game/data/sectionColors";
 import { useCultivatorStore } from "@/game/stores/cultivatorStore";
 import { useInventoryStore } from "@/game/stores/inventoryStore";
 import { useGameStore } from "@/game/stores/gameStore";
@@ -9,32 +9,13 @@ import { useActivityStore } from "@/game/stores/activityStore";
 import { useLerpNumber } from "@/ui/hooks/useLerpNumber";
 import { formatNumber } from "@/game/utils/formatNumber";
 import { getActivityXpProgress, scaleEffectAmount } from "@/game/utils";
-import type { Currency, Stats } from "@/game/types/domain";
+import type { Stats } from "@/game/types/domain";
 import { StatIcon } from "@/ui/components/StatIcon";
 import { EntityRegistry } from "@/game/services";
 import { text, navKey } from "@/game/content/text";
 
-function renderMoney(amount: number): JSX.Element[] | JSX.Element {
-  const currencyArray: Currency[] = ["Bronze", "Silver", "Gold", "Platinum"];
-  const parts: JSX.Element[] = [];
-  let remaining = Math.floor(amount);
-
-  for (let i = 0; i < currencyArray.length && remaining > 0; i++) {
-    const value = remaining % 100;
-    if (value > 0) {
-      parts.unshift(
-        <span key={currencyArray[i]} className={`font-mono ${CURRENCY_COLORS[currencyArray[i]]}`}>
-          {formatNumber(value)}{currencyArray[i][0]}
-        </span>
-      );
-    }
-    remaining = Math.floor(remaining / 100);
-  }
-
-  if (parts.length === 0) {
-    return <span className={`font-mono ${CURRENCY_COLORS.Bronze}`}>0B</span>;
-  }
-  return parts;
+function renderMoney(amount: number): JSX.Element {
+  return <span className="font-mono text-accent-silver">{formatNumber(Math.floor(amount))}</span>;
 }
 
 // A mortal has no precise self-knowledge: resources read as words, not numbers.
@@ -171,11 +152,11 @@ export function Sidebar() {
           </div>
           <div className="flex justify-between">
             <span className="text-slate-500">{text("sidebar.label.income")}</span>
-            <span className="text-accent-jade font-mono">+{formatNumber(dailyIncome)}g</span>
+            <span className="text-accent-jade font-mono">+{formatNumber(dailyIncome)}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-slate-500">{text("sidebar.label.expenses")}</span>
-            <span className="text-accent-cinnabar font-mono">-{formatNumber(dailyExpenses)}g</span>
+            <span className="text-accent-cinnabar font-mono">-{formatNumber(dailyExpenses)}</span>
           </div>
           <div className="flex justify-between font-bold">
             <span className="text-slate-200">{text("sidebar.label.net")}</span>

@@ -8,7 +8,7 @@ import { text } from "@/game/content/text";
 function formatCosts(costs: Cost[]): string {
   return costs
     .filter((c) => c.amount > 0)
-    .map((c) => `${c.amount} ${c.currency}${c.period ? `/${c.period}` : ""}`)
+    .map((c) => `${c.amount} coin${c.period ? `/${c.period}` : ""}`)
     .join(", ") || text("lifestyle.cost.free");
 }
 

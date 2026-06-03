@@ -21,7 +21,7 @@ export const activityData: Activity[] = [
     xpScalingFn: () => 100,
     timeCost: 8,
     unlocked: true,
-    effects: [{ type: "grant_currency", currency: "Bronze", amount: 100 }],
+    effects: [{ type: "grant_currency", amount: 100 }],
   },
   {
     key: "farmFields",
@@ -32,7 +32,7 @@ export const activityData: Activity[] = [
     timeCost: 6,
     unlocked: true,
     effects: [
-      { type: "grant_currency", currency: "Bronze", amount: 80 },
+      { type: "grant_currency", amount: 80 },
       { type: "grant_stat", stat: "Strength", amount: 1 },
     ],
   },
@@ -45,7 +45,7 @@ export const activityData: Activity[] = [
     timeCost: 8,
     unlocked: true,
     effects: [
-      { type: "grant_currency", currency: "Bronze", amount: 150 },
+      { type: "grant_currency", amount: 150 },
       { type: "grant_stat", stat: "Strength", amount: 2 },
     ],
   },
@@ -94,7 +94,7 @@ export const activityData: Activity[] = [
     timeCost: 6,
     unlocked: true,
     scope: "self",
-    effects: [{ type: "grant_currency", currency: "Bronze", amount: 30 }],
+    effects: [{ type: "grant_currency", amount: 30 }],
   },
   {
     key: "studyFormations",
@@ -120,7 +120,7 @@ export const activityData: Activity[] = [
     unlocked: true,
     scope: "self",
     effects: [
-      { type: "grant_currency", currency: "Bronze", amount: 60 },
+      { type: "grant_currency", amount: 60 },
       { type: "grant_stat", stat: "Dexterity", amount: 1 },
     ],
   },
@@ -132,7 +132,7 @@ export const activityData: Activity[] = [
     xpScalingFn: () => 100,
     timeCost: 4,
     unlocked: true,
-    effects: [{ type: "grant_currency", currency: "Bronze", amount: 40 }],
+    effects: [{ type: "grant_currency", amount: 40 }],
   },
   {
     key: "networkMerchants",
@@ -142,7 +142,7 @@ export const activityData: Activity[] = [
     xpScalingFn: () => 200,
     timeCost: 6,
     unlocked: true,
-    effects: [{ type: "grant_currency", currency: "Silver", amount: 5 }],
+    effects: [{ type: "grant_currency", amount: 500 }],
   },
 ];
 

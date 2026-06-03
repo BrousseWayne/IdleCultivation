@@ -1,4 +1,4 @@
-import type { NavigationItem, ActivityCategory, Currency, Stats } from "@/game/types/domain";
+import type { NavigationItem, ActivityCategory, Stats } from "@/game/types/domain";
 
 // ---------------------------------------------------------------------------
 // Palette — single source of truth (mirror these hexes in globals.css).
@@ -68,14 +68,6 @@ export const CATEGORY_COLOR_CLASSES: Record<ActivityCategory, ColorClasses> = {
   life: { text: "text-accent-sky", border: "border-l-accent-sky", borderFaded: "border-l-accent-sky/30 hover:border-l-accent-sky/60", progress: "[&>div]:bg-accent-sky" },
   hobby: { text: "text-accent-sky", border: "border-l-accent-sky", borderFaded: "border-l-accent-sky/30 hover:border-l-accent-sky/60", progress: "[&>div]:bg-accent-sky" },
   adventure: { text: "text-accent-indigo", border: "border-l-accent-indigo", borderFaded: "border-l-accent-indigo/30 hover:border-l-accent-indigo/60", progress: "[&>div]:bg-accent-indigo" },
-};
-
-// NOTE: currency is mid-collapse to a single silver unit (next commit).
-export const CURRENCY_COLORS: Record<Currency, string> = {
-  Bronze: "text-accent-silver",
-  Silver: "text-accent-silver",
-  Gold: "text-accent-silver",
-  Platinum: "text-accent-silver",
 };
 
 // Stats are rendered icon-first and neutral (see StatIcon); no chromatic accent.

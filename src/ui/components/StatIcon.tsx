@@ -1,4 +1,4 @@
-import type { Stats, Currency } from "@/game/types/domain";
+import type { Stats } from "@/game/types/domain";
 
 type IconProps = {
   className?: string;
@@ -58,21 +58,6 @@ export function DexterityIcon({ className, size = 16 }: IconProps) {
   );
 }
 
-export function BronzeIcon({ className, size = 16 }: IconProps) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 16 16"
-      fill="none"
-      className={className}
-    >
-      <circle cx="8" cy="8" r="5" fill="currentColor" opacity="0.9" />
-      <circle cx="8" cy="8" r="3" fill="currentColor" opacity="0.4" />
-    </svg>
-  );
-}
-
 export function SilverIcon({ className, size = 16 }: IconProps) {
   return (
     <svg
@@ -96,48 +81,6 @@ export function SilverIcon({ className, size = 16 }: IconProps) {
   );
 }
 
-export function GoldIcon({ className, size = 16 }: IconProps) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 16 16"
-      fill="none"
-      className={className}
-    >
-      <path
-        d="M8 1 L10 5.5 L15 6 L11.5 9.5 L12.5 14.5 L8 12 L3.5 14.5 L4.5 9.5 L1 6 L6 5.5 Z"
-        fill="currentColor"
-        opacity="0.9"
-      />
-      <circle cx="8" cy="8" r="2.5" fill="currentColor" opacity="0.4" />
-    </svg>
-  );
-}
-
-export function PlatinumIcon({ className, size = 16 }: IconProps) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 16 16"
-      fill="none"
-      className={className}
-    >
-      <path
-        d="M8 1 L11.5 3 L14 6.5 L14 9.5 L11.5 13 L8 15 L4.5 13 L2 9.5 L2 6.5 L4.5 3 Z"
-        fill="currentColor"
-        opacity="0.9"
-      />
-      <path
-        d="M8 4 L10 5.5 L11 7.5 L11 8.5 L10 10.5 L8 12 L6 10.5 L5 8.5 L5 7.5 L6 5.5 Z"
-        fill="currentColor"
-        opacity="0.4"
-      />
-    </svg>
-  );
-}
-
 type StatIconProps = {
   stat: Stats;
   className?: string;
@@ -145,7 +88,6 @@ type StatIconProps = {
 };
 
 type CurrencyIconProps = {
-  currency: Currency;
   className?: string;
   size?: number;
 };
@@ -159,15 +101,7 @@ export function StatIcon({ stat, className, size }: StatIconProps) {
   }
 }
 
-export function CurrencyIcon({ currency, className, size }: CurrencyIconProps) {
-  switch (currency) {
-    case "Bronze":
-      return <BronzeIcon className={className} size={size} />;
-    case "Silver":
-      return <SilverIcon className={className} size={size} />;
-    case "Gold":
-      return <GoldIcon className={className} size={size} />;
-    case "Platinum":
-      return <PlatinumIcon className={className} size={size} />;
-  }
+// Single silver coin — currency collapsed to one denomination.
+export function CurrencyIcon({ className, size }: CurrencyIconProps) {
+  return <SilverIcon className={className} size={size} />;
 }

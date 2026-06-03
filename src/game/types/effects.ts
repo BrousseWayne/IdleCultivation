@@ -1,9 +1,9 @@
-import type { Currency, Stats, ActivityCategory, NavigationItem } from "@/game/types/domain";
+import type { Stats, ActivityCategory, NavigationItem } from "@/game/types/domain";
 
 export type Effect =
-  | { type: "grant_currency"; currency: Currency; amount: number }
+  | { type: "grant_currency"; amount: number }
   | { type: "grant_stat"; stat: Stats; amount: number }
-  | { type: "spend_currency"; currency: Currency; amount: number }
+  | { type: "spend_currency"; amount: number }
   | { type: "log"; message: string }
   | { type: "damage"; amount: number }
   | { type: "heal"; amount: number }

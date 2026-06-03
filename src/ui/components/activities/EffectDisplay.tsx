@@ -1,5 +1,5 @@
 import type { Effect } from "@/game/types/effects";
-import { CURRENCY_COLORS, STAT_COLORS } from "@/game/data/sectionColors";
+import { STAT_COLORS } from "@/game/data/sectionColors";
 import { StatIcon, CurrencyIcon } from "@/ui/components/StatIcon";
 import { formatNumber, scaleEffectAmount } from "@/game/utils";
 
@@ -16,10 +16,10 @@ export function EffectDisplay({ effects, level }: EffectDisplayProps) {
           return (
             <div
               key={i}
-              className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm ${CURRENCY_COLORS[effect.currency].replace('text-', 'bg-')}/10 border border-${CURRENCY_COLORS[effect.currency].replace('text-', '')}/20`}
+              className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm bg-accent-silver/10 border border-accent-silver/20"
             >
-              <CurrencyIcon currency={effect.currency} className={CURRENCY_COLORS[effect.currency]} size={10} />
-              <span className={`text-[10px] font-mono font-bold ${CURRENCY_COLORS[effect.currency]}`}>
+              <CurrencyIcon className="text-accent-silver" size={10} />
+              <span className="text-[10px] font-mono font-bold text-accent-silver">
                 +{formatNumber(scaleEffectAmount(effect.amount, level))}
               </span>
             </div>
@@ -28,7 +28,7 @@ export function EffectDisplay({ effects, level }: EffectDisplayProps) {
           return (
             <div
               key={i}
-              className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm ${STAT_COLORS[effect.stat].replace('text-', 'bg-')}/10 border border-${STAT_COLORS[effect.stat].replace('text-', '')}/20`}
+              className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm bg-slate-700/20 border border-slate-700/30"
             >
               <StatIcon stat={effect.stat} className={STAT_COLORS[effect.stat]} size={10} />
               <span className={`text-[10px] font-mono font-bold ${STAT_COLORS[effect.stat]}`}>

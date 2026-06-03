@@ -2,7 +2,6 @@ import type { Effect } from "@/game/types/effects";
 import { useInventoryStore } from "@/game/stores/inventoryStore";
 import { useCultivatorStore } from "@/game/stores/cultivatorStore";
 import { useGameStore } from "@/game/stores/gameStore";
-import { toCurrency } from "@/game/data/currency";
 import { EventBus } from "@/game/services/EventBus";
 
 class EffectExecutorService {
@@ -15,15 +14,11 @@ class EffectExecutorService {
   private apply(effect: Effect): void {
     switch (effect.type) {
       case "grant_currency":
-        useInventoryStore
-          .getState()
-          .addCurrency(toCurrency(effect.currency, effect.amount));
+        useInventoryStore.getState().addCurrency(effect.amount);
         break;
 
       case "spend_currency":
-        useInventoryStore
-          .getState()
-          .subtractCurrency(toCurrency(effect.currency, effect.amount));
+        useInventoryStore.getState().subtractCurrency(effect.amount);
         break;
 
       case "grant_stat": {

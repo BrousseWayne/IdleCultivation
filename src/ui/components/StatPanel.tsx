@@ -1,7 +1,7 @@
 import { useCultivatorStore } from "@/game/stores/cultivatorStore";
 import { useInventoryStore } from "@/game/stores/inventoryStore";
-import { StatIcon, BronzeIcon } from "@/ui/components/StatIcon";
-import { STAT_COLORS, CURRENCY_COLORS } from "@/game/data/sectionColors";
+import { StatIcon, CurrencyIcon } from "@/ui/components/StatIcon";
+import { STAT_COLORS } from "@/game/data/sectionColors";
 import { formatNumber } from "@/game/utils";
 import type { Stats } from "@/game/types/domain";
 import { useEtherealShimmer } from "@/ui/hooks/useEtherealShimmer";
@@ -23,12 +23,12 @@ export function StatPanel() {
     <div className="flex items-center gap-3 px-3 py-1.5 bg-slate-900/30 border border-slate-800/40 rounded">
       {currency > 0 && (
         <div className="flex items-center gap-1.5">
-          <BronzeIcon
-            className={CURRENCY_COLORS.Bronze}
+          <CurrencyIcon
+            className="text-accent-silver"
             size={14}
           />
           <EtherealEffect effect={getEffect("currency")}>
-            <span className={`text-xs font-mono font-bold ${CURRENCY_COLORS.Bronze}`}>
+            <span className="text-xs font-mono font-bold text-accent-silver">
               {formatNumber(currency)}
             </span>
           </EtherealEffect>

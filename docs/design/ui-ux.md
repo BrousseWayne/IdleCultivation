@@ -1,28 +1,23 @@
 ---
 purpose: Canonical UI/UX and visual language reference — palette, typography, number formatting, animation tiers, navigation, per-page layouts, sidebar, and activity design tokens.
 status: active
-last-verified: 2026-05-30
+last-verified: 2026-06-03
 related: [docs/design/roadmap.md]
 ---
 
 ## Key facts
 
-- **Palette name**: "Jade Mountain". Colors map to Chinese cultural / xianxia associations (jade = immortality, cinnabar = tribulation/demonic, imperial gold = Golden Core 金丹, deep blue = heavenly dao). Principle: one accent color per game section, used sparingly.
-- **Section accent colors** (apply via CSS custom properties + `[data-section]`):
-  - Cultivation / Training — Jade teal `#2DD4BF`
-  - Combat / Explore — Cinnabar red `#EF4444`
-  - Resources / Money — Imperial gold `#F59E0B`
-  - Health / Vitality — Emerald green `#10B981`
-  - Quests / Story — Soft violet `#A78BFA`
-  - Travel / Map — Sky blue `#3B82F6`
-  - Lifestyle — Lotus pink `#F472B6`
-  - Stats / Analytics — Moon silver `#94A3B8`
-- **Background surface hierarchy** (semi-transparent white "mist" overlays for natural stacking depth):
-  - `--bg-base: #0B0F14` (deepest background)
-  - `--bg-surface: rgba(255,255,255,0.03)` (cards, panels)
-  - `--bg-elevated: rgba(255,255,255,0.06)` (hover states)
-  - `--bg-overlay: rgba(255,255,255,0.09)` (active panels, modals)
-- **Accent usage rule**: accent applies only to page title underline/icon, primary action button, active nav indicator, and 3px left-edge card borders. ~90% of UI stays neutral.
+- **Palette**: one consolidated set, single source of truth — `PALETTE` in `src/game/data/sectionColors.ts` mirrored by `--accent-*` / `--stat-*` in `globals.css`. Governing rule: **one hue = one meaning** (no hue does two jobs).
+- **Reserved hues (state/system — never decorative)**:
+  - jade `#5FB4A0` — positive + brand (active nav, primary action, income, healthy/full)
+  - gold `#D4AF6A` — caution (mid HP/satiety, warnings)
+  - cinnabar `#E07856` — negative (expense, hurt, hungry, death)
+  - silver `#94A3B8` — money (single currency unit)
+- **Free / wayfinding hues** (categories, places, stream themes):
+  - violet `#B59ACF` — mind (study) · sky `#6BA3D4` — world/travel (work, hobby, life, places) · lotus `#D98AA8` — people (social) · indigo `#6E73C9` — body (training, adventure)
+- **Dedicated stat palette** (separate from the 8 UI hues, `--stat-*`): Strength `#CB4B5F`, Dexterity `#7FB85A`.
+- **Neutral ramp (one)** — tokens, not raw `slate-*`: text `--ink` `#E2E8F0` / `--ink-2` `#94A3B8` / `--ink-3` `#64748B`; surfaces `--panel-0` (deepest chrome, e.g. sidebar) / `--panel` (cards) / `--panel-2` (hover); borders `--line` / `--line-2`. Surfaces are dark translucent (not the old white "mist" overlays).
+- **Accent usage rule**: ~90% neutral; color carries meaning (state, money, category wayfinding, active nav), never decoration. Nav: active = jade, inactive = muted; sidebar section bars are neutral. No per-section rainbow, no `[data-section]` mechanism.
 - **Cultivation realm color progression** (for prestige layers / breakthrough palette shifts):
   - Qi Condensation — pale silver-blue `#94A3B8`
   - Foundation Establishment — teal `#14B8A6`
@@ -34,7 +29,7 @@ related: [docs/design/roadmap.md]
   - Mahayana — crimson-to-gold gradient
 - **Typography (three-tier)**:
   - Display — **Cinzel** (`'Cinzel', 'Noto Serif', Georgia, serif`), weights 400/600/700; realm names, section titles, game title. Use at `1.875rem`+ only, `letter-spacing: 0.05em`, `text-transform: uppercase` for realm names. Optional CJK alternative: **LXGW WenKai TC**.
-  - Body — **Inter** (`'Inter', -apple-system, BlinkMacSystemFont, sans-serif`); UI labels, descriptions, nav, dialogue. Ships tabular numeric figures.
+  - Body — intended **Inter**, but `--font-sans` is currently **Crimson Text** (serif) in `globals.css`; UI labels, descriptions, nav, dialogue.
   - Number — **JetBrains Mono** (`'JetBrains Mono', 'Fira Code', 'Consolas', monospace`); every resource count, timer, statistic, big number. Apply via `.resource-number` with `font-weight: 500`, `letter-spacing: -0.02em`. Distinguishes 0/O and 1/l/I.
 - **Text brightness levels (dark bg)**: primary `#E8ECF0`, secondary `#8B95A5`, muted `#4B5563`. Always `-webkit-font-smoothing: antialiased`.
 - **Number formatting tiers (implement in order)**:
@@ -50,11 +45,13 @@ related: [docs/design/roadmap.md]
 
 ## Color system
 
-The Jade Mountain palette assigns each game section a distinct accent color so players orient by color (spatial wayfinding). Each accent is genre-authentic: jade teal for cultivation/spiritual energy, cinnabar red for combat/tribulations, imperial gold for resources/Golden Core, emerald for vitality, soft violet for quests/story, sky blue for travel, lotus pink for lifestyle, moon silver for stats.
+The palette is deliberately small and disciplined: **one hue = one meaning.** Four reserved hues carry state/system semantics and are never used decoratively — jade (positive/brand), gold (caution), cinnabar (negative), silver (money). Four free hues handle wayfinding only — violet (mind), sky (world/travel), lotus (people), indigo (body) — and map the activity categories onto four axes (study→violet; social→lotus; training/adventure→indigo; work/hobby/life→sky). Stats sit outside both groups in their own dedicated palette (Strength crimson, Dexterity green).
 
-Surfaces use a "mist" hierarchy of semi-transparent white overlays on a near-black base (`#0B0F14`) rather than hard-coded grays, so panels stack into natural depth. Accent color is applied sparingly — only to the page-title underline or icon, the primary action button, the active navigation indicator, and a 3px colored left border on cards. The remaining ~90% of the UI stays neutral. Section accents are driven by CSS custom properties keyed off a `[data-section]` attribute.
+Single source of truth: `PALETTE` (hex) in `sectionColors.ts` is mirrored by the `--accent-*` / `--stat-*` CSS vars in `globals.css`; nothing else hard-codes accent hex. Neutrals are one slate-based ramp exposed as tokens (`--ink*`, `--panel*`, `--line*`) — components reference the tokens, not raw `slate-*` classes.
 
-Cultivation realms carry their own color progression (silver-blue → teal → gold → violet → blue → indigo → emerald → crimson-gold gradient), used for prestige-layer theming and for breakthrough color-scheme shifts where CSS custom properties transition over ~1s to the new realm's palette.
+~90% of the UI stays neutral. Color appears only where it means something: state feedback, money, category wayfinding, the active nav item (jade). There is no per-section accent rainbow and no `[data-section]` switching — section/nav chrome is neutral with a jade active indicator.
+
+Cultivation realms carry their own future color progression (silver-blue → teal → gold → violet → blue → indigo → emerald → crimson-gold gradient) for prestige-layer theming and breakthrough shifts — intended, not yet wired.
 
 ## Typography
 
@@ -120,43 +117,34 @@ Layout follows content type, not a uniform card grid — cards suit heterogeneou
 - **Quests** — small cards (genuinely heterogeneous content) with colored left border by quest type, progress bar, reward icons; sort by completability.
 - **Lifestyle** — inline toggle groups / radio selections by category (Housing, Meals, Transportation); cost and benefit on the same line per option.
 - **Travel** — SVG node map (circles + connecting lines) with list-view toggle for accessibility. Discovered = full color + label; adjacent undiscovered = gray "?" silhouette; unknown = hidden. Current location = breathing glow. Travel cost shown as time points consumed, integrating with Activities. Fits one viewport initially, no pan/zoom until world expands.
-- **Stats** — two-column table/definition list (stat name | value) grouped under category headers; bold key stats; show rate of change (`+2.3/day`).
+- **Stats** — definition-list rows. Attributes show as stat icon + descriptor word (no name/number), consistent with the sidebar. (Vitals — HP/Satiety/Mortality — still render as numeric bars here; a later vitals pass should word-ify them like the sidebar.)
 - **Recap** — vertical timeline of previous lives; each life a collapsible section with headline stats (age reached, realm, cause of death, achievements).
 - **Story** — clean text layout, generous margins, Cinzel headers + Inter body, minimal chrome, progressive text reveal.
 
 ## Sidebar design
 
-The sidebar is the persistent stat monitor; rates of change matter as much as current values. Organize into three collapsible sections with subtle dividers:
+The sidebar is the persistent status monitor. Sections have neutral header bars (no per-section color):
 
-- **Character** — Age as a lifespan progress bar (current/max), HP bar (current/max), Satiety bar with rate of change (`-5/day`), Mortality as a traffic-light indicator (green/yellow/red).
-- **Economy** — Money in monospace, Income and Expenses on separate lines, Net as a color-coded delta (green positive / red negative). Housing and Meal Quality as compact labels.
-- **Cultivation** — current realm, XP Multiplier, cultivation progress bar toward next breakthrough.
+- **Status** — Age as a bare number (no lifespan; a mortal can't know when they die). HP and Satiety as qualitative **words**, not bars or numbers (Healthy…Near death / Full…Starving), toned on the reserved state scale jade → gold → cinnabar. Mortality is hidden for now.
+- **Resources** — Money in silver monospace; Income (jade) and Expenses (cinnabar) on separate lines; Net as a color-coded delta.
+- **Attributes** (shown once a stat > 0) — each stat as its dedicated-color icon + a qualitative descriptor word (`describeStat`: Strength Feeble…Mighty, Dexterity Clumsy…Fleet). No stat name, no number.
 
-Principles: every stat with a rate shows that rate, color-coded; mini progress bars for HP/Satiety/Age/Lifespan are the most glanceable indicators; tooltips on every value reveal breakdowns; conditional display hides stats until mechanically relevant (XP Multiplier hidden pre-cultivation, Mortality hidden until relevant). On mobile, collapse to a pull-down drawer showing Age, HP, Money. The desktop sidebar should never require scrolling — if it does, tighten the hierarchy.
+Guiding principle — **a mortal has no precise self-data.** Internal values (vitality, satiety, stats) read as words/icons; only external, countable things (coin, age) read as numbers. Numeric self-knowledge is a later reveal (a stable job / salary). Progressive disclosure hides sections until relevant.
 
-## Activity design system (verified vs activityDesignTokens.ts)
+## Activity rows
 
-Unified tokens (`ACTIVITY_DESIGN`) for consistent activity representation across cards, queue lists, and the bottom queue bar. Import from `src/app/styles/activityDesignTokens.ts`.
+`ActivityRow` (`src/ui/components/`) is the shared row used by both Explore and Activities. (An older `ACTIVITY_DESIGN` token map exists at `src/ui/styles/activityDesignTokens.ts`; the live row no longer drives off it — category color comes from `CATEGORY_COLOR_CLASSES` / `getCategoryHex`.)
 
-**Icon sizes**: Card `w-4 h-4` (16px); Queue `w-3 h-3` (12px); Queue Bar `w-3 h-3` (12px). Cards are primary UI and get larger icons; queue items are compact.
+Row layout: category-colored icon · fixed-width activity **name** (so the level column aligns across rows) · visible **`Lv N`** · effect previews · time/allocation · −/＋ buttons. Borders and chrome use the neutral tokens (`border-line`, `hover:border-line-2`, `hover:bg-panel-2`); the running row takes its category's left-border color.
 
-**Typography**:
+**Effect previews** encode the external/internal split:
+- Currency reward — silver coin icon + numeric amount (coin is countable).
+- Stat reward — the stat's dedicated-color **icon only**: no name, no number, no magnitude. A mortal can't quantify their own growth; numbers arrive with the later job/salary reveal.
 
-| Element | Class | Usage |
-|---------|-------|-------|
-| Card Name | `text-xs font-semibold` | Activity cards |
-| Queue Name | `text-xs` | Queue list items |
-| Level Badge | `text-[10px] font-bold text-accent-gold` | All contexts |
-| Time | `text-[10px] text-slate-500 font-mono` | All views |
-| Completions | `text-[10px] text-slate-600 font-mono` | x{count} indicator |
-| Allocation | `text-xs font-mono font-bold` | Hours allocated |
+There is **no** per-row completion counter (`×N`) — that data is still tracked (death recap, unlock conditions) but not shown.
 
-Mono font for numeric values (time, counts), sans-serif for names.
+**XP bar** (bottom of the row): a thin foil-shimmer fill growing 0–100% toward the next activity level.
 
-**Spacing** — Activity cards: padding `px-3 py-2`, main gap `gap-3`, inner gap `gap-1.5`. Queue items: padding `px-2 py-1`, gap `gap-2`. Cards use ~1.5× the spacing of queue items.
+## Queue bar
 
-**Progress bars** — Allocation bar (top): height `0.5px` (`h-0.5`), track `bg-slate-800/50`, fill category-colored and striped when active. XP bar (bottom): height `1.2px` (`h-[1.2px]`), track `bg-slate-800/30` (always visible, full width), fill foil-shimmer gradient growing 0–100%, shimmer size `400% 100%`, animation `6s linear infinite`.
-
-**States & transitions** — Running: cards intensify border color (`border-l-3`), queue darkens background + pulsing dot. Hover: cards `hover:bg-card/50`, queue `hover:opacity-100`. Transition timings: standard `300ms` (meaningful state changes), quick `150ms` (hover), allocation `300ms` (progress fills).
-
-**Effects display** — icon size `12px`, gap `gap-1` (4px), `font-mono` for values; currency and stat icons use consistent 12px size.
+A sticky bar at the **top of the gamezone** (just under the header) — the active schedule is the first thing the player sees. Constant height in every state so the page never jumps: running shows the current activity (category-colored icon + name + hours remaining); idle/resting shows a moon + "Resting" with the same footprint. A segmented progress bar shows the day's schedule; a Trash button clears the schedule (`clearQueue`).

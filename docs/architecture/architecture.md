@@ -1,7 +1,7 @@
 ---
 purpose: Source of truth for the wired runtime architecture — Zustand stores, services, the effect/event/unlock discriminated-union systems, and the run-vs-meta state model.
 status: active
-last-verified: 2026-06-02
+last-verified: 2026-06-03
 related: [docs/architecture/conventions.md, docs/design/core-loop.md]
 ---
 
@@ -16,7 +16,7 @@ related: [docs/architecture/conventions.md, docs/design/core-loop.md]
 - WIRED: `EntityRegistry` (`src/game/services/EntityRegistry.ts`) — singleton seeded imperatively in `src/main.tsx` BEFORE React mounts (`activity`/`item`/`location`/`navigation`). O(1) `get`/`getAll`/`has`.
 - WIRED: `UnlockEvaluator` — data-driven, event-driven (no polling). `checkAll()` runs on `activity:completed`, `cultivator:stat-changed`, and at aging/decade boundaries. A satisfied unlockable fires `onUnlock()` once, then is deleted from the pool.
 - WIRED: `EffectExecutor` applies an `Effect[]` discriminated union by switching on `effect.type` and calling store actions directly.
-- RESOLVED (was the C3 gap): currency is a single integer balance with a **denomination** system. `Effect.currency` ∈ {Bronze=1, Silver=100, Gold=10 000, Platinum=1 000 000} is converted to base coin by `toCurrency()` (`data/currency.ts`); the sidebar `renderMoney()` decomposes the integer back into denominations. There are NOT four separate balances. `UnlockEvaluator`'s old `spirit_stones` condition is now `currency`.
+- CURRENCY: a single flat unit ("silver"). The old Bronze/Silver/Gold/Platinum denomination system was removed — `Currency` type and `data/currency.ts` (`toCurrency`/`CURRENCY_VALUE`) are gone, `Effect.grant_currency`/`spend_currency` carry only `amount`, and `renderMoney()` shows one silver number. `UnlockEvaluator`'s old `spirit_stones` condition is now `currency`.
 - WIRED: `SaveManager` (`src/game/services/SaveManager.ts`) — localStorage `cultivation-save`, `SAVE_VERSION = 1`, 30s autosave. Snapshots cultivator/game/activity/inventory (NOT `notificationStore`); persists `scheduleIndex`.
 - REMOVED: the JSON + Zod data-staging layer. There is no `data/json/` or `data/schemas/`; ALL content is pure TS (commit "convert remaining JSON data to typed TS, drop zod").
 - INTENDED, NOT WIRED: the two-layer state model. Run-state stores are real; there is no meta-state layer (prestige currencies, karma/luck, permanent unlocks). `reincarnate()` full-wipes every store and auto-reboots a fresh run.
@@ -28,7 +28,7 @@ State lives in five `create()` Zustand stores under `src/game/stores/`. Componen
 - `cultivatorStore` — run-scoped player: `age`, `lifespan`, `vitality`/`satiety`/`mortality` (each a `{max,current}` ResourceBar), `stats` (`Record<Stats, number>` where `Stats = "Strength" | "Dexterity"`), `hasFallen`. Actions: `incrementStat`, `takeDamage`, `heal`, `incrementAge`, `reset`. (The three ResourceBars are display-only today — nothing drains them yet.)
 - `gameStore` — tick/time (`ticks`, `day`, `gameSpeed`, `isPlaying`), intro/run flags (`introComplete`, `runBackground`), `maxTimePoints` (=24; free hours are derived from the schedule, not stored), the persistent `streamLog`, `currentPlaceKey`, calendar-selection state, and `navigationUnlocks` + `activityCategoryUnlocks` with their unlock actions. The tick loop and `reincarnate` live in `engine/gameLoop.ts`; `startRun` only sets `introComplete`/`runBackground`.
 - `activityStore` — `queue: QueueBlock[]` (the day's ordered schedule; adjacent same-key blocks merge), `scheduleIndex` (unit currently running), `runningTicks`, `completionCounts`, `activityXp`, `repeatActivities`. Editing actions `pushUnit`/`popUnit`/`clearQueue`; execution actions `advanceSchedule`/`resetSchedule`/`setRunningTicks`; pure helpers `queuedUnits`/`totalUnits`/`unitKeyAt`/`blockAt`. Completion logic (XP, level-scaled effects, `EffectExecutor`, `activity:completed`) lives in `engine/gameLoop.ts`.
-- `inventoryStore` — single `currency: number` (denomination-encoded; see currency note), `inventoryItems`, `equippedItems` (six slots), `dailyExpenses`/`dailyIncome`. `equipItem` resolves the item through `EntityRegistry.get("item", ...)`.
+- `inventoryStore` — single `currency: number` (one flat silver unit), `inventoryItems`, `equippedItems` (six slots), `dailyExpenses`/`dailyIncome`. `equipItem` resolves the item through `EntityRegistry.get("item", ...)`.
 - `notificationStore` — transient UI notifications with auto-dismiss timers. NOT persisted by SaveManager.
 
 ### Run-state vs meta-state (INTENDED, partially built)
@@ -53,7 +53,7 @@ Holds `unlockables: Map<id, UnlockableEntity>` and an `unlockedIds` set. `evalua
 
 ### EffectExecutor
 
-`execute(Effect[])` loops and `apply`s each by `effect.type`. Mapped cases: `grant_currency`/`spend_currency` → `inventory.addCurrency`/`subtractCurrency` after `toCurrency(currency, amount)` converts the denomination to base coin; `grant_stat` → `cultivator.incrementStat` plus emit `cultivator:stat-changed`; `log` → `gameStore.addEventLog`; `damage`/`heal` → cultivator; `unlock_category`/`unlock_nav` → gameStore unlock actions.
+`execute(Effect[])` loops and `apply`s each by `effect.type`. Mapped cases: `grant_currency`/`spend_currency` → `inventory.addCurrency`/`subtractCurrency` with the raw `amount`; `grant_stat` → `cultivator.incrementStat` plus emit `cultivator:stat-changed`; `log` → `gameStore.addEventLog`; `damage`/`heal` → cultivator; `unlock_category`/`unlock_nav` → gameStore unlock actions.
 
 ### SaveManager
 
@@ -82,7 +82,7 @@ The loop does NOT auto-stop on an empty or finished schedule — time keeps pass
 
 Game content lives in `src/game/data/`, all **pure TypeScript** — the earlier JSON + Zod staging layer was dropped (no `data/json/` or `data/schemas/`).
 
-- Live content: `activity.ts`, `places.ts`, `navigation.ts`, `unlocks.ts`, `currency.ts`, `constant.ts`, `intro.ts` (background/intro), `sectionColors.ts`.
+- Live content: `activity.ts`, `places.ts`, `navigation.ts`, `unlocks.ts`, `constant.ts`, `intro.ts` (background/intro), `sectionColors.ts` (palette source), `stats.ts` (stat descriptors).
 - Empty shells awaiting authoring: `lifestyle.ts`, `quests.ts`, `story.ts`.
 - Legacy mock data still read by scaffold pages: `items.ts`, `locations.ts` (the old cosmic Travel map).
 

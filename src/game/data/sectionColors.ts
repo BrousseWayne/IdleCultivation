@@ -1,4 +1,4 @@
-import type { NavigationItem, ActivityCategory, Stats } from "@/game/types/domain";
+import type { ActivityCategory, Stats } from "@/game/types/domain";
 
 // ---------------------------------------------------------------------------
 // Palette — single source of truth (mirror these hexes in globals.css).
@@ -26,19 +26,6 @@ export const ACCENT_HEX: Record<string, string> = {
   "accent-sky": PALETTE.sky,
   "accent-lotus": PALETTE.lotus,
   "accent-indigo": PALETTE.indigo,
-};
-
-// Active nav uses the brand (jade); inactive is neutral. No per-section rainbow.
-export const SECTION_COLORS: Record<NavigationItem, string> = {
-  Activities: "accent-jade",
-  Explore: "accent-jade",
-  Inventory: "accent-jade",
-  Quests: "accent-jade",
-  Lifestyle: "accent-jade",
-  Travel: "accent-jade",
-  Stats: "accent-jade",
-  Recap: "accent-jade",
-  Story: "accent-jade",
 };
 
 // Category wayfinding draws ONLY from the free axes (mind/world/people/body).

@@ -1,7 +1,7 @@
 import { type JSX, useMemo } from "react";
 import { Link, useLocation } from "react-router";
 import { sidebarData } from "@/game/data/navigation";
-import { SECTION_COLORS, STAT_COLORS } from "@/game/data/sectionColors";
+import { STAT_COLORS } from "@/game/data/sectionColors";
 import { describeStat } from "@/game/data/stats";
 import { useCultivatorStore } from "@/game/stores/cultivatorStore";
 import { useInventoryStore } from "@/game/stores/inventoryStore";
@@ -20,22 +20,22 @@ function renderMoney(amount: number): JSX.Element {
 }
 
 // A mortal has no precise self-knowledge: resources read as words, not numbers.
-// (Numeric self-readouts are a later cultivation-perception unlock.)
+// Tones use the reserved state scale: jade (good) -> gold (caution) -> cinnabar (bad).
 type Tier = { min: number; word: string; tone: string };
 
 const VITALITY_TIERS: Tier[] = [
-  { min: 90, word: "Healthy", tone: "text-emerald-300" },
-  { min: 70, word: "Bruised", tone: "text-green-300" },
-  { min: 45, word: "Wounded", tone: "text-amber-300" },
-  { min: 20, word: "Badly hurt", tone: "text-orange-300" },
+  { min: 90, word: "Healthy", tone: "text-accent-jade" },
+  { min: 70, word: "Bruised", tone: "text-accent-jade" },
+  { min: 45, word: "Wounded", tone: "text-accent-gold" },
+  { min: 20, word: "Badly hurt", tone: "text-accent-cinnabar" },
   { min: 0, word: "Near death", tone: "text-accent-cinnabar" },
 ];
 
 const SATIETY_TIERS: Tier[] = [
-  { min: 90, word: "Full", tone: "text-emerald-300" },
-  { min: 65, word: "Sated", tone: "text-green-300" },
-  { min: 40, word: "Peckish", tone: "text-amber-300" },
-  { min: 15, word: "Hungry", tone: "text-orange-300" },
+  { min: 90, word: "Full", tone: "text-accent-jade" },
+  { min: 65, word: "Sated", tone: "text-accent-jade" },
+  { min: 40, word: "Peckish", tone: "text-accent-gold" },
+  { min: 15, word: "Hungry", tone: "text-accent-cinnabar" },
   { min: 0, word: "Starving", tone: "text-accent-cinnabar" },
 ];
 
@@ -46,8 +46,19 @@ function pickTier(tiers: Tier[], pct: number): Tier {
 function StatWord({ label, tier }: { label: string; tier: Tier }) {
   return (
     <div className="flex justify-between">
-      <span className="text-slate-500">{label}</span>
+      <span className="text-ink-2">{label}</span>
       <span className={`font-semibold ${tier.tone}`}>{tier.word}</span>
+    </div>
+  );
+}
+
+function SectionHeader({ label }: { label: string }) {
+  return (
+    <div className="mb-3 pb-1.5 border-b border-line">
+      <div className="flex items-center gap-2">
+        <div className="w-1 h-4 bg-ink-3 rounded-full" />
+        <span className="text-sm font-bold text-ink uppercase tracking-wider">{label}</span>
+      </div>
     </div>
   );
 }
@@ -95,13 +106,12 @@ export function Sidebar() {
   const hasStats = statEntries.some(([_, value]) => value > 0);
 
   return (
-    <aside className="w-60 fixed left-0 top-12 h-[calc(100vh-3rem)] bg-slate-950/50 overflow-y-auto">
+    <aside className="w-60 fixed left-0 top-12 h-[calc(100vh-3rem)] bg-panel-0 overflow-y-auto">
       <nav className="grid grid-cols-5 gap-1 p-2">
         {sidebarData
           .filter((item) => navigationUnlocks[item.name])
           .map((item) => {
             const isActive = activeTab === item.name;
-            const color = SECTION_COLORS[item.name];
             return (
               <Link
                 key={item.name}
@@ -109,13 +119,13 @@ export function Sidebar() {
                 title={text(navKey(item.name))}
                 className={`relative flex items-center justify-center p-2.5 rounded-md transition-all ${
                   isActive
-                    ? `bg-${color}/15 text-${color}`
-                    : `text-slate-600 hover:text-slate-400 hover:bg-slate-900/40`
+                    ? "bg-accent-jade/15 text-accent-jade"
+                    : "text-ink-3 hover:text-ink-2 hover:bg-panel-2"
                 }`}
               >
-                <item.icon className={`w-[18px] h-[18px] transition-transform ${isActive ? 'scale-110' : ''}`} />
+                <item.icon className={`w-[18px] h-[18px] transition-transform ${isActive ? "scale-110" : ""}`} />
                 {isActive && (
-                  <span className={`absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-4 h-[2px] bg-${color} rounded-full`} />
+                  <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-4 h-[2px] bg-accent-jade rounded-full" />
                 )}
               </Link>
             );
@@ -123,16 +133,11 @@ export function Sidebar() {
       </nav>
 
       <div className="px-4 py-3">
-        <div className="mb-3 pb-1.5 border-b border-accent-jade/30">
-          <div className="flex items-center gap-2">
-            <div className="w-1 h-4 bg-accent-jade rounded-full" />
-            <span className="text-sm font-bold text-accent-jade uppercase tracking-wider">{text("sidebar.section.status")}</span>
-          </div>
-        </div>
+        <SectionHeader label={text("sidebar.section.status")} />
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-slate-500">{text("sidebar.label.age")}</span>
-            <span className="text-accent-jade font-mono font-bold">{lerpAge}</span>
+            <span className="text-ink-2">{text("sidebar.label.age")}</span>
+            <span className="text-ink font-mono font-bold">{lerpAge}</span>
           </div>
           <StatWord label={text("stat.hp")} tier={vitalityTier} />
           <StatWord label={text("stat.satiety")} tier={satietyTier} />
@@ -140,27 +145,22 @@ export function Sidebar() {
       </div>
 
       <div className="px-4 py-3">
-        <div className="mb-3 pb-1.5 border-b border-accent-gold/30">
-          <div className="flex items-center gap-2">
-            <div className="w-1 h-4 bg-accent-gold rounded-full" />
-            <span className="text-sm font-bold text-accent-gold uppercase tracking-wider">{text("sidebar.section.resources")}</span>
-          </div>
-        </div>
+        <SectionHeader label={text("sidebar.section.resources")} />
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-slate-500">{text("sidebar.label.money")}</span>
+            <span className="text-ink-2">{text("sidebar.label.money")}</span>
             <span className="font-bold flex gap-1">{renderMoney(lerpMoney)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-slate-500">{text("sidebar.label.income")}</span>
+            <span className="text-ink-2">{text("sidebar.label.income")}</span>
             <span className="text-accent-jade font-mono">+{formatNumber(dailyIncome)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-slate-500">{text("sidebar.label.expenses")}</span>
+            <span className="text-ink-2">{text("sidebar.label.expenses")}</span>
             <span className="text-accent-cinnabar font-mono">-{formatNumber(dailyExpenses)}</span>
           </div>
           <div className="flex justify-between font-bold">
-            <span className="text-slate-200">{text("sidebar.label.net")}</span>
+            <span className="text-ink">{text("sidebar.label.net")}</span>
             <span className={`font-mono ${net >= 0 ? "text-accent-jade" : "text-accent-cinnabar"}`}>
               {net >= 0 ? "+" : ""}{formatNumber(net)}
             </span>
@@ -169,24 +169,17 @@ export function Sidebar() {
       </div>
 
       {hasStats && (
-        <>
-          <div className="px-4 py-3">
-            <div className="mb-3 pb-1.5 border-b border-accent-violet/30">
-              <div className="flex items-center gap-2">
-                <div className="w-1 h-4 bg-accent-violet rounded-full" />
-                <span className="text-sm font-bold text-accent-violet uppercase tracking-wider">{text("sidebar.section.attributes")}</span>
+        <div className="px-4 py-3">
+          <SectionHeader label={text("sidebar.section.attributes")} />
+          <div className="space-y-2 text-sm">
+            {statEntries.map(([stat, value]) => (
+              <div key={stat} className="flex items-center justify-between">
+                <StatIcon stat={stat} className={STAT_COLORS[stat]} size={16} />
+                <span className={`font-semibold ${STAT_COLORS[stat]}`}>{describeStat(stat, value)}</span>
               </div>
-            </div>
-            <div className="space-y-2 text-sm">
-              {statEntries.map(([stat, value]) => (
-                <div key={stat} className="flex items-center justify-between">
-                  <StatIcon stat={stat} className={STAT_COLORS[stat]} size={16} />
-                  <span className={`font-semibold ${STAT_COLORS[stat]}`}>{describeStat(stat, value)}</span>
-                </div>
-              ))}
-            </div>
+            ))}
           </div>
-        </>
+        </div>
       )}
     </aside>
   );

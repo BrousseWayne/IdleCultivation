@@ -2,6 +2,7 @@ import { type JSX, useMemo } from "react";
 import { Link, useLocation } from "react-router";
 import { sidebarData } from "@/game/data/navigation";
 import { SECTION_COLORS, STAT_COLORS } from "@/game/data/sectionColors";
+import { describeStat } from "@/game/data/stats";
 import { useCultivatorStore } from "@/game/stores/cultivatorStore";
 import { useInventoryStore } from "@/game/stores/inventoryStore";
 import { useGameStore } from "@/game/stores/gameStore";
@@ -161,7 +162,7 @@ export function Sidebar() {
           <div className="flex justify-between font-bold">
             <span className="text-slate-200">{text("sidebar.label.net")}</span>
             <span className={`font-mono ${net >= 0 ? "text-accent-jade" : "text-accent-cinnabar"}`}>
-              {net >= 0 ? "+" : ""}{formatNumber(net)}g
+              {net >= 0 ? "+" : ""}{formatNumber(net)}
             </span>
           </div>
         </div>
@@ -179,13 +180,8 @@ export function Sidebar() {
             <div className="space-y-2 text-sm">
               {statEntries.map(([stat, value]) => (
                 <div key={stat} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <StatIcon stat={stat} className={STAT_COLORS[stat]} size={16} />
-                    <span className="text-slate-500">{stat}</span>
-                  </div>
-                  <span className={`font-mono font-bold ${STAT_COLORS[stat]}`}>
-                    {formatNumber(value)}
-                  </span>
+                  <StatIcon stat={stat} className={STAT_COLORS[stat]} size={16} />
+                  <span className={`font-semibold ${STAT_COLORS[stat]}`}>{describeStat(stat, value)}</span>
                 </div>
               ))}
             </div>

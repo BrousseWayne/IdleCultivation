@@ -26,14 +26,8 @@ export function EffectDisplay({ effects, level }: EffectDisplayProps) {
           );
         if (effect.type === "grant_stat")
           return (
-            <div
-              key={i}
-              className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm bg-slate-700/20 border border-slate-700/30"
-            >
-              <StatIcon stat={effect.stat} className={STAT_COLORS[effect.stat]} size={10} />
-              <span className={`text-[10px] font-mono font-bold ${STAT_COLORS[effect.stat]}`}>
-                +{formatNumber(scaleEffectAmount(effect.amount, level))}
-              </span>
+            <div key={i} className="flex items-center px-0.5 py-0.5" title={effect.stat}>
+              <StatIcon stat={effect.stat} className={STAT_COLORS[effect.stat]} size={14} />
             </div>
           );
         return null;

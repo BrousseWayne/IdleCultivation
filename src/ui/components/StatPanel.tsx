@@ -2,6 +2,7 @@ import { useCultivatorStore } from "@/game/stores/cultivatorStore";
 import { useInventoryStore } from "@/game/stores/inventoryStore";
 import { StatIcon, CurrencyIcon } from "@/ui/components/StatIcon";
 import { STAT_COLORS } from "@/game/data/sectionColors";
+import { describeStat } from "@/game/data/stats";
 import { formatNumber } from "@/game/utils";
 import type { Stats } from "@/game/types/domain";
 import { useEtherealShimmer } from "@/ui/hooks/useEtherealShimmer";
@@ -47,8 +48,8 @@ export function StatPanel() {
             size={14}
           />
           <EtherealEffect effect={getEffect(`stat_${stat}` as any)}>
-            <span className={`text-xs font-mono font-bold ${STAT_COLORS[stat]}`}>
-              {formatNumber(amount)}
+            <span className={`text-xs font-semibold ${STAT_COLORS[stat]}`}>
+              {describeStat(stat, amount)}
             </span>
           </EtherealEffect>
         </div>

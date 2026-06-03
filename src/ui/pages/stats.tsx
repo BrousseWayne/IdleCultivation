@@ -5,24 +5,10 @@ import { useEtherealShimmer } from "@/ui/hooks/useEtherealShimmer";
 import { EtherealEffect } from "@/ui/components/EtherealEffect";
 import { PageHeader } from "@/ui/components/PageHeader";
 import { text } from "@/game/content/text";
-
-const StatRow = ({
-  label,
-  value,
-  colorClass,
-}: {
-  label: string;
-  value: string;
-  colorClass: string;
-}) => (
-  <>
-    <div className="flex justify-between items-center py-1.5">
-      <span className="text-sm text-slate-400">{label}</span>
-      <span className={`font-mono text-sm ${colorClass}`}>{value}</span>
-    </div>
-    <div className="h-px bg-gradient-to-r from-transparent via-slate-700/30 to-transparent" />
-  </>
-);
+import { StatIcon } from "@/ui/components/StatIcon";
+import { STAT_COLORS } from "@/game/data/sectionColors";
+import { describeStat } from "@/game/data/stats";
+import type { Stats } from "@/game/types/domain";
 
 const ProgressRow = ({
   label,
@@ -84,8 +70,14 @@ export const RenderStatsPage = () => {
               </span>
             </div>
             <div className="h-px bg-gradient-to-r from-transparent via-slate-700/30 to-transparent" />
-            {Object.entries(stats).map(([stat, value]) => (
-              <StatRow key={stat} label={stat} value={String(value)} colorClass="text-accent-cinnabar" />
+            {(Object.entries(stats) as [Stats, number][]).map(([stat, value]) => (
+              <div key={stat}>
+                <div className="flex justify-between items-center py-1.5">
+                  <StatIcon stat={stat} className={STAT_COLORS[stat]} size={18} />
+                  <span className={`text-sm font-semibold ${STAT_COLORS[stat]}`}>{describeStat(stat, value)}</span>
+                </div>
+                <div className="h-px bg-gradient-to-r from-transparent via-slate-700/30 to-transparent" />
+              </div>
             ))}
             <ProgressRow label={text("stat.hp")} current={vitality.current} max={vitality.max} colorClass="text-accent-jade" effect={getEffect("vitality")} />
             <ProgressRow label={text("stat.satiety")} current={satiety.current} max={satiety.max} colorClass="text-accent-gold" effect={getEffect("satiety")} />

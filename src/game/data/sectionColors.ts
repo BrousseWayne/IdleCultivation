@@ -70,10 +70,12 @@ export const CATEGORY_COLOR_CLASSES: Record<ActivityCategory, ColorClasses> = {
   adventure: { text: "text-accent-indigo", border: "border-l-accent-indigo", borderFaded: "border-l-accent-indigo/30 hover:border-l-accent-indigo/60", progress: "[&>div]:bg-accent-indigo" },
 };
 
-// Stats are rendered icon-first and neutral (see StatIcon); no chromatic accent.
+// Stats use their own dedicated identity palette (see --stat-* in globals.css),
+// separate from the UI accents. Rendered icon-first.
+// Qualitative stat wording lives in game logic (data/stats.ts), not here.
 export const STAT_COLORS: Record<Stats, string> = {
-  Strength: "text-slate-300",
-  Dexterity: "text-slate-300",
+  Strength: "text-stat-strength",
+  Dexterity: "text-stat-dexterity",
 };
 
 export function getCategoryHex(category: ActivityCategory): string {

@@ -93,8 +93,8 @@ export function RenderActivitiesPage() {
                 </button>
                 {!isCollapsed && (
                   <div className="space-y-1">
-                    {available[category].map((a) => (
-                      <ActivityRow key={a.key} activity={a} onQueue={doQueue} onUnqueue={unqueue} />
+                    {available[category].map((a, i) => (
+                      <ActivityRow key={a.key} activity={a} index={i} onQueue={doQueue} onUnqueue={unqueue} />
                     ))}
                   </div>
                 )}

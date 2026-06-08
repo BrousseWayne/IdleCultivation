@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Trash2, PanelRightClose, PanelRightOpen } from "lucide-react";
 import { useGameStore } from "@/game/stores/gameStore";
+import { PALETTE } from "@/game/data/sectionColors";
 import type { LogEntry, StreamTheme } from "@/game/types/domain";
 
 const THEME_LABEL: Record<StreamTheme, string> = {
@@ -10,12 +11,14 @@ const THEME_LABEL: Record<StreamTheme, string> = {
   dialogue: "Talk",
   travel: "Travel",
 };
+// Themes draw from the single palette source. income = jade (positive, matches
+// the sidebar); ambient is neutral.
 const THEME_HEX: Record<StreamTheme, string> = {
-  ambient: "#64748b",
-  income: "#D4AF6A",
-  event: "#E07856",
-  dialogue: "#B59ACF",
-  travel: "#6BA3D4",
+  ambient: "#64748B",
+  income: PALETTE.jade,
+  event: PALETTE.cinnabar,
+  dialogue: PALETTE.violet,
+  travel: PALETTE.sky,
 };
 
 type Row = { entry: LogEntry; count: number };
@@ -49,7 +52,7 @@ export function Stream() {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="relative w-10 shrink-0 bg-slate-950/40 flex flex-col items-center pt-4 gap-2 text-slate-500 hover:text-slate-300"
+        className="relative w-10 shrink-0 bg-panel-0 flex flex-col items-center pt-4 gap-2 text-ink-3 hover:text-ink"
         title="open the thread"
       >
         <div className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-black/35 to-transparent pointer-events-none" />
@@ -70,12 +73,12 @@ export function Stream() {
     });
 
   return (
-    <aside className="relative w-80 shrink-0 flex flex-col bg-slate-950/40">
+    <aside className="relative w-80 shrink-0 flex flex-col bg-panel-0">
       <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-black/35 to-transparent pointer-events-none" />
       <div className="relative flex-1 flex flex-col p-4 pb-16 min-h-0">
         <div className="flex items-center justify-between pb-2">
-          <span className="text-[11px] text-slate-600 uppercase tracking-widest">the thread</span>
-          <button onClick={() => setOpen(false)} className="text-slate-500 hover:text-slate-300" title="collapse">
+          <span className="text-[11px] text-ink-3 uppercase tracking-widest">the thread</span>
+          <button onClick={() => setOpen(false)} className="text-ink-3 hover:text-ink" title="collapse">
             <PanelRightClose className="w-4 h-4" />
           </button>
         </div>
@@ -96,7 +99,7 @@ export function Stream() {
                 </button>
               );
             })}
-            <button onClick={clearLog} className="ml-auto text-slate-600 hover:text-accent-cinnabar" title="clear log">
+            <button onClick={clearLog} className="ml-auto text-ink-3 hover:text-accent-cinnabar" title="clear log">
               <Trash2 className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -109,11 +112,11 @@ export function Stream() {
             const isNpc = entry.tone === "npc";
             return (
               <div key={i} className="pl-2.5 py-[3px] leading-snug border-l-2" style={{ borderColor: `${THEME_HEX[entry.theme]}55` }}>
-                <span className={`text-[13px] font-[family-name:var(--font-sans)] ${isSelf ? "text-slate-300" : isNpc ? "text-slate-200" : "text-slate-400 italic"}`}>
+                <span className={`text-[13px] font-[family-name:var(--font-sans)] ${isSelf ? "text-ink" : isNpc ? "text-ink" : "text-ink-2 italic"}`}>
                   {isNpc && entry.speaker && <span className="text-[10px] uppercase tracking-widest mr-1.5 text-accent-violet not-italic">{entry.speaker}</span>}
                   {isSelf && entry.speaker && <span className="text-[10px] uppercase tracking-widest mr-1.5 text-accent-jade not-italic">{entry.speaker}</span>}
                   {entry.text}
-                  {count > 1 && <span className="text-slate-600 font-mono text-xs"> ×{count}</span>}
+                  {count > 1 && <span className="text-ink-3 font-mono text-xs"> ×{count}</span>}
                 </span>
               </div>
             );

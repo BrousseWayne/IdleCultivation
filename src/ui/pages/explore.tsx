@@ -107,8 +107,8 @@ export function RenderExplorePage() {
       {placeActivities.length > 0 && (
         <section className="space-y-1.5">
           <div className="text-[11px] text-slate-600 uppercase tracking-widest">What you can do here</div>
-          {placeActivities.map((a) => (
-            <ActivityRow key={a.key} activity={a} onQueue={queue} onUnqueue={unqueue} />
+          {placeActivities.map((a, i) => (
+            <ActivityRow key={a.key} activity={a} index={i} onQueue={queue} onUnqueue={unqueue} />
           ))}
         </section>
       )}

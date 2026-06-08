@@ -65,6 +65,12 @@ export const STAT_COLORS: Record<Stats, string> = {
   Dexterity: "text-stat-dexterity",
 };
 
+// Hex mirror of --stat-* (for gradients / inline styles).
+export const STAT_HEX: Record<Stats, string> = {
+  Strength: "#CB4B5F",
+  Dexterity: "#7FB85A",
+};
+
 export function getCategoryHex(category: ActivityCategory): string {
   return ACCENT_HEX[CATEGORY_COLORS[category]] || PALETTE.jade;
 }

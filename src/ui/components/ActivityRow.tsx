@@ -1,4 +1,4 @@
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, Clock } from "lucide-react";
 import { useActivityStore, queuedUnits, unitKeyAt } from "@/game/stores/activityStore";
 import { useGameStore } from "@/game/stores/gameStore";
 import { queueActivity, unqueueActivity } from "@/game/engine/gameLoop";
@@ -21,10 +21,11 @@ export function useActivityActions() {
   return { queue, unqueue };
 }
 
-export function ActivityRow({ activity, onQueue, onUnqueue }: {
+export function ActivityRow({ activity, onQueue, onUnqueue, index = 0 }: {
   activity: Activity;
   onQueue: (key: string) => void;
   onUnqueue: (key: string) => void;
+  index?: number;
 }) {
   const queue = useActivityStore((s) => s.queue);
   const scheduleIndex = useActivityStore((s) => s.scheduleIndex);
@@ -35,6 +36,8 @@ export function ActivityRow({ activity, onQueue, onUnqueue }: {
   const allocated = units * activity.timeCost;
   const isRunning = unitKeyAt(queue, scheduleIndex) === activity.key;
   const colors = CATEGORY_COLOR_CLASSES[activity.category];
+  const hex = getCategoryHex(activity.category);
+  const zebra = index % 2 === 1;
 
   const progress = isRunning ? Math.min(runningTicks / activity.timeCost, 1) : 0;
   const interpolatedXp = xp + activity.xpScalingFn() * progress;
@@ -42,37 +45,41 @@ export function ActivityRow({ activity, onQueue, onUnqueue }: {
   const xpPct = xpForNext > 0 ? (currentXp / xpForNext) * 100 : 0;
 
   return (
-    <div className={`rounded-md border overflow-hidden transition-colors ${isRunning ? colors.border : "border-line hover:border-line-2"}`}>
-      <div className="w-full flex items-center gap-3 px-3 py-2.5">
-        <activity.icon className={`w-4 h-4 shrink-0 ${colors.text}`} />
-        <span className="w-44 truncate text-sm text-ink shrink-0">{activity.name}</span>
-        <span className="w-12 shrink-0 text-[11px] font-bold text-ink-2">Lv {level}</span>
+    <div className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md ${zebra ? "bg-panel" : ""}`}>
+      <activity.icon className={`w-4 h-4 shrink-0 ${colors.text}`} />
 
-        <div className="flex flex-wrap gap-1 min-w-0">
-          <EffectDisplay effects={activity.effects} level={level} />
+      <div className="flex-1 min-w-0 flex flex-col gap-1">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="text-[13px] text-ink truncate">{activity.name}</span>
+          <div className="flex flex-wrap items-center gap-1 shrink-0">
+            <EffectDisplay effects={activity.effects} level={level} />
+          </div>
         </div>
+        <div className="flex items-center gap-1.5 w-1/2 min-w-0">
+          <span className="text-[10px] text-ink-3 shrink-0">Lv {level}</span>
+          <div className="flex-1 h-1.5 rounded-full bg-line overflow-hidden">
+            <div className="h-full animate-shimmer" style={{ width: `${xpPct}%`, background: getFoilGradient(hex), backgroundSize: "200% 100%" }} />
+          </div>
+        </div>
+      </div>
 
-        <span className="ml-auto flex items-center gap-3 text-xs text-ink-3 shrink-0">
-          <span>{activity.timeCost}h{allocated > 0 && <span className="text-accent-jade"> · {allocated}h</span>}</span>
-          <span className="flex items-center gap-1">
-            <button onClick={() => onUnqueue(activity.key)} disabled={allocated < activity.timeCost}
-              className="w-5 h-5 flex items-center justify-center rounded hover:bg-panel-2 disabled:opacity-30 disabled:hover:bg-transparent">
-              <Minus className="w-3 h-3" />
-            </button>
-            <button onClick={() => onQueue(activity.key)}
-              className="w-5 h-5 flex items-center justify-center rounded hover:bg-panel-2 text-accent-jade">
-              <Plus className="w-3 h-3" />
-            </button>
-          </span>
+      <span className="flex items-center gap-2.5 shrink-0">
+        <span className="flex items-center gap-1 text-[13px] font-mono font-semibold text-ink-2">
+          <Clock className="w-3 h-3 text-ink-3" />
+          {activity.timeCost}h{allocated > 0 && <span className="text-accent-jade"> ·{allocated}h</span>}
         </span>
-      </div>
-
-      {/* xp level bar */}
-      <div className="h-px w-full bg-slate-900/60 relative overflow-hidden">
-        <div className="h-full absolute left-0 top-0 transition-all" style={{ width: `${xpPct}%` }}>
-          <div className="absolute inset-0 animate-shimmer" style={{ background: getFoilGradient(getCategoryHex(activity.category)), backgroundSize: "200% 100%" }} />
-        </div>
-      </div>
+        <span className="flex items-center rounded-md border border-line-2 overflow-hidden">
+          <button onClick={() => onUnqueue(activity.key)} disabled={allocated < activity.timeCost}
+            className="w-6 h-5 flex items-center justify-center text-ink-2 hover:bg-panel-2 disabled:opacity-30 disabled:hover:bg-transparent">
+            <Minus className="w-3 h-3" />
+          </button>
+          <span className="w-px h-3.5 bg-line-2" />
+          <button onClick={() => onQueue(activity.key)}
+            className="w-6 h-5 flex items-center justify-center text-accent-jade hover:bg-panel-2">
+            <Plus className="w-3 h-3" />
+          </button>
+        </span>
+      </span>
     </div>
   );
 }

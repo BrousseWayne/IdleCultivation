@@ -21,7 +21,7 @@ export const activityData: Activity[] = [
     xpScalingFn: () => 100,
     timeCost: 8,
     unlocked: true,
-    effects: [{ type: "grant_currency", amount: 100 }],
+    effects: [{ type: "grant_currency", amount: 100, uncertain: true }],
   },
   {
     key: "farmFields",

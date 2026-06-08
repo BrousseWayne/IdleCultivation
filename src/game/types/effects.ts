@@ -1,7 +1,7 @@
 import type { Stats, ActivityCategory, NavigationItem } from "@/game/types/domain";
 
 export type Effect =
-  | { type: "grant_currency"; amount: number }
+  | { type: "grant_currency"; amount: number; uncertain?: boolean }
   | { type: "grant_stat"; stat: Stats; amount: number }
   | { type: "spend_currency"; amount: number }
   | { type: "log"; message: string }

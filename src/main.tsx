@@ -48,6 +48,13 @@ initializeGameEventListeners();
 SaveManager.load();
 SaveManager.startAutoSave();
 
+// at 1 day = 1 real second, the 30s autosave alone can lose a month of life —
+// flush whenever the tab closes or goes to the background
+window.addEventListener("beforeunload", () => SaveManager.save());
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) SaveManager.save();
+});
+
 bootRun();
 
 declare global {

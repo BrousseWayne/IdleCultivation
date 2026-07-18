@@ -3,7 +3,7 @@ import { EventBus } from "@/game/services/EventBus";
 import { UnlockEvaluator } from "@/game/services/UnlockEvaluator";
 import { initializeGameEventListeners } from "@/game/services/gameEventListeners";
 import { resetRunState } from "@/game/services/persistence";
-import { gameLoop, runTick, resetAging } from "@/game/engine/gameLoop";
+import { gameLoop, runTick } from "@/game/engine/gameLoop";
 import { TICKS_PER_DAY } from "@/game/engine/time";
 import { rng } from "@/game/engine/rng";
 import { useGameStore } from "@/game/stores/gameStore";
@@ -21,7 +21,6 @@ export function freshRun(seed = 12345): void {
   EventBus.clear();
   UnlockEvaluator.clear();
   resetRunState();
-  resetAging();
   rng.reseed(seed);
   localStorage.clear();
   initializeGameEventListeners();

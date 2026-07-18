@@ -79,6 +79,15 @@ export function validateContent(): string[] {
   for (const key of duplicatesIn(eventData.map((event) => event.key)))
     errors.push(`duplicate event key "${key}"`);
 
+  // spend_currency in event content is legal only inside choice `costs` —
+  // costs are the one affordability-gated channel; a spend anywhere else
+  // executes unconditionally and can drive copper negative.
+  const checkSpendsOnlyInCosts = (owner: string, effects: readonly Effect[] | undefined) => {
+    for (const effect of effects ?? [])
+      if (effect.type === "spend_currency")
+        errors.push(`${owner} has spend_currency outside choice costs (only costs are gated)`);
+  };
+
   for (const event of eventData) {
     const where = `event "${event.key}"`;
     checkConditions(where, event.conditions);
@@ -103,10 +112,12 @@ export function validateContent(): string[] {
 
     for (const [stepId, step] of Object.entries(event.steps)) {
       checkEffects(`${where} step "${stepId}"`, step.effects);
+      checkSpendsOnlyInCosts(`${where} step "${stepId}"`, step.effects);
       for (const choice of step.choices ?? []) {
         if (choice.requires) checkConditions(`${where} step "${stepId}"`, choice.requires);
         checkEffects(`${where} step "${stepId}"`, choice.costs);
         checkEffects(`${where} step "${stepId}"`, choice.effects);
+        checkSpendsOnlyInCosts(`${where} step "${stepId}" choice "${choice.label}"`, choice.effects);
         if (choice.goto && !stepIds.has(choice.goto))
           errors.push(`${where} step "${stepId}" choice goes to unknown step "${choice.goto}"`);
       }

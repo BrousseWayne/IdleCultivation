@@ -38,3 +38,6 @@ export const CHANCE_PROBABILITY: Record<Chance, number> = {
   uncommon: 0.08,
   rare: 0.02,
 };
+
+// uncertain currency rewards roll uniformly in [1−spread, 1+spread) × base
+export const UNCERTAIN_SPREAD = 0.5;

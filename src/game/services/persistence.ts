@@ -31,6 +31,7 @@ export const persistedSections: readonly PersistedSection[] = [
         satiety: state.satiety,
         mortality: state.mortality,
         stats: state.stats,
+        hasFallen: state.hasFallen,
       };
     },
     restore: (saved) =>

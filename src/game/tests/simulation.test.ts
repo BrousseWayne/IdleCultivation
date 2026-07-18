@@ -52,14 +52,29 @@ describe("a mortal life", () => {
 });
 
 describe("the daily schedule", () => {
-  it("a scheduled activity pays exactly what it promises", () => {
+  it("a disclosed activity pays exactly what it promises", () => {
     freshRun();
-    queueActivity("beg"); // 8h, grants 100 copper at level 1
+    queueActivity("farmFields"); // 6h, grants 80 copper + 1 Strength at level 1
 
-    passTicks(8);
+    passTicks(6);
 
-    expect(useInventoryStore.getState().currency).toBe(initialCurrency + 100);
-    expect(useActivityStore.getState().completionCounts.beg).toBe(1);
+    expect(useInventoryStore.getState().currency).toBe(initialCurrency + 80);
+    expect(useCultivatorStore.getState().stats.Strength).toBe(1);
+    expect(useActivityStore.getState().completionCounts.farmFields).toBe(1);
+  });
+
+  it("an uncertain reward is a real roll, reproducible from the seed", () => {
+    const play = () => {
+      freshRun(99);
+      queueActivity("beg"); // 8h, base 100, uncertain
+      passTicks(8);
+      return useInventoryStore.getState().currency - initialCurrency;
+    };
+
+    const earned = play();
+    expect(earned).toBeGreaterThanOrEqual(50);
+    expect(earned).toBeLessThanOrEqual(150);
+    expect(play()).toBe(earned); // same seed, same fortune
   });
 
   it("repeat replays the plan every dawn", () => {
@@ -88,6 +103,33 @@ describe("persistence", () => {
     delete before.timestamp;
     delete after.timestamp;
     expect(after).toEqual(before);
+  });
+
+  it("aging never drifts across a save/load", () => {
+    freshRun();
+    passDays(100); // aged to 13 at day 60; next birthday is day 120
+
+    SaveManager.save();
+    resetRunState();
+    SaveManager.load();
+
+    passDays(19); // day 119 — still 13
+    expect(useCultivatorStore.getState().age).toBe(13);
+    passDays(1); // day 120 — 14, right on time
+    expect(useCultivatorStore.getState().age).toBe(14);
+  });
+
+  it("death writes a save that restores the fallen state", () => {
+    freshRun();
+    passDays((initialPlayerLifespan - initialPlayerAge) * DAYS_PER_YEAR);
+    expect(useCultivatorStore.getState().hasFallen).toBe(true);
+
+    resetRunState();
+    SaveManager.load(); // the death listener saved at the moment of passing
+    expect(useCultivatorStore.getState().hasFallen).toBe(true);
+
+    gameLoop.start(); // the dead don't tick
+    expect(gameLoop.running).toBe(false);
   });
 
   it("an unlock announces exactly once, even across a reload", () => {

@@ -80,6 +80,10 @@ export function initializeGameEventListeners() {
     useNotificationStore.getState().push(payload.message, payload.notificationType);
   });
 
+  EventBus.on("cultivator:death", () => {
+    SaveManager.save();
+  });
+
   EventBus.on("cultivator:reincarnated", () => {
     SaveManager.clearSave();
     UnlockEvaluator.clear();

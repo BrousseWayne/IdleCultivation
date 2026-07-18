@@ -13,16 +13,12 @@ import { EntityRegistry } from "@/game/services/EntityRegistry";
 import { UnlockEvaluator } from "@/game/services/UnlockEvaluator";
 import { getActivityXpProgress, scaleEffectAmount } from "@/game/utils/activityXp";
 import { backgroundDefinitions } from "@/game/data/intro";
+import { initialPlayerAge } from "@/game/data/constant";
+import { UNCERTAIN_SPREAD } from "@/game/data/balance";
 import type { Activity, Background, PlaceAction, QueueBlock, Stats } from "@/game/types/domain";
 import type { Effect } from "@/game/types/effects";
 
 const DEFAULT_BACKGROUND: Background = "orphan";
-
-let lastAgeDay = 0;
-
-export function resetAging(): void {
-  lastAgeDay = 0;
-}
 
 // total hours committed by the day's schedule.
 export function scheduledHours(queue: QueueBlock[]): number {
@@ -52,11 +48,16 @@ function completeActivity(activity: Activity): void {
   activityState.addCompletion(activity.key);
   activityState.addXp(activity.key, activity.xpPerCompletion());
 
-  const scaledEffects: Effect[] = activity.effects.map((effect) =>
-    effect.type === "grant_currency" || effect.type === "grant_stat"
-      ? { ...effect, amount: scaleEffectAmount(effect.amount, level) }
-      : effect
-  );
+  // uncertain rewards really roll — the "+?" the UI shows is a live gamble
+  const scaledEffects: Effect[] = activity.effects.map((effect) => {
+    if (effect.type !== "grant_currency" && effect.type !== "grant_stat") return effect;
+    const scaled = scaleEffectAmount(effect.amount, level);
+    const amount =
+      effect.type === "grant_currency" && effect.uncertain
+        ? Math.round(scaled * (1 - UNCERTAIN_SPREAD + rng.next() * 2 * UNCERTAIN_SPREAD))
+        : scaled;
+    return { ...effect, amount };
+  });
   EffectExecutor.execute(scaledEffects);
 
   const coin = scaledEffects
@@ -110,18 +111,20 @@ function dayRollSystem(day: number): void {
   rollDailyEvents(day);
 }
 
+// Age derives from the clock (initial age + elapsed years) — there is no
+// separate aging state to persist, so a save/load can never shift a birthday.
 function agingSystem(day: number): void {
-  if (day - lastAgeDay >= DAYS_PER_YEAR) {
-    useCultivatorStore.getState().incrementAge();
-    lastAgeDay = day;
-    UnlockEvaluator.checkAll();
+  const expectedAge = initialPlayerAge + Math.floor(day / DAYS_PER_YEAR);
+  if (useCultivatorStore.getState().age >= expectedAge) return;
 
-    const { age, lifespan, hasFallen } = useCultivatorStore.getState();
-    if (!hasFallen && age >= lifespan) {
-      useCultivatorStore.getState().setHasFallen(true);
-      gameLoop.stop();
-      EventBus.emit({ type: "cultivator:death", payload: { age } });
-    }
+  useCultivatorStore.getState().incrementAge();
+  UnlockEvaluator.checkAll();
+
+  const { age, lifespan, hasFallen } = useCultivatorStore.getState();
+  if (!hasFallen && age >= lifespan) {
+    useCultivatorStore.getState().setHasFallen(true);
+    gameLoop.stop();
+    EventBus.emit({ type: "cultivator:death", payload: { age } });
   }
 }
 
@@ -144,6 +147,7 @@ export const gameLoop = {
   start(): void {
     if (tickIntervalHandle !== null) return;
     if (useEventStore.getState().active) return; // an event holds the stage
+    if (useCultivatorStore.getState().hasFallen) return; // the dead don't tick
     const speed = useGameStore.getState().gameSpeed;
     const intervalMs = 1000 / (TICKS_PER_SECOND * speed);
     tickIntervalHandle = setInterval(runTick, intervalMs);
@@ -217,7 +221,6 @@ export function bootRun(): void {
 
 export function reincarnate(): void {
   gameLoop.stop();
-  resetAging();
   resetRunState();
   EventBus.emit({ type: "cultivator:reincarnated" });
   bootRun();

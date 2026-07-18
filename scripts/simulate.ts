@@ -1,7 +1,7 @@
 import { registerContent } from "@/game/bootstrap";
 import { initializeGameEventListeners } from "@/game/services/gameEventListeners";
 import { resetRunState } from "@/game/services/persistence";
-import { runTick, queueActivity, resetAging } from "@/game/engine/gameLoop";
+import { runTick, queueActivity } from "@/game/engine/gameLoop";
 import { chooseOption, getActiveEvent, isChoiceAvailable } from "@/game/engine/events";
 import { TICKS_PER_DAY } from "@/game/engine/time";
 import { rng } from "@/game/engine/rng";
@@ -43,7 +43,6 @@ globalThis.localStorage = {
 
 registerContent();
 resetRunState();
-resetAging();
 rng.reseed(seed);
 initializeGameEventListeners();
 useGameStore.setState({ introComplete: true, runBackground: "orphan" });

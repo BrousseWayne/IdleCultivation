@@ -8,6 +8,8 @@ import { places } from "@/game/data/places";
 // Unlockables that aren't tied to a single content entry (categories, and any
 // future cross-cutting unlocks) are authored here. Per-activity and per-nav
 // conditions live on the content itself and are folded in by allUnlockables().
+// DECIDED 2026-07-18: `training` deliberately has NO unlockable — a narrative
+// event from the generation batch opens it via unlock_category.
 const standaloneUnlockables = defineUnlockables([
   {
     id: "category:study",

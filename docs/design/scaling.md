@@ -7,6 +7,14 @@ related: [docs/design/core-loop.md]
 
 > NOT IMPLEMENTED. Everything below is design intent from `docs/design/scaling.md`. None of these formulas, exponents, growth rates, softcaps, or library choices exist in the codebase yet. Status = draft/intended.
 
+> DECIDED (2026-07-18): the mortal-phase economy re-base happens in a dedicated scaling
+> session (design dialogue + `npm run simulate` evidence) and MUST precede the event-batch
+> import. Known inputs for that session: activity amounts are hard-coded outside the
+> balance table (beg 100/8h, networkMerchants 500/6h) while events are authored in COIN
+> magnitudes (trivial 5 → windfall 800); the generation prompt promises "a day of begging
+> ≈ one day of poor food"; simulate shows 87M copper at death under the income policy;
+> level scaling ×(1+0.1(L−1)) is unbounded; the only sink is a 5-copper food stall.
+
 ## Key facts
 
 ### Core principle

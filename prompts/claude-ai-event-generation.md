@@ -37,6 +37,8 @@ Core design pillars you must serve:
 Place-bound: `beg`, `mineOre`, `farmFields`, `helpElders`, `networkMerchants`.
 Self-scoped (doable anywhere, live in a separate tab): `liftWeights`, `bodyConditioning`, `footworkDrills`, `readClassics`, `studyFormations`, `copyScrolls`.
 
+Activity categories gate visibility: `work` is open from the start; `study` unlocks at age 15; `social` at Strength 20. The **`training` category (liftWeights / bodyConditioning / footworkDrills) has NO unlock path by design — one of YOUR events must open it** via `{ type: "unlock_category", category: "training" }`: someone or something teaches the player that a body can be *built*, not just spent. Make that event earn the moment (it is the player's first step on the martial road); gate it so it can't fire in the opening minutes (e.g. a labor threshold, a stat floor, or a cost).
+
 ### Tone exemplar (Feels too generic, a more xianxia feel would be good)
 
 > "The ox-cart groans along a mud road. Beside you, an old man with white hair and still eyes watches the passing trees. He does not look at you when he speaks."

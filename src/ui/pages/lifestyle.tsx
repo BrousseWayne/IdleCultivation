@@ -1,14 +1,14 @@
-import { Home } from "lucide-react";
 import { lifestyleOptions } from "@/game/data/lifestyle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Cost } from "@/game/types/domain";
 import { PageHeader } from "@/ui/components/PageHeader";
+import { Glyph } from "@/ui/components/StatIcon";
 import { text } from "@/game/content/text";
 
 function formatCosts(costs: Cost[]): string {
   return costs
-    .filter((c) => c.amount > 0)
-    .map((c) => `${c.amount} coin${c.period ? `/${c.period}` : ""}`)
+    .filter((cost) => cost.amount > 0)
+    .map((cost) => `${cost.amount} copper${cost.period ? `/${cost.period}` : ""}`)
     .join(", ") || text("lifestyle.cost.free");
 }
 
@@ -17,12 +17,12 @@ export function RenderLifestylePage() {
     return (
       <div className="space-y-4">
         <PageHeader
-          icon={Home}
+          glyph="家"
           title={text("page.lifestyle.title")}
           color="text-accent-lotus"
         />
-        <div className="flex flex-col items-center justify-center py-16 text-slate-500">
-          <Home className="w-12 h-12 mb-3 opacity-30" />
+        <div className="flex flex-col items-center justify-center py-16 text-ink-2">
+          <Glyph char="家" size={44} className="mb-3 opacity-30" />
           <p className="text-sm">{text("page.lifestyle.empty")}</p>
         </div>
       </div>
@@ -32,7 +32,7 @@ export function RenderLifestylePage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <Home className="w-6 h-6 text-accent-lotus" />
+        <Glyph char="家" size={22} className="text-accent-lotus" />
         <h2 className="text-2xl font-bold font-[family-name:var(--font-display)] text-accent-lotus">
           {text("page.lifestyle.title")}
         </h2>
@@ -40,9 +40,9 @@ export function RenderLifestylePage() {
 
       <div className="grid gap-6">
         {lifestyleOptions.map((category) => (
-          <Card key={category.category} className="bg-black border-slate-700/50">
+          <Card key={category.category} className="bg-panel border-line">
             <CardHeader>
-              <CardTitle className="text-lg text-slate-200">{category.category}</CardTitle>
+              <CardTitle className="text-lg text-ink">{category.category}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {category.options.map((option) => (
@@ -50,14 +50,14 @@ export function RenderLifestylePage() {
                   key={option.id}
                   className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                     option.unlocked
-                      ? "border-slate-600 hover:border-accent-lotus/50 bg-slate-900/30"
-                      : "border-slate-700/30 bg-slate-900/10 opacity-50"
+                      ? "border-line-2 hover:border-accent-lotus/50 bg-panel-2"
+                      : "border-line bg-panel opacity-50"
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-semibold text-accent-lotus">{option.name}</h3>
-                      <p className="text-sm text-slate-400 mt-1">{option.description}</p>
+                      <p className="text-sm text-ink-2 mt-1">{option.description}</p>
                     </div>
                     <div className="text-right">
                       <span className="text-accent-gold font-semibold text-sm">

@@ -1,28 +1,30 @@
 import { Outlet } from "react-router";
 import { Header } from "@/ui/layout/layoutHeader";
-import { Sidebar } from "@/ui/layout/sidebar";
+import { TabsNav } from "@/ui/layout/TabsNav";
 import { QueueBar } from "@/ui/components/QueueBar";
+import { SelfCard } from "@/ui/components/SelfCard";
+import { ThreadDrawer } from "@/ui/components/ThreadDrawer";
 import { DeathOverlay } from "@/ui/components/DeathOverlay";
 import { NotificationFeed } from "@/ui/components/NotificationFeed";
-import { Stream } from "@/ui/components/Stream";
 import { useCultivatorStore } from "@/game/stores/cultivatorStore";
 
 export function Layout() {
-  const hasFallen = useCultivatorStore((s) => s.hasFallen);
+  const hasFallen = useCultivatorStore((state) => state.hasFallen);
 
   return (
-    <div className="h-screen bg-black flex flex-col text-foreground dark bg-vignette-jade overflow-hidden">
+    <div className="h-screen bg-background flex flex-col text-foreground dark bg-vignette-jade overflow-hidden">
       <Header />
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
-        <main className="flex-1 ml-60 overflow-y-auto relative z-10 flex flex-col">
-          <QueueBar />
-          <div className="p-6 flex-1">
-            <Outlet />
-          </div>
+      <QueueBar />
+      <TabsNav />
+      <div className="flex flex-1 overflow-hidden relative z-10">
+        <main className="flex-1 overflow-y-auto p-6">
+          <Outlet />
         </main>
-        <Stream />
+        <aside className="w-72 shrink-0 overflow-y-auto py-6 pr-6">
+          <SelfCard />
+        </aside>
       </div>
+      <ThreadDrawer />
       {hasFallen && <DeathOverlay />}
       <NotificationFeed />
     </div>

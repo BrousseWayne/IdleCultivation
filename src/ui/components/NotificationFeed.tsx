@@ -2,7 +2,7 @@ import { useNotificationStore, type Notification } from "@/game/stores/notificat
 import { storyEntryColors } from "@/game/data/constant";
 
 const NotificationToast = ({ notification }: { notification: Notification }) => {
-  const dismiss = useNotificationStore((s) => s.dismiss);
+  const dismiss = useNotificationStore((state) => state.dismiss);
   const colorClass = storyEntryColors[notification.type];
 
   return (
@@ -18,7 +18,7 @@ const NotificationToast = ({ notification }: { notification: Notification }) => 
 };
 
 export const NotificationFeed = () => {
-  const notifications = useNotificationStore((s) => s.notifications);
+  const notifications = useNotificationStore((state) => state.notifications);
 
   if (notifications.length === 0) return null;
 

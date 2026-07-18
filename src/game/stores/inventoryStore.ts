@@ -11,29 +11,21 @@ interface InventoryState {
   currency: number;
   inventoryItems: InventoryItem[];
   equippedItems: EquippedItems;
-  dailyExpenses: number;
-  dailyIncome: number;
 
   addCurrency: (amount: number) => void;
   subtractCurrency: (amount: number) => void;
-  setCurrency: (amount: number) => void;
 
   addItem: (item: InventoryItem) => void;
   removeItem: (itemId: number) => void;
-  setInventoryItems: (items: InventoryItem[]) => void;
 
   equipItem: (itemId: number, slot: EquipmentSlot) => void;
   unequipItem: (slot: EquipmentSlot) => void;
-  setEquippedItems: (equipped: EquippedItems) => void;
-
-  setDailyExpenses: (amount: number) => void;
-  setDailyIncome: (amount: number) => void;
   reset: () => void;
 }
 
 const initialEquippedItems: EquippedItems = {
-  weapon: initialItems.find((i) => i.type === "weapon") ?? null,
-  armor: initialItems.find((i) => i.type === "armor") ?? null,
+  weapon: initialItems.find((item) => item.type === "weapon") ?? null,
+  armor: initialItems.find((item) => item.type === "armor") ?? null,
   helmet: null,
   boots: null,
   ring: null,
@@ -44,8 +36,6 @@ const initialInventoryState = {
   currency: initialCurrency,
   inventoryItems: initialItems,
   equippedItems: initialEquippedItems,
-  dailyExpenses: 0,
-  dailyIncome: 0,
 };
 
 export const useInventoryStore = create<InventoryState>((set) => ({
@@ -56,8 +46,6 @@ export const useInventoryStore = create<InventoryState>((set) => ({
 
   subtractCurrency: (amount) =>
     set((state) => ({ currency: state.currency - amount })),
-
-  setCurrency: (amount) => set({ currency: amount }),
 
   addItem: (item) =>
     set((state) => ({ inventoryItems: [...state.inventoryItems, item] })),
@@ -71,12 +59,10 @@ export const useInventoryStore = create<InventoryState>((set) => ({
         }
       }
       return {
-        inventoryItems: state.inventoryItems.filter((i) => i.id !== itemId),
+        inventoryItems: state.inventoryItems.filter((item) => item.id !== itemId),
         equippedItems: newEquipped,
       };
     }),
-
-  setInventoryItems: (items) => set({ inventoryItems: items }),
 
   equipItem: (itemId, slot) => {
     const item = EntityRegistry.get("item", String(itemId));
@@ -99,9 +85,5 @@ export const useInventoryStore = create<InventoryState>((set) => ({
     }));
   },
 
-  setEquippedItems: (equipped) => set({ equippedItems: equipped }),
-
-  setDailyExpenses: (amount) => set({ dailyExpenses: amount }),
-  setDailyIncome: (amount) => set({ dailyIncome: amount }),
   reset: () => set(initialInventoryState),
 }));

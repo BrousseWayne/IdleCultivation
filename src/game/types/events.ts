@@ -7,6 +7,7 @@ export type GameEvent =
     }
   | { type: "activity:completed"; payload: { activityKey: string } }
   | { type: "game:tick"; payload: { ticks: number; day: number } }
+  | { type: "inventory:currency-changed"; payload: { amount: number } }
   | { type: "player:peered_at_fate"; zoomLevel: number }
   | { type: "cultivator:death"; payload: { age: number } }
   | { type: "cultivator:reincarnated" }
@@ -15,4 +16,6 @@ export type GameEvent =
       payload: { message: string; notificationType: NotificationType };
     };
 
-export type EventHandler<T = any> = (event: T) => void;
+export type GameEventOf<T extends GameEvent["type"]> = Extract<GameEvent, { type: T }>;
+
+export type EventHandler<T extends GameEvent = GameEvent> = (event: T) => void;

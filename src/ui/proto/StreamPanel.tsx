@@ -21,6 +21,7 @@ const THEME_HEX: Record<ProtoTheme, string> = {
   travel: "#6BA3D4",
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useStream(seed: string[]) {
   const [entries, setEntries] = useState<StreamEntry[]>(
     seed.map((t) => ({ kind: "line", line: { speaker: "", text: t, tone: "narration", theme: "ambient" } }))
@@ -100,7 +101,8 @@ export function StreamView({
   const toggle = (t: ProtoTheme) =>
     setHidden((h) => {
       const n = new Set(h);
-      n.has(t) ? n.delete(t) : n.add(t);
+      if (n.has(t)) n.delete(t);
+      else n.add(t);
       return n;
     });
 

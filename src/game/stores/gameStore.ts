@@ -1,27 +1,14 @@
 import { create } from "zustand";
-import {
-  ALL_CATEGORIES,
-  type Background,
-  type GamePhase,
-  type LogEntry,
-  type NavigationItem,
-  type NavigationUnlockState,
-  type StreamTheme,
+import type {
+  Background,
+  GamePhase,
+  IncomeBufferItem,
+  LogEntry,
+  StreamTheme,
 } from "@/game/types/domain";
-import type { ActivityUnlockState } from "@/game/types/states";
-import { initialNavigationUnlockState, initialPhase } from "@/game/data/constant";
-import { INITIALLY_UNLOCKED } from "@/game/data/activity";
+import { initialPhase } from "@/game/data/constant";
+import { formatNumber } from "@/game/utils/formatNumber";
 import { STARTING_PLACE } from "@/game/data/places";
-
-type CalendarView = "month" | "year" | "decade" | "era";
-
-const createInitialActivityUnlockState = (): ActivityUnlockState => {
-  const state = {} as ActivityUnlockState;
-  for (const category of ALL_CATEGORIES) {
-    state[category] = INITIALLY_UNLOCKED.includes(category);
-  }
-  return state;
-};
 
 interface GameState {
   ticks: number;
@@ -34,44 +21,29 @@ interface GameState {
 
   maxTimePoints: number;
 
-  selectedTimeScale: string;
   selectedYear: number;
   selectedMonth: number;
-  selectedEra: number;
-  selectedDecade: number;
-  calendarView: CalendarView;
-
-  navigationUnlocks: NavigationUnlockState;
-  activityCategoryUnlocks: ActivityUnlockState;
 
   currentPlaceKey: string;
   streamLog: LogEntry[];
+  logBuffer: IncomeBufferItem[];
+  logBufferDay: number;
   selectedDate: number | null;
   showDetailedView: boolean;
 
   startRun: (background: Background) => void;
   reset: () => void;
 
-
-  setSelectedTimeScale: (scale: string) => void;
   setSelectedYear: (year: number) => void;
   setSelectedMonth: (month: number) => void;
-  setSelectedEra: (era: number) => void;
-  setSelectedDecade: (decade: number) => void;
-  setCalendarView: (view: CalendarView) => void;
-
-  unlockNavigationTab: (tab: NavigationItem) => void;
-  unlockActivityCategory: (
-    category: (typeof ALL_CATEGORIES)[number]
-  ) => void;
 
   setCurrentPlace: (placeKey: string) => void;
   pushLog: (entry: LogEntry) => void;
+  pushIncome: (gain: Omit<IncomeBufferItem, "count">, day: number) => void;
   addEventLog: (text: string, theme?: StreamTheme) => void;
   clearLog: () => void;
   setSelectedDate: (date: number | null) => void;
   setShowDetailedView: (show: boolean) => void;
-
 }
 
 const createInitialGameState = () => ({
@@ -83,58 +55,102 @@ const createInitialGameState = () => ({
   runBackground: null as Background | null,
   phase: initialPhase,
   maxTimePoints: 24,
-  selectedTimeScale: "Day",
   selectedYear: 1,
   selectedMonth: 1,
-  selectedEra: 1,
-  selectedDecade: 1,
-  calendarView: "month" as CalendarView,
-  navigationUnlocks: initialNavigationUnlockState,
-  activityCategoryUnlocks: createInitialActivityUnlockState(),
   currentPlaceKey: STARTING_PLACE,
   streamLog: [] as LogEntry[],
+  logBuffer: [] as IncomeBufferItem[],
+  logBufferDay: 0,
   selectedDate: null as number | null,
   showDetailedView: false,
 });
 
+export function mergeIncome(
+  base: IncomeBufferItem,
+  addition: IncomeBufferItem,
+): IncomeBufferItem {
+  const stats = { ...(base.stats ?? {}) };
+  for (const [stat, amount] of Object.entries(addition.stats ?? {})) {
+    const key = stat as keyof typeof stats;
+    stats[key] = (stats[key] ?? 0) + amount;
+  }
+  return {
+    source: base.source,
+    count: base.count + addition.count,
+    coin: base.coin + addition.coin,
+    stats,
+  };
+}
+
+export function formatIncomeEntry(item: IncomeBufferItem): LogEntry {
+  const times = item.count > 1 ? ` ×${item.count}` : "";
+  const parts: string[] = [];
+  if (item.coin > 0) parts.push(`earned ${formatNumber(item.coin)} copper`);
+  for (const [stat, amount] of Object.entries(item.stats ?? {})) {
+    parts.push(`+${formatNumber(amount)} ${stat}`);
+  }
+  return {
+    text: `${item.source}${times} · ${parts.join(" · ")}.`,
+    theme: "income",
+    key: `income:${item.source}`,
+    income: item,
+  };
+}
+
+// streamLog with any buffered income dumped at the end, capped.
+function flushedLog(state: {
+  streamLog: LogEntry[];
+  logBuffer: IncomeBufferItem[];
+}): LogEntry[] {
+  const log = state.logBuffer.length
+    ? [...state.streamLog, ...state.logBuffer.map(formatIncomeEntry)]
+    : state.streamLog;
+  return log.length > 200 ? log.slice(-200) : log;
+}
+
 export const useGameStore = create<GameState>((set) => ({
   ...createInitialGameState(),
 
-  setSelectedTimeScale: (scale) => set({ selectedTimeScale: scale }),
   setSelectedYear: (year) => set({ selectedYear: year }),
   setSelectedMonth: (month) => set({ selectedMonth: month }),
-  setSelectedEra: (era) => set({ selectedEra: era }),
-  setSelectedDecade: (decade) => set({ selectedDecade: decade }),
-  setCalendarView: (view) => set({ calendarView: view }),
-
-  unlockNavigationTab: (tab) =>
-    set((state) => ({
-      navigationUnlocks: {
-        ...state.navigationUnlocks,
-        [tab]: true,
-      },
-    })),
-
-  unlockActivityCategory: (category) =>
-    set((state) => ({
-      activityCategoryUnlocks: {
-        ...state.activityCategoryUnlocks,
-        [category]: true,
-      },
-    })),
 
   setCurrentPlace: (placeKey) => set({ currentPlaceKey: placeKey }),
+  // narrative beats dump the pending income block first, preserving chronology
   pushLog: (entry) =>
     set((state) => {
-      const log = [...state.streamLog, entry];
-      return { streamLog: log.length > 200 ? log.slice(-200) : log };
+      const log = [...flushedLog(state), entry];
+      return {
+        streamLog: log.length > 200 ? log.slice(-200) : log,
+        logBuffer: [],
+      };
+    }),
+  pushIncome: (gain, day) =>
+    set((state) => {
+      const item: IncomeBufferItem = { ...gain, count: 1 };
+      if (state.logBuffer.length > 0 && state.logBufferDay !== day) {
+        return {
+          streamLog: flushedLog(state),
+          logBuffer: [item],
+          logBufferDay: day,
+        };
+      }
+      const existing = state.logBuffer.find((buffered) => buffered.source === item.source);
+      const logBuffer = existing
+        ? state.logBuffer.map((buffered) =>
+            buffered.source === item.source ? mergeIncome(buffered, item) : buffered,
+          )
+        : [...state.logBuffer, item];
+      return { logBuffer, logBufferDay: day };
     }),
   addEventLog: (text, theme = "ambient") =>
     set((state) => {
-      const log = [...state.streamLog, { text, theme } as LogEntry];
-      return { streamLog: log.length > 200 ? log.slice(-200) : log };
+      const log = [...flushedLog(state), { text, theme } as LogEntry];
+      return {
+        streamLog: log.length > 200 ? log.slice(-200) : log,
+        logBuffer: [],
+      };
     }),
-  clearLog: () => set({ streamLog: [] }),
+  clearLog: () => set({ streamLog: [], logBuffer: [] }),
   setSelectedDate: (date) => set({ selectedDate: date }),
   setShowDetailedView: (show) => set({ showDetailedView: show }),
 

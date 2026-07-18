@@ -1,25 +1,12 @@
 import { Plus, Minus, Clock } from "lucide-react";
 import { useActivityStore, queuedUnits, unitKeyAt } from "@/game/stores/activityStore";
-import { useGameStore } from "@/game/stores/gameStore";
-import { queueActivity, unqueueActivity } from "@/game/engine/gameLoop";
-import { EntityRegistry } from "@/game/services";
 import { getActivityXpProgress, getFoilGradient } from "@/game/utils";
 import { CATEGORY_COLOR_CLASSES, getCategoryHex } from "@/game/data/sectionColors";
+import { CATEGORY_GLYPHS } from "@/game/data/glyphs";
 import { EffectDisplay } from "@/ui/components/activities/EffectDisplay";
+import { Glyph } from "@/ui/components/StatIcon";
+import { useProjectedPercent } from "@/ui/hooks/useProjectedPercent";
 import type { Activity } from "@/game/types/domain";
-
-// shared queue/unqueue with stream logging — used by Explore + Activities
-export function useActivityActions() {
-  const pushLog = useGameStore((s) => s.pushLog);
-  const queue = (key: string) => {
-    const a = EntityRegistry.get("activity", key);
-    if (a && queueActivity(key)) {
-      pushLog({ text: `You set out to ${a.name.toLowerCase()}.`, theme: "ambient" });
-    }
-  };
-  const unqueue = (key: string) => { unqueueActivity(key); };
-  return { queue, unqueue };
-}
 
 export function ActivityRow({ activity, onQueue, onUnqueue, index = 0 }: {
   activity: Activity;
@@ -27,10 +14,10 @@ export function ActivityRow({ activity, onQueue, onUnqueue, index = 0 }: {
   onUnqueue: (key: string) => void;
   index?: number;
 }) {
-  const queue = useActivityStore((s) => s.queue);
-  const scheduleIndex = useActivityStore((s) => s.scheduleIndex);
-  const xp = useActivityStore((s) => s.activityXp[activity.key] || 0);
-  const runningTicks = useActivityStore((s) => s.runningTicks);
+  const queue = useActivityStore((state) => state.queue);
+  const scheduleIndex = useActivityStore((state) => state.scheduleIndex);
+  const xp = useActivityStore((state) => state.activityXp[activity.key] || 0);
+  const runningTicks = useActivityStore((state) => state.runningTicks);
 
   const units = queuedUnits(queue, activity.key);
   const allocated = units * activity.timeCost;
@@ -40,13 +27,13 @@ export function ActivityRow({ activity, onQueue, onUnqueue, index = 0 }: {
   const zebra = index % 2 === 1;
 
   const progress = isRunning ? Math.min(runningTicks / activity.timeCost, 1) : 0;
-  const interpolatedXp = xp + activity.xpScalingFn() * progress;
+  const interpolatedXp = xp + activity.xpPerCompletion() * progress;
   const { level, currentXp, xpForNext } = getActivityXpProgress(interpolatedXp);
-  const xpPct = xpForNext > 0 ? (currentXp / xpForNext) * 100 : 0;
+  const xpPercent = useProjectedPercent(xpForNext > 0 ? (currentXp / xpForNext) * 100 : 0);
 
   return (
     <div className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-md ${zebra ? "bg-panel" : ""}`}>
-      <activity.icon className={`w-4 h-4 shrink-0 ${colors.text}`} />
+      <Glyph char={CATEGORY_GLYPHS[activity.category]} size={18} className={`w-[22px] text-center shrink-0 ${colors.text}`} />
 
       <div className="flex-1 min-w-0 flex flex-col gap-1">
         <div className="flex items-center gap-2 min-w-0">
@@ -56,9 +43,9 @@ export function ActivityRow({ activity, onQueue, onUnqueue, index = 0 }: {
           </div>
         </div>
         <div className="flex items-center gap-1.5 w-1/2 min-w-0">
-          <span className="text-[10px] text-ink-3 shrink-0">Lv {level}</span>
+          <span className="text-[11px] text-ink-2 shrink-0">Lv {level}</span>
           <div className="flex-1 h-1.5 rounded-full bg-line overflow-hidden">
-            <div className="h-full animate-shimmer" style={{ width: `${xpPct}%`, background: getFoilGradient(hex), backgroundSize: "200% 100%" }} />
+            <div className="h-full animate-shimmer" style={{ width: `${xpPercent}%`, background: getFoilGradient(hex), backgroundSize: "200% 100%" }} />
           </div>
         </div>
       </div>
@@ -70,12 +57,12 @@ export function ActivityRow({ activity, onQueue, onUnqueue, index = 0 }: {
         </span>
         <span className="flex items-center rounded-md border border-line-2 overflow-hidden">
           <button onClick={() => onUnqueue(activity.key)} disabled={allocated < activity.timeCost}
-            className="w-6 h-5 flex items-center justify-center text-ink-2 hover:bg-panel-2 disabled:opacity-30 disabled:hover:bg-transparent">
+            className="w-7 h-7 flex items-center justify-center text-ink-2 hover:bg-panel-2 disabled:opacity-30 disabled:hover:bg-transparent">
             <Minus className="w-3 h-3" />
           </button>
-          <span className="w-px h-3.5 bg-line-2" />
+          <span className="w-px h-4 bg-line-2" />
           <button onClick={() => onQueue(activity.key)}
-            className="w-6 h-5 flex items-center justify-center text-accent-jade hover:bg-panel-2">
+            className="w-7 h-7 flex items-center justify-center text-accent-jade hover:bg-panel-2">
             <Plus className="w-3 h-3" />
           </button>
         </span>

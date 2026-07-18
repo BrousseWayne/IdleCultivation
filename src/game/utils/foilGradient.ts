@@ -14,6 +14,6 @@ export function getFoilGradient(categoryColor: string): string {
   };
 
   const colors = foilPalettes[categoryColor] || foilPalettes['#5FB4A0'];
-  const stops = colors.map((c, i) => `${c} ${(i / (colors.length - 1)) * 100}%`).join(', ');
+  const stops = colors.map((color, index) => `${color} ${(index / (colors.length - 1)) * 100}%`).join(', ');
   return `linear-gradient(90deg, ${stops})`;
 }

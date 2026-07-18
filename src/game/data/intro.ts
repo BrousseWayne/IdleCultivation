@@ -129,6 +129,6 @@ export function resolveBackground(
 ): Background {
   const sorted = (
     Object.entries(tagCounts) as [Background, number][]
-  ).sort((a, b) => b[1] - a[1]);
+  ).sort((first, second) => second[1] - first[1]);
   return sorted[0][0];
 }

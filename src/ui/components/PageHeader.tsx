@@ -1,17 +1,17 @@
-import type { LucideIcon } from "lucide-react";
+import { Glyph } from "@/ui/components/StatIcon";
 
 interface PageHeaderProps {
-  icon: LucideIcon;
   title: string;
   color: string;
+  glyph?: string;
   subtitle?: string;
 }
 
-export function PageHeader({ icon: Icon, title, color, subtitle }: PageHeaderProps) {
+export function PageHeader({ title, color, glyph, subtitle }: PageHeaderProps) {
   return (
     <div className="space-y-1">
-      <div className="flex items-center gap-2">
-        <Icon className={`w-6 h-6 ${color}`} />
+      <div className="flex items-center gap-2.5">
+        {glyph && <Glyph char={glyph} size={22} className={color} />}
         <h2 className={`text-2xl font-bold font-[family-name:var(--font-display)] ${color}`}>
           {title}
         </h2>

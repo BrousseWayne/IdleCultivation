@@ -22,12 +22,6 @@ interface CultivatorState {
   stats: Record<Stats, number>;
   hasFallen: boolean;
 
-  setAge: (age: number) => void;
-  setLifespan: (lifespan: number) => void;
-  setVitality: (vitality: ResourceBar) => void;
-  setSatiety: (satiety: ResourceBar) => void;
-  setMortality: (mortality: ResourceBar) => void;
-  setStats: (stats: Record<Stats, number>) => void;
   setHasFallen: (hasFallen: boolean) => void;
 
   incrementStat: (stat: Stats, amount: number) => void;
@@ -50,12 +44,6 @@ const initialCultivatorState = {
 export const useCultivatorStore = create<CultivatorState>((set) => ({
   ...initialCultivatorState,
 
-  setAge: (age) => set({ age }),
-  setLifespan: (lifespan) => set({ lifespan }),
-  setVitality: (vitality) => set({ vitality }),
-  setSatiety: (satiety) => set({ satiety }),
-  setMortality: (mortality) => set({ mortality }),
-  setStats: (stats) => set({ stats }),
   setHasFallen: (hasFallen) => set({ hasFallen }),
 
   incrementStat: (stat, amount) =>

@@ -1,24 +1,19 @@
-import {
-  Activity,
-  BarChart3,
-  BookOpen,
-  Calendar,
-  Compass,
-  Home,
-  MapPin,
-  Package,
-  Target,
-} from "lucide-react";
 import type { SidebarNavigation } from "@/game/types/domain";
+import { when } from "@/game/data/conditions";
 
 export const sidebarData: SidebarNavigation[] = [
-  { name: "Explore", icon: Compass, url: "/Explore" },
-  { name: "Inventory", icon: Package, url: "/Inventory" },
-  { name: "Activities", icon: Activity, url: "/Activities" },
-  { name: "Quests", icon: Target, url: "/Quests" },
-  { name: "Lifestyle", icon: Home, url: "/Lifestyle" },
-  { name: "Travel", icon: MapPin, url: "/Travel" },
-  { name: "Stats", icon: BarChart3, url: "/Stats" },
-  { name: "Recap", icon: Calendar, url: "/Recap" },
-  { name: "Story", icon: BookOpen, url: "/Story", unlockConditions: [{ type: "day", operator: ">=", value: 10 }] },
+  { name: "Explore", url: "/Explore", unlocked: true },
+  { name: "Inventory", url: "/Inventory", unlocked: true },
+  { name: "Activities", url: "/Activities", unlocked: true },
+  { name: "Quests", url: "/Quests", unlocked: true },
+  { name: "Lifestyle", url: "/Lifestyle", unlocked: true },
+  { name: "Travel", url: "/Travel", unlocked: false },
+  { name: "Stats", url: "/Stats", unlocked: true },
+  { name: "Recap", url: "/Recap", unlocked: true },
+  {
+    name: "Story",
+    url: "/Story",
+    unlocked: false,
+    unlockConditions: [when.day(">=", 10)],
+  },
 ];

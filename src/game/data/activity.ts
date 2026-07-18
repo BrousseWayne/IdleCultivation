@@ -1,24 +1,13 @@
-import {
-  BookOpen,
-  Dumbbell,
-  HandCoins,
-  Pickaxe,
-  Wheat,
-  Wind,
-  Brain,
-  ScrollText,
-  Users,
-  HeartHandshake,
-} from "lucide-react";
-import type { Activity, ActivityCategory } from "@/game/types/domain";
+import type { ActivityCategory } from "@/game/types/domain";
+import { defineActivities } from "@/game/data/defineContent";
+import { when } from "@/game/data/conditions";
 
-export const activityData: Activity[] = [
+export const activityData = defineActivities([
   {
     key: "beg",
     name: "Beg",
-    icon: HandCoins,
     category: "work",
-    xpScalingFn: () => 100,
+    xpPerCompletion: () => 100,
     timeCost: 8,
     unlocked: true,
     effects: [{ type: "grant_currency", amount: 100, uncertain: true }],
@@ -26,9 +15,8 @@ export const activityData: Activity[] = [
   {
     key: "farmFields",
     name: "Farm Fields",
-    icon: Wheat,
     category: "work",
-    xpScalingFn: () => 150,
+    xpPerCompletion: () => 150,
     timeCost: 6,
     unlocked: true,
     effects: [
@@ -39,9 +27,8 @@ export const activityData: Activity[] = [
   {
     key: "mineOre",
     name: "Mine Ore",
-    icon: Pickaxe,
     category: "work",
-    xpScalingFn: () => 200,
+    xpPerCompletion: () => 200,
     timeCost: 8,
     unlocked: true,
     effects: [
@@ -52,9 +39,8 @@ export const activityData: Activity[] = [
   {
     key: "liftWeights",
     name: "Lift Weights",
-    icon: Dumbbell,
     category: "training",
-    xpScalingFn: () => 200,
+    xpPerCompletion: () => 200,
     timeCost: 4,
     unlocked: true,
     scope: "self",
@@ -63,9 +49,8 @@ export const activityData: Activity[] = [
   {
     key: "bodyConditioning",
     name: "Body Conditioning",
-    icon: Wind,
     category: "training",
-    xpScalingFn: () => 180,
+    xpPerCompletion: () => 180,
     timeCost: 4,
     unlocked: true,
     scope: "self",
@@ -77,9 +62,8 @@ export const activityData: Activity[] = [
   {
     key: "footworkDrills",
     name: "Footwork Drills",
-    icon: Wind,
     category: "training",
-    xpScalingFn: () => 160,
+    xpPerCompletion: () => 160,
     timeCost: 3,
     unlocked: true,
     scope: "self",
@@ -88,9 +72,8 @@ export const activityData: Activity[] = [
   {
     key: "readClassics",
     name: "Read the Classics",
-    icon: BookOpen,
     category: "study",
-    xpScalingFn: () => 120,
+    xpPerCompletion: () => 120,
     timeCost: 6,
     unlocked: true,
     scope: "self",
@@ -99,23 +82,19 @@ export const activityData: Activity[] = [
   {
     key: "studyFormations",
     name: "Study Formations",
-    icon: Brain,
     category: "study",
-    xpScalingFn: () => 250,
+    xpPerCompletion: () => 250,
     timeCost: 8,
     unlocked: false,
     scope: "self",
     effects: [{ type: "grant_stat", stat: "Dexterity", amount: 3 }],
-    unlockConditions: [
-      { type: "activity_completions", activityKey: "readClassics", count: 5 },
-    ],
+    unlockConditions: [when.completions("readClassics", 5)],
   },
   {
     key: "copyScrolls",
     name: "Copy Scrolls",
-    icon: ScrollText,
     category: "study",
-    xpScalingFn: () => 180,
+    xpPerCompletion: () => 180,
     timeCost: 4,
     unlocked: true,
     scope: "self",
@@ -127,9 +106,8 @@ export const activityData: Activity[] = [
   {
     key: "helpElders",
     name: "Help the Elders",
-    icon: HeartHandshake,
     category: "social",
-    xpScalingFn: () => 100,
+    xpPerCompletion: () => 100,
     timeCost: 4,
     unlocked: true,
     effects: [{ type: "grant_currency", amount: 40 }],
@@ -137,13 +115,15 @@ export const activityData: Activity[] = [
   {
     key: "networkMerchants",
     name: "Network with Merchants",
-    icon: Users,
     category: "social",
-    xpScalingFn: () => 200,
+    xpPerCompletion: () => 200,
     timeCost: 6,
     unlocked: true,
     effects: [{ type: "grant_currency", amount: 500 }],
   },
-];
+]);
 
-export const INITIALLY_UNLOCKED: ActivityCategory[] = ["work"];
+// The union of every authored activity key — derived, never hand-maintained.
+export type ActivityKey = (typeof activityData)[number]["key"];
+
+export const INITIALLY_UNLOCKED: readonly ActivityCategory[] = ["work"];

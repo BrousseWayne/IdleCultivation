@@ -10,7 +10,7 @@ export const PALETTE = {
   jade: "#5FB4A0",
   gold: "#D4AF6A",
   cinnabar: "#E07856",
-  silver: "#94A3B8",
+  silver: "#AFBCCB",
   violet: "#B59ACF",
   sky: "#6BA3D4",
   lotus: "#D98AA8",

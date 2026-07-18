@@ -1,4 +1,3 @@
-import type { LucideIcon } from "lucide-react";
 import type { UnlockCondition } from "@/game/types/unlocks";
 import type { Effect } from "@/game/types/effects";
 
@@ -23,7 +22,7 @@ export type LifestyleOption = {
   costs: Cost[];
   unlocked: boolean;
   bonuses: LifestyleBonus;
-  icon?: LucideIcon;
+  glyph?: string;
   unlockConditions?: UnlockCondition[];
 };
 
@@ -38,12 +37,26 @@ export type Background = "farmer" | "orphan" | "soldier";
 export type GamePhase = "mortal" | "immortal" | "supreme" | "cosmic";
 
 export type StreamTheme = "ambient" | "income" | "event" | "dialogue" | "travel";
+export type StreamTone = "narration" | "npc" | "self";
+
+// Per-source gain aggregate (coin and/or stats), buffered until a narrative
+// beat or day change.
+export type IncomeBufferItem = {
+  source: string;
+  count: number;
+  coin: number;
+  stats: Partial<Record<Stats, number>>;
+};
 
 export type LogEntry = {
   text: string;
   theme: StreamTheme;
-  tone?: "narration" | "npc" | "self";
+  tone?: StreamTone;
   speaker?: string;
+  // dedup identity: consecutive entries with the same key collapse into one row
+  key?: string;
+  // structured payload for income rows — merged (counts/coins summed) on dedup
+  income?: IncomeBufferItem;
 };
 
 export type NotificationType =
@@ -72,20 +85,20 @@ export type NavigationItem =
 
 export type SidebarNavigation = {
   name: NavigationItem;
-  icon: LucideIcon;
   url: string;
-  unlockConditions?: UnlockCondition[];
+  unlocked: boolean;
+  unlockConditions?: readonly UnlockCondition[];
 };
 
 export type NavigationUnlockState = Record<SidebarNavigation["name"], boolean>;
 
 export type ActivityModel = {
-  xpScalingFn: () => number;
+  xpPerCompletion: () => number;
   key: string;
   timeCost: number;
   unlocked: boolean;
-  effects: Effect[];
-  unlockConditions?: UnlockCondition[];
+  effects: readonly Effect[];
+  unlockConditions?: readonly UnlockCondition[];
   // "self" = doable anywhere (meditate/train/study); undefined = place-bound
   scope?: "self";
 };
@@ -96,7 +109,6 @@ export type QueueBlock = { key: string; units: number };
 export type ActivityView = {
   key: string;
   name: string;
-  icon: LucideIcon;
   category: ActivityCategory;
 };
 
@@ -114,28 +126,35 @@ export type ActivityCategory = (typeof ALL_CATEGORIES)[number];
 
 export type Activity = ActivityModel & ActivityView;
 
+export type PlaceActionKind = "talk" | "shop" | "enter";
+
 // A contextual non-activity verb at a place: talk to someone, enter a shop, etc.
-// Free (no time cost). Rewards must come gated/costed via the eventual event/shop
-// systems — for now `onSelect` is descriptive narration only.
+// Free (no time cost). A dialogue event bound to the action takes priority;
+// otherwise its effects resolve through EffectExecutor (any spend_currency in
+// there doubles as the affordability gate).
 export type PlaceAction = {
   key: string;
   label: string;
   detail: string;
-  icon: LucideIcon;
-  kind: "talk" | "shop" | "enter";
+  glyph: string;
+  kind: PlaceActionKind;
+  effects?: readonly Effect[];
 };
 
-export type Place = {
+// Generic over the activity-key union so authored data gets compile-checked
+// cross-references; runtime code uses the plain-string default.
+export type Place<TActivityKey extends string = string> = {
   key: string;
   name: string;
   description: string;
-  activityKeys: string[];
-  actions?: PlaceAction[];
-  connections: string[];
+  activityKeys: readonly TActivityKey[];
+  actions?: readonly PlaceAction[];
+  connections: readonly string[]; // self-referential — checked at boot by validateContent
   unlocked: boolean;
+  unlockConditions?: readonly UnlockCondition[];
   x: number;
   y: number;
-  icon: LucideIcon;
+  glyph: string;
   color: string;
 };
 
@@ -172,43 +191,31 @@ export type CompletedQuest = {
   completedDate: string;
 };
 
-export type CalendarEvent = {
-  date: number;
-  type: "past" | "future";
-  activity: string;
-  result: string;
-  category: string;
-};
-
-export type ExploreActivity = {
-  name: string;
-  time: string;
-  effects: Effect[];
-  icon: LucideIcon;
-};
-
-export type ExploreLocation = {
-  name: string;
-  icon: LucideIcon;
-  view: "shop" | "conversation" | "combat";
-};
-
-export type LocationEntry = {
-  description: string;
-  activities: ExploreActivity[];
-  locations: ExploreLocation[];
-};
-
-export type UnlockableDefinition =
+export type UnlockableDefinition<
+  TActivityKey extends string = string,
+  TPlaceKey extends string = string,
+> =
   | {
       id: string;
-      unlockConditions: UnlockCondition[];
+      unlockConditions: readonly UnlockCondition<TActivityKey>[];
+      type: "activity";
+      target: TActivityKey;
+    }
+  | {
+      id: string;
+      unlockConditions: readonly UnlockCondition<TActivityKey>[];
+      type: "place";
+      target: TPlaceKey;
+    }
+  | {
+      id: string;
+      unlockConditions: readonly UnlockCondition<TActivityKey>[];
       type: "activity_category";
       target: ActivityCategory;
     }
   | {
       id: string;
-      unlockConditions: UnlockCondition[];
+      unlockConditions: readonly UnlockCondition<TActivityKey>[];
       type: "navigation_tab";
       target: NavigationItem;
     };

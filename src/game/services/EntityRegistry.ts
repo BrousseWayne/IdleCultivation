@@ -1,60 +1,42 @@
 import type { Activity, InventoryItem, Location, SidebarNavigation } from "@/game/types/domain";
 
-interface EntityTypeMap {
+// O(1) lookup of content entities by key, seeded once in main.tsx before
+// React mounts. A plain module with closed-over maps — no class ceremony.
+
+export interface EntityTypeMap {
   activity: Activity;
   item: InventoryItem;
   location: Location;
   navigation: SidebarNavigation;
 }
 
-type EntityType = keyof EntityTypeMap;
+export type EntityType = keyof EntityTypeMap;
 
-class EntityRegistryService {
-  private registries = new Map<EntityType, Map<string, unknown>>();
+const registries: { [T in EntityType]: Map<string, EntityTypeMap[T]> } = {
+  activity: new Map(),
+  item: new Map(),
+  location: new Map(),
+  navigation: new Map(),
+};
 
-  constructor() {
-    this.registries.set('activity', new Map());
-    this.registries.set('item', new Map());
-    this.registries.set('location', new Map());
-    this.registries.set('navigation', new Map());
-  }
-
+export const EntityRegistry = {
   register<T extends EntityType>(type: T, id: string, entity: EntityTypeMap[T]): void {
-    const registry = this.registries.get(type);
-    if (!registry) {
-      console.warn(`EntityRegistry: Unknown type "${type}"`);
-      return;
-    }
-    registry.set(id, entity);
-  }
+    registries[type].set(id, entity);
+  },
 
   get<T extends EntityType>(type: T, id: string): EntityTypeMap[T] | undefined {
-    const registry = this.registries.get(type);
-    if (!registry) {
-      console.warn(`EntityRegistry: Unknown type "${type}"`);
-      return undefined;
-    }
-    return registry.get(id) as EntityTypeMap[T] | undefined;
-  }
+    return registries[type].get(id);
+  },
 
   getAll<T extends EntityType>(type: T): EntityTypeMap[T][] {
-    const registry = this.registries.get(type);
-    if (!registry) {
-      console.warn(`EntityRegistry: Unknown type "${type}"`);
-      return [];
-    }
-    return Array.from(registry.values()) as EntityTypeMap[T][];
-  }
+    return Array.from(registries[type].values());
+  },
 
   has(type: EntityType, id: string): boolean {
-    const registry = this.registries.get(type);
-    if (!registry) return false;
-    return registry.has(id);
-  }
+    return registries[type].has(id);
+  },
 
   clear(): void {
-    this.registries.forEach(registry => registry.clear());
-  }
-}
-
-export const EntityRegistry = new EntityRegistryService();
+    for (const registry of Object.values(registries)) registry.clear();
+  },
+};

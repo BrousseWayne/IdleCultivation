@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 export function useLerpNumber(target: number, speed = 0.1): number {
   const [display, setDisplay] = useState(target);
-  const rafRef = useRef<number>(0);
+  const frameHandle = useRef<number>(0);
   const currentRef = useRef(target);
 
   useEffect(() => {
@@ -15,11 +15,11 @@ export function useLerpNumber(target: number, speed = 0.1): number {
       }
       currentRef.current += diff * speed;
       setDisplay(Math.round(currentRef.current));
-      rafRef.current = requestAnimationFrame(animate);
+      frameHandle.current = requestAnimationFrame(animate);
     };
 
-    rafRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(rafRef.current);
+    frameHandle.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frameHandle.current);
   }, [target, speed]);
 
   return display;

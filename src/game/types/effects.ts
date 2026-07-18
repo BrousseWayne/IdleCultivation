@@ -8,4 +8,6 @@ export type Effect =
   | { type: "damage"; amount: number }
   | { type: "heal"; amount: number }
   | { type: "unlock_category"; category: ActivityCategory }
-  | { type: "unlock_nav"; tab: NavigationItem };
+  | { type: "unlock_nav"; tab: NavigationItem }
+  | { type: "unlock_activity"; key: string }
+  | { type: "unlock_place"; key: string };

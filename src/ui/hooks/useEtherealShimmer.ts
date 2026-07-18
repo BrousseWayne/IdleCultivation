@@ -5,9 +5,7 @@ type ElementKey =
   | "day"
   | "currency"
   | "stat_Strength"
-  | "stat_Wisdom"
-  | "stat_Charisma"
-  | "stat_Luck"
+  | "stat_Dexterity"
   | "vitality"
   | "satiety"
   | "mortality"
@@ -20,9 +18,7 @@ const SHIMMER_ELEMENTS: ElementKey[] = [
   "day",
   "currency",
   "stat_Strength",
-  "stat_Wisdom",
-  "stat_Charisma",
-  "stat_Luck",
+  "stat_Dexterity",
   "vitality",
   "satiety",
   "mortality",
@@ -34,9 +30,7 @@ const ELEMENT_WEIGHTS: Record<ElementKey, number> = {
   day: 5,
   currency: 4,
   stat_Strength: 2,
-  stat_Wisdom: 2,
-  stat_Charisma: 2,
-  stat_Luck: 1,
+  stat_Dexterity: 2,
   vitality: 3,
   satiety: 2,
   mortality: 1,

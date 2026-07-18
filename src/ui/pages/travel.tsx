@@ -1,21 +1,22 @@
-import { Clock, MapPin } from "lucide-react";
+import { Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useActivityStore } from "@/game/stores/activityStore";
 import { locations } from "@/game/data/locations";
 import { EntityRegistry } from "@/game/services";
 import { PageHeader } from "@/ui/components/PageHeader";
+import { Glyph } from "@/ui/components/StatIcon";
 import { text } from "@/game/content/text";
 
 export const RenderTravelMap = () => {
-  const selectedLocation = useActivityStore((s) => s.selectedLocation);
-  const setSelectedLocation = useActivityStore((s) => s.setSelectedLocation);
+  const selectedLocation = useActivityStore((state) => state.selectedLocation);
+  const setSelectedLocation = useActivityStore((state) => state.setSelectedLocation);
 
   return (
     <div className="space-y-6">
       <div className="mb-2 p-2 bg-accent-sky/10 rounded-lg border border-accent-sky/20">
         <div className="flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-accent-sky" />
+          <Glyph char="地" size={16} className="text-accent-sky" />
           <span className="font-semibold text-sm">{text("page.travel.label.currentLocation")}</span>
           <span className="text-accent-sky text-sm">{selectedLocation}</span>
         </div>
@@ -28,22 +29,22 @@ export const RenderTravelMap = () => {
         <CardContent className="p-3">
           <div className="relative w-full h-80 bg-background rounded-lg border border-border/30 overflow-hidden">
             <div className="absolute inset-0 opacity-5">
-              <div className="absolute top-8 left-12 text-6xl text-slate-400">
+              <div className="absolute top-8 left-12 text-6xl text-ink-3">
                 ☯
               </div>
-              <div className="absolute top-20 right-16 text-4xl text-slate-400">
+              <div className="absolute top-20 right-16 text-4xl text-ink-3">
                 ⚡
               </div>
-              <div className="absolute bottom-16 left-20 text-5xl text-slate-400">
+              <div className="absolute bottom-16 left-20 text-5xl text-ink-3">
                 🏔
               </div>
-              <div className="absolute bottom-12 right-12 text-4xl text-slate-400">
+              <div className="absolute bottom-12 right-12 text-4xl text-ink-3">
                 🌊
               </div>
-              <div className="absolute top-1/2 left-1/4 text-3xl text-slate-400">
+              <div className="absolute top-1/2 left-1/4 text-3xl text-ink-3">
                 🔥
               </div>
-              <div className="absolute top-1/3 right-1/3 text-3xl text-slate-400">
+              <div className="absolute top-1/3 right-1/3 text-3xl text-ink-3">
                 💨
               </div>
             </div>
@@ -60,7 +61,7 @@ export const RenderTravelMap = () => {
                     <path
                       d="M 40 0 L 0 0 0 40"
                       fill="none"
-                      stroke="rgb(148 163 184)"
+                      stroke="rgb(152 162 154)"
                       strokeWidth="0.5"
                       opacity="0.3"
                     />
@@ -86,7 +87,7 @@ export const RenderTravelMap = () => {
                       y1={`${location.y}%`}
                       x2={`${connected.x}%`}
                       y2={`${connected.y}%`}
-                      stroke="rgb(148 163 184 / 0.4)"
+                      stroke="rgb(152 162 154 / 0.4)"
                       strokeWidth="2"
                       strokeDasharray="5,5"
                     />
@@ -115,7 +116,7 @@ export const RenderTravelMap = () => {
                         ? "bg-accent-sky border-accent-sky shadow-lg shadow-accent-sky/50"
                         : location.travel === 0
                         ? "bg-primary border-primary"
-                        : "bg-slate-600 border-slate-400 hover:bg-slate-500"
+                        : "bg-ink-3 border-ink-2 hover:bg-ink-2"
                     }`}
                   />
                   {location.name === selectedLocation && (
@@ -182,7 +183,7 @@ export const RenderTravelPage = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        icon={MapPin}
+        glyph="途"
         title={text("page.travel.title")}
         color="text-accent-sky"
         subtitle={text("page.travel.subtitle")}

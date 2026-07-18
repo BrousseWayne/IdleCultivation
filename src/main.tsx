@@ -2,6 +2,8 @@ import { createRoot } from "react-dom/client";
 import "@/styles/globals.css";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { Layout } from "@/ui/layout/layout";
+import { ErrorBoundary } from "@/ui/components/ErrorBoundary";
+import { RequireUnlock } from "@/ui/components/RequireUnlock";
 import { RenderExplorePage } from "@/ui/pages/explore";
 import { RenderInventoryPage } from "@/ui/pages/inventory";
 import { RenderActivitiesPage } from "@/ui/pages/activities";
@@ -30,15 +32,17 @@ import {
   initializeGameEventListeners,
 } from "@/game/services";
 import { bootRun } from "@/game/engine/gameLoop";
-import { activityData } from "@/game/data/activity";
-import { items } from "@/game/data/items";
-import { locations } from "@/game/data/locations";
-import { sidebarData } from "@/game/data/navigation";
+import { registerContent } from "@/game/bootstrap";
+import { validateContent } from "@/game/data/validateContent";
 
-activityData.forEach((a) => EntityRegistry.register("activity", a.key, a));
-items.forEach((i) => EntityRegistry.register("item", String(i.id), i));
-locations.forEach((l) => EntityRegistry.register("location", l.name, l));
-sidebarData.forEach((n) => EntityRegistry.register("navigation", n.name, n));
+registerContent();
+
+if (import.meta.env.DEV) {
+  const contentErrors = validateContent();
+  if (contentErrors.length) {
+    throw new Error(`[content] invalid game data:\n- ${contentErrors.join("\n- ")}`);
+  }
+}
 
 initializeGameEventListeners();
 SaveManager.load();
@@ -46,12 +50,19 @@ SaveManager.startAutoSave();
 
 bootRun();
 
+declare global {
+  interface Window {
+    EntityRegistry: typeof EntityRegistry;
+  }
+}
+
 if (typeof window !== "undefined") {
-  (window as any).EntityRegistry = EntityRegistry;
+  window.EntityRegistry = EntityRegistry;
 }
 
 createRoot(document.getElementById("root")!).render(
   // <StrictMode>
+  <ErrorBoundary>
   <BrowserRouter>
     <Routes>
       <Route path="/poc" element={<DesignPocPage />} />
@@ -68,17 +79,18 @@ createRoot(document.getElementById("root")!).render(
       <Route path="/proto/seam" element={<ProtoFrame><SeamLab /></ProtoFrame>} />
       <Route path="/" element={<Layout />}>
         <Route index element={<Navigate to="/Explore" replace />} />
-        <Route path="/Explore" element={<RenderExplorePage />} />
-        <Route path="/Inventory" element={<RenderInventoryPage />} />
-        <Route path="/Activities" element={<RenderActivitiesPage />} />
-        <Route path="/Quests" element={<RenderQuestsPage />} />
-        <Route path="/Lifestyle" element={<RenderLifestylePage />} />
-        <Route path="/Travel" element={<RenderTravelPage />} />
-        <Route path="/Stats" element={<RenderStatsPage />} />
-        <Route path="/Recap" element={<RenderCalendarPage />} />
-        <Route path="/Story" element={<RenderStoryPage />} />
+        <Route path="/Explore" element={<RequireUnlock name="Explore"><RenderExplorePage /></RequireUnlock>} />
+        <Route path="/Inventory" element={<RequireUnlock name="Inventory"><RenderInventoryPage /></RequireUnlock>} />
+        <Route path="/Activities" element={<RequireUnlock name="Activities"><RenderActivitiesPage /></RequireUnlock>} />
+        <Route path="/Quests" element={<RequireUnlock name="Quests"><RenderQuestsPage /></RequireUnlock>} />
+        <Route path="/Lifestyle" element={<RequireUnlock name="Lifestyle"><RenderLifestylePage /></RequireUnlock>} />
+        <Route path="/Travel" element={<RequireUnlock name="Travel"><RenderTravelPage /></RequireUnlock>} />
+        <Route path="/Stats" element={<RequireUnlock name="Stats"><RenderStatsPage /></RequireUnlock>} />
+        <Route path="/Recap" element={<RequireUnlock name="Recap"><RenderCalendarPage /></RequireUnlock>} />
+        <Route path="/Story" element={<RequireUnlock name="Story"><RenderStoryPage /></RequireUnlock>} />
       </Route>
     </Routes>
   </BrowserRouter>
+  </ErrorBoundary>
   // </StrictMode>
 );

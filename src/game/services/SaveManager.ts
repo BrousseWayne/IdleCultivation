@@ -1,145 +1,101 @@
-import { useCultivatorStore } from "@/game/stores/cultivatorStore";
-import { useGameStore } from "@/game/stores/gameStore";
-import { useActivityStore } from "@/game/stores/activityStore";
-import { useInventoryStore } from "@/game/stores/inventoryStore";
+import { persistedSections } from "@/game/services/persistence";
 import { gameLoop } from "@/game/engine/gameLoop";
 
+// localStorage persistence, driven entirely by the persistence manifest —
+// this module only owns versioning, migration, and the autosave timer.
+
 const SAVE_KEY = "cultivation-save";
-const SAVE_VERSION = 1;
-const AUTO_SAVE_INTERVAL = 30_000;
-const MAX_EVENT_LOG = 200;
+const SAVE_VERSION = 2; // v2: unlock state moved into its own store/section
+const AUTO_SAVE_INTERVAL_MS = 30_000;
 
-class SaveManagerService {
-  private intervalId: ReturnType<typeof setInterval> | null = null;
+let autoSaveHandle: ReturnType<typeof setInterval> | null = null;
 
-  private snapshot() {
-    const cultivator = useCultivatorStore.getState();
-    const game = useGameStore.getState();
-    const activity = useActivityStore.getState();
-    const inventory = useInventoryStore.getState();
-
-    return {
-      version: SAVE_VERSION,
-      timestamp: Date.now(),
-      cultivator: {
-        age: cultivator.age,
-        lifespan: cultivator.lifespan,
-        vitality: cultivator.vitality,
-        satiety: cultivator.satiety,
-        mortality: cultivator.mortality,
-        stats: cultivator.stats,
-      },
-      game: {
-        ticks: game.ticks,
-        day: game.day,
-        gameSpeed: game.gameSpeed,
-        introComplete: game.introComplete,
-        runBackground: game.runBackground,
-        maxTimePoints: game.maxTimePoints,
-        selectedTimeScale: game.selectedTimeScale,
-        selectedYear: game.selectedYear,
-        selectedMonth: game.selectedMonth,
-        selectedEra: game.selectedEra,
-        selectedDecade: game.selectedDecade,
-        calendarView: game.calendarView,
-        navigationUnlocks: game.navigationUnlocks,
-        activityCategoryUnlocks: game.activityCategoryUnlocks,
-        currentPlaceKey: game.currentPlaceKey,
-        streamLog: game.streamLog.slice(-MAX_EVENT_LOG),
-        selectedDate: game.selectedDate,
-        showDetailedView: game.showDetailedView,
-      },
-      activity: {
-        queue: activity.queue,
-        runningTicks: activity.runningTicks,
-        scheduleIndex: activity.scheduleIndex,
-        completionCounts: activity.completionCounts,
-        activityXp: activity.activityXp,
-        repeatActivities: activity.repeatActivities,
-        selectedLocation: activity.selectedLocation,
-      },
-      inventory: {
-        currency: inventory.currency,
-        inventoryItems: inventory.inventoryItems,
-        equippedItems: inventory.equippedItems,
-        dailyExpenses: inventory.dailyExpenses,
-        dailyIncome: inventory.dailyIncome,
-      },
-    };
+function snapshot(): Record<string, unknown> {
+  const save: Record<string, unknown> = {
+    version: SAVE_VERSION,
+    timestamp: Date.now(),
+  };
+  for (const section of persistedSections) {
+    save[section.key] = section.snapshot();
   }
+  return save;
+}
 
-  private restore(data: Record<string, unknown>): void {
-    if (!data?.version) return;
+// v1 kept unlock state inside the game/activity sections
+function migrateFromV1(data: Record<string, unknown>): void {
+  const game = (data.game ?? {}) as Record<string, unknown>;
+  const activity = (data.activity ?? {}) as Record<string, unknown>;
+  data.unlocks = {
+    navigation: game.navigationUnlocks,
+    categories: game.activityCategoryUnlocks,
+    activities: activity.unlockedActivities,
+  };
+  delete game.navigationUnlocks;
+  delete game.activityCategoryUnlocks;
+  delete activity.unlockedActivities;
+}
 
-    gameLoop.stop();
+function restore(data: Record<string, unknown>): void {
+  if (!data?.version) return;
 
-    if (data.cultivator) {
-      useCultivatorStore.setState(data.cultivator as Partial<ReturnType<typeof useCultivatorStore.getState>>);
-    }
+  gameLoop.stop();
+  if (data.version === 1) migrateFromV1(data);
 
-    if (data.game) {
-      useGameStore.setState(data.game as Partial<ReturnType<typeof useGameStore.getState>>);
-    }
-
-    if (data.activity) {
-      useActivityStore.setState(data.activity as Partial<ReturnType<typeof useActivityStore.getState>>);
-    }
-
-    if (data.inventory) {
-      useInventoryStore.setState(data.inventory as Partial<ReturnType<typeof useInventoryStore.getState>>);
-    }
+  for (const section of persistedSections) {
+    const saved = data[section.key];
+    if (saved) section.restore(saved as Record<string, unknown>);
   }
+}
 
+export const SaveManager = {
   save(): void {
     try {
-      localStorage.setItem(SAVE_KEY, JSON.stringify(this.snapshot()));
-    } catch (err) {
-      console.error("[SaveManager] Save failed:", err);
+      localStorage.setItem(SAVE_KEY, JSON.stringify(snapshot()));
+    } catch (error) {
+      console.error("[SaveManager] Save failed:", error);
     }
-  }
+  },
 
   load(): void {
     try {
       const raw = localStorage.getItem(SAVE_KEY);
       if (!raw) return;
-      this.restore(JSON.parse(raw));
-    } catch (err) {
-      console.error("[SaveManager] Load failed:", err);
+      restore(JSON.parse(raw));
+    } catch (error) {
+      console.error("[SaveManager] Load failed:", error);
     }
-  }
+  },
 
   exportSave(): string {
-    return JSON.stringify(this.snapshot());
-  }
+    return JSON.stringify(snapshot());
+  },
 
   importSave(json: string): void {
     const data = JSON.parse(json);
     if (!data.version) throw new Error("Invalid save format");
-    this.restore(data);
-    this.save();
-  }
+    restore(data);
+    SaveManager.save();
+  },
 
   clearSave(): void {
     localStorage.removeItem(SAVE_KEY);
-  }
+  },
 
   wipeSave(): void {
     gameLoop.stop();
     localStorage.removeItem(SAVE_KEY);
     window.location.reload();
-  }
+  },
 
   startAutoSave(): void {
-    if (this.intervalId) return;
-    this.intervalId = setInterval(() => this.save(), AUTO_SAVE_INTERVAL);
-  }
+    if (autoSaveHandle) return;
+    autoSaveHandle = setInterval(() => SaveManager.save(), AUTO_SAVE_INTERVAL_MS);
+  },
 
   stopAutoSave(): void {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
+    if (autoSaveHandle) {
+      clearInterval(autoSaveHandle);
+      autoSaveHandle = null;
     }
-  }
-}
-
-export const SaveManager = new SaveManagerService();
+  },
+};

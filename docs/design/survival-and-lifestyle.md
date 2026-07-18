@@ -13,7 +13,7 @@ related: [docs/design/core-loop.md, docs/design/ui-ux.md, docs/vision/identity.m
 - BARS ARE QUALITATIVE, NOT NUMERIC, AT FIRST. Satiety and vitality (HP) show as words — e.g. "faint / … / full" — not `x/100`. Numeric self-knowledge is a later cultivation unlock. Applies to HP too: a mortal cannot read their own vitality as a number.
 - FOREGO IS ALLOWED, AND COSTS. The player may skip meals/sleep. Consequences: amplifies **mortality** (the bar that lets time kill the player — currently starts at 1), and reduces activity xp / output. Foregoing sleep is the riskier of the two.
 - MORTALITY IS THE TIME-KILL VECTOR. Distinct from lifespan-based aging death. Neglecting upkeep raises mortality; high mortality is how a run ends early (mechanism TBD — drain, death-rolls, or threshold).
-- FIRST-NIGHT ONBOARDING. Survival systems are introduced diegetically: the player arrives with nothing to do but Beg; night falls; hunger + sleepiness fire an event that opens the lifestyle table (diet + lodging choice) for the first time. The meters exist to motivate that event, then settle into passive upkeep.
+- FIRST-NIGHT ONBOARDING. Survival systems are introduced diegetically: the player arrives with nothing to do but Beg; night falls; hunger + sleepiness fire an event that opens the lifestyle table (diet + lodging choice) for the first time. The meters exist to motivate that event, then settle into passive upkeep. (Note — pacing decision 2026-07: there is no clock-level day/night; "night falls" is narrative framing for a day-1 event trigger, not a time-of-day mechanic.)
 
 ## Day structure (intent)
 

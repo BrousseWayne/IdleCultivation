@@ -1,5 +1,7 @@
 # Kickoff — Next Agent
 
+> **Status note (2026-07-18):** several Part 3 threads have landed since this was written — the narrative event system exists (Thread drawer, pause, `defineEvent`), place verbs carry effects, the unlock pipeline/content authoring is typed end-to-end (`define*` helpers, `when` grammar, boot validator), a simulation test suite + `npm run simulate` exist, currency is copper, and the chrome was redesigned (tabs / Self card / Thread drawer). Still true: no meta-state — reincarnation wipes everything. Trust `docs/architecture/architecture.md` over Part 3's factual claims; the exploration mandate (Part 2) still applies.
+
 You are picking up an in-progress passion project. No deadline, no money pressure. The bar is **craft**: the previous collaborators cared about clean architecture, honest design, and not over-engineering. Match that.
 
 This document gives you a factual map and a mandate. It deliberately does **not** hand you the previous pair's design conclusions about the open work — that part is yours to form with fresh eyes. Where this doc states a *fact about the code*, trust it but verify. Where it gestures at *what's next*, treat it as a question, not an answer.

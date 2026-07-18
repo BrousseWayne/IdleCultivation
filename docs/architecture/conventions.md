@@ -1,17 +1,21 @@
 ---
 purpose: Canonical naming, domain terminology, coding patterns, type-safety rules, prohibitions, communication style, and tech stack for the Idle Cultivation game.
 status: stable
-last-verified: 2026-05-30
+last-verified: 2026-07-17
 related: [docs/architecture/architecture.md]
 ---
 
 ## Key facts
 
-- Tech stack: React 19, TypeScript, Vite, React Router 7, Tailwind CSS 4, Zustand, Radix UI, Lucide React, date-fns.
+- Tech stack: React 19, TypeScript, Vite, React Router 7, Tailwind CSS 4, Zustand, Radix UI, Lucide React.
 - Path alias `@/` points to `src/`. Dark mode by default. ESLint for code quality.
-- Stores named `useXxxStore`; services are PascalCase singletons; types are PascalCase; data files are camelCase.ts.
-- Use xianxia domain terms everywhere — code, data, and UI.
-- Type safety: discriminated unions for variants, `unknown` + type guards over `any`, typed entity IDs (`ActivityId`, `ItemId`) over plain strings.
+- Stores named `useXxxStore`; services are PascalCase module singletons (plain objects + module state — no classes, with ONE sanctioned exception: `ErrorBoundary`, which React requires to be a class); types are PascalCase; data files are camelCase.ts.
+- Randomness: never `Math.random()` in game logic — always `rng` (`engine/rng.ts`), so every run is replayable from its seed.
+- Tests: the simulation suite (`npm test`) is the safety net — any change to engine/stores/services should keep it green, and new systems should land with simulation tests that play the game headlessly.
+- Unlock conditions are authored through the `when` grammar (`data/conditions.ts`): `when.level("mineOre", 5)`, `when.all(...)`, `when.any(...)` — an embedded DSL over the `UnlockCondition` union, fully compiler-checked (no string parsing).
+- Content is code: this game has no assets — adding content means writing typed data. The compiler is the level editor; `validateContent()` (dev boot) catches only what types can't (self-references, circular graphs).
+- Use xianxia domain terms everywhere — code, data, and UI. (The terminology table below is forward-looking vocabulary; most terms have no code counterpart yet.)
+- Type safety: discriminated unions for variants, `unknown` + type guards over `any`. Entity keys are REAL literal unions derived from the data (`ActivityKey`, `PlaceKey`, `PlaceActionKey` — see `data/defineContent.ts`): a typo'd cross-reference in content fails to compile.
 - Source of truth: when CLAUDE.md / docs conflict with the actual codebase, the codebase wins.
 - Communication: describe concrete approach (not aspirational pitch); absorb clarifications without praising them.
 
@@ -25,7 +29,6 @@ related: [docs/architecture/architecture.md]
 - **Zustand** — State management
 - **Radix UI** — Accessible component primitives
 - **Lucide React** — Icons
-- **date-fns** — Date utilities
 
 Development conventions: path aliases (`@/` points to `src/`), TypeScript for type safety, ESLint for code quality, dark mode by default. Prerequisites are Node.js v18+ and npm or yarn.
 
@@ -38,7 +41,7 @@ Development conventions: path aliases (`@/` points to `src/`), TypeScript for ty
 
 ## Domain Terminology
 
-Use xianxia terms everywhere (code, data, UI):
+Use xianxia terms everywhere (code, data, UI). This table is the naming guide for content as it gets built — today only `vitality`, `hasFallen`, and `reincarnate()` exist in code; the rest is reserved vocabulary for future systems:
 
 | Western Concept   | Xianxia Term            | Code Variable         |
 | ----------------- | ----------------------- | --------------------- |
@@ -56,7 +59,8 @@ Use xianxia terms everywhere (code, data, UI):
 | Weapon            | Spiritual Weapon        | `weapon`              |
 | Armor             | Protective Treasure     | `armor`               |
 | Accessory         | Spirit Treasure         | `treasure`            |
-| Currency          | Spirit Stones           | `spiritStones`        |
+| Currency          | Copper wen 文 (mortal)  | `currency`            |
+| Currency (later)  | Taels of silver 兩, then Spirit Stones | —      |
 | Premium Currency  | Immortal Jade           | `immortalJade`        |
 | XP                | Enlightenment           | `enlightenment`       |
 | Death             | Passing / Falling       | `hasFallen`           |
@@ -78,12 +82,13 @@ Note on text tone: story text uses xianxia novel tone ("broken English" cultivat
 
 - Use discriminated unions for variants (reward types, event types, unlock conditions)
 - Avoid `any` — use `unknown` with type guards
-- Entity IDs should be typed (`ActivityId`, `ItemId`) not plain strings
+- Entity keys ARE typed: content is authored through `defineActivities`/`definePlaces`/`defineUnlockables`/`defineEvents` (`data/defineContent.ts`), which keep literal keys and derive the unions. Runtime code uses the plain-string defaults of the generic types; only authoring surfaces are strict.
 
 ### Adding New Content
 
-- **New Activity**: Add to `activity.ts`, EntityRegistry auto-indexes on load
-- **New Game System**: New store or extend existing → data file → types → page → EventBus events
+- **New Activity**: add an entry inside `defineActivities` in `activity.ts` — registry, unlocks, keys, and visibility all follow.
+- **New unlock condition on anything**: express it with the `when` grammar; keys autocomplete.
+- **New Game System**: new store (declare it in `services/persistence.ts` — save + reincarnation follow automatically) → data file via a `define*` helper → types → page → EventBus events.
 
 ## What NOT To Do
 

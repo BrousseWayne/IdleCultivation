@@ -2,7 +2,7 @@
 
 A browser idle/incremental **xianxia life-sim**: each run is one life, death is prestige via reincarnation, and the incremental game *is* the reincarnation cycle. Genre blend of roguelike prestige loop + idle scaling + cultivation RPG. Currently building the **Early (Mortal/Wuxia)** phase.
 
-Stack: React 19 · Vite · TypeScript · Zustand · React Router 7 · Tailwind 4 · Zod. React Compiler enabled.
+Stack: React 19 · Vite · TypeScript · Zustand · React Router 7 · Tailwind 4. React Compiler enabled.
 
 ---
 
@@ -16,6 +16,10 @@ Project knowledge is recomposed by theme under `docs/`. Each doc opens with a `#
 | [`docs/design/core-loop.md`](docs/design/core-loop.md) | Run = life, prestige loop, run-vs-meta state, run types, the time/aging clock |
 | [`docs/design/scaling.md`](docs/design/scaling.md) | Cost/production curves, growth rates, prestige formulas *(design math, not yet built)* |
 | [`docs/design/ui-ux.md`](docs/design/ui-ux.md) | Color tokens, typography, number formatting, animation tiers, layouts, sidebar |
+| [`docs/design/explore-and-places.md`](docs/design/explore-and-places.md) | The Explore tab — city graph, place-scoped activities, contextual actions (talk/shop/enter), time/reward rule |
+| [`docs/design/survival-and-lifestyle.md`](docs/design/survival-and-lifestyle.md) | Satiety/rest/lifestyle upkeep + mortality — the mortal survival loop *(design intent, not yet built)* |
+| [`docs/design/realms.md`](docs/design/realms.md) | The realm ladder across all four macro phases, breakthrough rhythm, realm variants *(design intent)* |
+| [`docs/design/events.md`](docs/design/events.md) | Event philosophy — causal graph, invisible gates, layers of perception, archetypes |
 | [`docs/design/roadmap.md`](docs/design/roadmap.md) | 5-sprint UI/UX plan, each item annotated done/partial/pending |
 | [`docs/architecture/architecture.md`](docs/architecture/architecture.md) | Stores, services, data layer, effect/event/unlock systems, intended-vs-wired, gaps |
 | [`docs/architecture/conventions.md`](docs/architecture/conventions.md) | Naming, domain-terminology table, coding patterns, do-not list, comms style |

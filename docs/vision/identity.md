@@ -1,12 +1,14 @@
 ---
 purpose: Source of truth for what the game is — genre blend, inspirations, design philosophy, and the four macro phases
 status: stable
-last-verified: 2026-05-30
+last-verified: 2026-07-18
 related: [docs/design/core-loop.md, docs/meta-design/meta-design.md]
 ---
 
 ## Key facts
-- Genre blend: roguelike prestige loop + idle/incremental scaling + xianxia RPG life sim.
+- Genre blend: roguelike prestige loop + idle/incremental scaling + xianxia RPG life sim. Deeper framing: it is **three nested games** — (1) a solid idle/life-sim, (2) a cultivation simulator, (3) **a game about understanding itself**. The third layer is the point: the player, not the character, is the one becoming enlightened.
+- The guiding question is NOT "idle game with a xianxia skin" but: **"if cultivation were real, how would an incremental game actually work?"** Every prestige grants deeper understanding rather than merely larger numbers.
+- PILLAR (the once-missing sentence): **the player should continuously reinterpret earlier experiences through new understanding.** First life: an old beggar. Twentieth: perhaps a hidden expert. Hundredth: no — a messenger. Immortal realm: the bowl mattered, not the man. Cosmic: neither mattered — the mercy did. Every layer changes the meaning of the previous one; this fuses xianxia's "the world is larger than you thought" with Antimatter Dimensions' "your previous optimization was only locally correct".
 - Design mantra: easy to learn, hard to master.
 - Setting: a xianxia (Chinese cultivation fantasy) universe.
 - Has a deep meta-design layer that blurs the line between player and character (detail lives in `docs/meta-design/meta-design.md`).
@@ -14,7 +16,8 @@ related: [docs/design/core-loop.md, docs/meta-design/meta-design.md]
 - Four macro phases: Early (Mortal/Wuxia), Mid (Immortal Cultivation), Late (Supreme Ascension), Endgame (Cosmic Cultivation).
 - Currently building the Early (Mortal/Wuxia) phase.
 - Inspirations: Antimatter Dimensions, Universal Paperclip, Increlution, Progress Knight, xianxia novels (RMJI, BTTH, Top Tier Providence).
-- Core design pillars: diegetic mechanics, story through mechanics, freedom in progression, cultivation IS grinding, hidden depth.
+- Core design pillars: diegetic mechanics, story through mechanics, freedom in progression, cultivation IS grinding, hidden depth, continuous reinterpretation (above).
+- The first ~10 hours must be a **convincing, grounded wuxia life-sim** — the player should believe "this is a mortal life simulator", not "I am in a cosmic reincarnation engine". The hidden xianxia/meta layers only work if the wuxia layer is already satisfying on its own; the deception IS the design.
 - Story text uses xianxia novel tone; UI text is always clear and unambiguous.
 
 ## What the game is

@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Chrome standard — ink neutrals, glyphs, day bar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Crimson+Text:wght@400;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.7.0/style.css" rel="stylesheet" />
+<style>
+  :root{
+    /* accents — unchanged, one hue = one meaning */
+    --jade:#5FB4A0; --gold:#D4AF6A; --cinnabar:#E07856; --silver:#94A3B8;
+    --violet:#B59ACF; --sky:#6BA3D4; --lotus:#D98AA8; --indigo:#6E73C9;
+    --str:#CB4B5F; --dex:#7FB85A;
+
+    /* NEW neutral ramp — ink-stone (warm green-black), replaces blue slate */
+    --bg:#0A0C0B;
+    --panel-0:#0D100E;   /* deepest chrome: sidebar, header */
+    --panel:#121513;     /* cards */
+    --panel-2:#191D1A;   /* hover / wells */
+    --line:#222724;
+    --line-2:#2E342F;
+    --ink:#E4E7E1;
+    --ink-2:#98A29A;
+    --ink-3:#5E6862;
+
+    /* OLD slate ramp, for the comparison strip only */
+    --old-bg:#020617; --old-panel:#0f172a; --old-line:#1e293b; --old-ink:#e2e8f0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Crimson Text',Georgia,serif;padding:32px}
+  .mono{font-family:'JetBrains Mono',monospace}
+  .glyph{font-family:'LXGW WenKai TC','Kaiti TC','STKaiti','Noto Serif TC',serif}
+
+  h1{font-family:Cinzel,serif;font-size:20px;color:var(--ink);margin:0 0 4px;letter-spacing:.04em}
+  .sub{color:var(--ink-2);font-size:14px;margin:0 0 18px;max-width:820px}
+  .rules{font-size:13px;color:var(--ink-2);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:28px;max-width:820px;line-height:1.55}
+  .rules b{color:var(--ink)}
+  h2.section{font-family:Cinzel,serif;font-size:13px;color:var(--ink-2);letter-spacing:.12em;text-transform:uppercase;margin:40px 0 12px}
+
+  /* ============ THE CHROME (hero) ============ */
+  .app{max-width:1180px;background:var(--bg);border:1px solid var(--line-2);border-radius:12px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+
+  /* header */
+  .hdr{height:48px;display:flex;align-items:center;gap:18px;padding:0 18px;background:var(--panel-0);border-bottom:1px solid var(--line)}
+  .hdr .title{font-family:Cinzel,serif;font-size:15px;font-weight:700;color:var(--ink);letter-spacing:.06em;white-space:nowrap}
+  .rank{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--jade);border:1px solid color-mix(in srgb,var(--jade) 30%,transparent);border-radius:6px;padding:2px 8px}
+  .rank .glyph{font-size:13px}
+  .hdr .grow{flex:1}
+  .hdr .place{font-size:13px;color:var(--ink-2)}
+  .hdr .day{font-size:12px;color:var(--ink-2)}
+  .hdr .day b{color:var(--ink);font-weight:700}
+  .hdr .hours{font-size:12px;color:var(--jade);font-weight:700}
+  .hdr .hours span{color:var(--ink-3);font-weight:500}
+  .ctl{display:flex;gap:4px}
+  .btn{width:26px;height:26px;border-radius:6px;border:1px solid transparent;background:transparent;color:var(--ink-3);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer}
+  .btn:hover{background:var(--panel-2);color:var(--ink-2)}
+  .btn.active{color:var(--jade);border-color:color-mix(in srgb,var(--jade) 35%,transparent);background:color-mix(in srgb,var(--jade) 10%,transparent)}
+  .vr{width:1px;height:16px;background:var(--line-2)}
+
+  /* queue / day bar */
+  .qwrap{background:color-mix(in srgb,var(--panel-0) 80%,var(--bg));border-bottom:1px solid var(--line);padding:10px 18px 12px}
+  .qtop{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+  .qtop .doing{font-size:13px;font-weight:600}
+  .qtop .qsub{font-size:11px;color:var(--ink-3)}
+  .qtop .right{margin-left:auto;font-size:11px;color:var(--ink-2)}
+  .day-track{position:relative;height:22px;border-radius:5px;background:var(--panel-2);border:1px solid var(--line);display:flex;overflow:hidden}
+  .ticks{position:absolute;inset:0;display:flex;pointer-events:none}
+  .ticks i{flex:1;border-right:1px solid rgba(255,255,255,.025)}
+  .seg{position:relative;height:100%;display:flex;align-items:center;justify-content:center;gap:5px;border-right:1px solid var(--bg)}
+  .seg .glyph{position:relative;font-size:13px;line-height:1;color:rgba(255,255,255,.92)}
+  .seg .n{position:relative;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,.75)}
+  .seg .fill{position:absolute;inset:0 auto 0 0}
+  .free{margin-left:auto;display:flex;align-items:center;padding-right:10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-3)}
+
+  @keyframes sweep{0%{width:8%}92%{width:100%}100%{width:100%}}
+  .demo-fill{animation:sweep 7s linear infinite}
+
+  /* body */
+  .frame{display:flex;min-height:430px}
+  .side{width:216px;background:var(--panel-0);border-right:1px solid var(--line);padding:14px 10px;display:flex;flex-direction:column}
+  .nav a{display:block;padding:6px 12px;border-left:2px solid transparent;border-radius:0 6px 6px 0;font-size:15px;color:var(--ink-2);text-decoration:none;letter-spacing:.01em}
+  .nav a:hover{color:var(--ink);background:var(--panel-2)}
+  .nav a.active{color:var(--jade);border-left-color:var(--jade);background:color-mix(in srgb,var(--jade) 8%,transparent);font-weight:600}
+
+  .self{margin-top:auto;background:var(--panel);border:1px solid var(--line-2);border-radius:10px;padding:12px 12px 10px}
+  .self .cap{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+  .self .cap .glyph{font-size:15px;color:var(--ink-3)}
+  .self .cap span{font-family:Cinzel,serif;font-size:10px;letter-spacing:.14em;color:var(--ink-3);text-transform:uppercase}
+  .kv{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;padding:2.5px 0}
+  .kv .k{color:var(--ink-2)}
+  .kv .v{font-weight:600}
+  .self hr{border:0;border-top:1px solid var(--line);margin:7px 0}
+  .word-jade{color:var(--jade)} .word-gold{color:var(--gold)} .word-cinnabar{color:var(--cinnabar)}
+  .money{color:var(--silver)}
+  .attr{display:flex;align-items:center;gap:8px}
+  .attr .glyph{font-size:16px;line-height:1}
+
+  /* content: activity rows */
+  .content{flex:1;padding:20px 22px;background:var(--bg)}
+  .ph{font-family:Cinzel,serif;font-size:17px;letter-spacing:.05em;margin:0 0 2px}
+  .psub{font-size:13px;color:var(--ink-3);margin:0 0 14px}
+  .cat{font-size:14px;font-weight:600;margin:0 0 6px;display:flex;align-items:center;gap:8px}
+  .cat .glyph{font-size:16px}
+  .row{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:8px}
+  .row:nth-child(odd){background:var(--panel)}
+  .row .glyph.cat-mark{font-size:18px;width:22px;text-align:center}
+  .row .body2{flex:1;min-width:0}
+  .row .l1{display:flex;align-items:baseline;gap:10px}
+  .row .name{font-size:14.5px}
+  .chipfx{display:inline-flex;align-items:center;gap:4px;font-size:12px}
+  .chipfx .glyph{font-size:13px}
+  .row .l2{display:flex;align-items:center;gap:8px;margin-top:4px;width:55%}
+  .lv{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-3)}
+  .xp{flex:1;height:4px;border-radius:99px;background:var(--panel-2);overflow:hidden}
+  .xp i{display:block;height:100%;border-radius:99px}
+  .time{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--ink-2);display:flex;gap:6px;align-items:center}
+  .time .alloc{color:var(--jade)}
+  .step{display:flex;border:1px solid var(--line-2);border-radius:7px;overflow:hidden}
+  .step button{width:26px;height:26px;background:transparent;border:0;color:var(--ink-3);cursor:pointer;font-size:13px}
+  .step button:hover{background:var(--panel-2)}
+  .step button.plus{color:var(--jade)}
+  .step .sep{width:1px;background:var(--line-2)}
+
+  /* ============ variants & specimens ============ */
+  .strip{max-width:1180px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .card h3{margin:0 0 3px;font-size:13px;color:var(--ink)}
+  .card .d{font-size:12px;color:var(--ink-3);margin:0 0 12px}
+
+  .gspec{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;max-width:1180px}
+  .g{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center}
+  .g .glyph{font-size:34px;line-height:1.25;display:block}
+  .g .gn{font-size:12px;color:var(--ink);margin-top:6px}
+  .g .gm{font-size:10.5px;color:var(--ink-3)}
+
+  .ramps{display:flex;gap:18px;max-width:1180px;flex-wrap:wrap}
+  .ramp{flex:1;min-width:340px;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+  .ramp .lab{font-size:12px;padding:8px 12px;color:var(--ink-2);background:var(--panel)}
+  .ramp .cells{display:flex}
+  .ramp .cells div{flex:1;height:52px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:5px;font-family:'JetBrains Mono',monospace;font-size:8.5px;color:rgba(255,255,255,.4)}
+</style>
+</head>
+<body>
+
+<h1>Chrome standard</h1>
+<p class="sub">Header · queue bar · sidebar, sur les nouvelles fondations : neutres pierre-à-encre, glyphes calligraphiques en texte (zéro SVG), jade dominant. Les pills et barres d'XP restent — elles sont juste posées sur un meilleur socle.</p>
+<div class="rules">
+  <b>Règles.</b> Neutres = rampe unique « ink-stone » (noir-vert chaud, plus de slate bleu). Jade = seul accent à forte présence (actif, actionnable, positif). Teintes de catégorie = marques de quelques pixels (glyphe, fill de segment), jamais du chrome. Max 2 accents + neutres par zone. Glyphes = caractères <span class="glyph">力 武 學</span> rendus en texte (LXGW WenKai TC), teintés par leur hue dédiée — aucune icône lucide dans le chrome.
+</div>
+
+<h2 class="section">Assemblage — état « running »</h2>
+<div class="app">
+  <!-- header : jade + neutrals only ; money & place-pill retirés (doublons sidebar) -->
+  <div class="hdr">
+    <span class="title">A Kind of Something</span>
+    <span class="rank"><span class="glyph">凡</span> Mortal</span>
+    <span class="grow"></span>
+    <span class="place">Ironveil Streets</span>
+    <span class="vr"></span>
+    <span class="day mono">Day <b>671</b></span>
+    <span class="vr"></span>
+    <span class="hours mono">12h <span>free</span></span>
+    <span class="vr"></span>
+    <span class="ctl">
+      <button class="btn active">❚❚</button>
+      <button class="btn">▶▶</button>
+      <button class="btn">⚙</button>
+    </span>
+  </div>
+
+  <!-- queue bar : le track = la journée de 24h ; les pills vivent dedans -->
+  <div class="qwrap">
+    <div class="qtop">
+      <span class="doing" style="color:var(--indigo)">Lift Weights</span>
+      <span class="qsub">4h × 2</span>
+      <span class="right mono">3 queued · 12h · <span style="color:var(--ink-3)">12h free</span></span>
+    </div>
+    <div class="day-track">
+      <div class="ticks">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+      <!-- done block -->
+      <div class="seg" style="width:calc(4/24*100%)">
+        <div class="fill" style="width:100%;background:linear-gradient(180deg,color-mix(in srgb,var(--sky) 88%,white 4%),color-mix(in srgb,var(--sky) 70%,black 12%))"></div>
+        <span class="glyph">工</span>
+      </div>
+      <!-- active block : le fill balaye (démo animée) -->
+      <div class="seg" style="width:calc(8/24*100%);background:color-mix(in srgb,var(--indigo) 14%,transparent)">
+        <div class="fill demo-fill" style="background:linear-gradient(180deg,color-mix(in srgb,var(--indigo) 88%,white 4%),color-mix(in srgb,var(--indigo) 70%,black 12%));box-shadow:0 0 10px color-mix(in srgb,var(--indigo) 55%,transparent)"></div>
+        <span class="glyph">武</span><span class="n">×2</span>
+      </div>
+      <!-- pending block -->
+      <div class="seg" style="width:calc(4/24*100%);background:color-mix(in srgb,var(--violet) 14%,transparent)">
+        <span class="glyph" style="color:color-mix(in srgb,var(--violet) 80%,white 10%)">學</span>
+      </div>
+      <!-- reste de la journée : heures libres, visibles dans le track -->
+      <div class="free">12h free</div>
+    </div>
+  </div>
+
+  <div class="frame">
+    <!-- sidebar : nav texte pur, puis LA carte self (objet distinct, pas du menu) -->
+    <div class="side">
+      <nav class="nav">
+        <a href="#">Explore</a>
+        <a href="#">Inventory</a>
+        <a href="#" class="active">Activities</a>
+        <a href="#">Quests</a>
+        <a href="#">Lifestyle</a>
+        <a href="#">Stats</a>
+        <a href="#">Recap</a>
+        <a href="#">Story</a>
+      </nav>
+
+      <div class="self">
+        <div class="cap"><span class="glyph">己</span><span>Self</span></div>
+        <div class="kv"><span class="k">Age</span><span class="v mono">23</span></div>
+        <div class="kv"><span class="k">Body</span><span class="v word-jade">Healthy</span></div>
+        <div class="kv"><span class="k">Belly</span><span class="v word-gold">Peckish</span></div>
+        <hr />
+        <div class="kv"><span class="k attr"><span class="glyph money">銀</span>Money</span><span class="v mono money">230</span></div>
+        <div class="kv"><span class="k">Income</span><span class="v mono word-jade">+110</span></div>
+        <div class="kv"><span class="k">Upkeep</span><span class="v mono word-cinnabar">−40</span></div>
+        <hr />
+        <div class="kv"><span class="k attr"><span class="glyph" style="color:var(--str)">力</span>Strength</span><span class="v">Mighty</span></div>
+        <div class="kv"><span class="k attr"><span class="glyph" style="color:var(--dex)">敏</span>Dexterity</span><span class="v">Fleet</span></div>
+      </div>
+    </div>
+
+    <!-- content : rows d'activités, glyphes + barres d'XP conservées -->
+    <div class="content">
+      <p class="ph">Activities</p>
+      <p class="psub">Shape the day. The day shapes you.</p>
+
+      <p class="cat" style="color:var(--sky)"><span class="glyph">工</span>Work</p>
+      <div>
+        <div class="row">
+          <span class="glyph cat-mark" style="color:var(--sky)">工</span>
+          <div class="body2">
+            <div class="l1"><span class="name">Beg</span><span class="chipfx money"><span class="glyph">銀</span><span class="mono">+?</span></span></div>
+            <div class="l2"><span class="lv">Lv 4</span><div class="xp"><i style="width:62%;background:var(--sky)"></i></div></div>
+          </div>
+          <span class="time">8h</span>
+          <span class="step"><button>−</button><span class="sep"></span><button class="plus">+</button></span>
+        </div>
+        <div class="row">
+          <span class="glyph cat-mark" style="color:var(--sky)">工</span>
+          <div class="body2">
+            <div class="l1"><span class="name">Farm Fields</span><span class="chipfx money"><span class="glyph">銀</span><span class="mono">+96</span></span><span class="chipfx"><span class="glyph" style="color:var(--str)">力</span></span></div>
+            <div class="l2"><span class="lv">Lv 2</span><div class="xp"><i style="width:31%;background:var(--sky)"></i></div></div>
+          </div>
+          <span class="time">6h</span>
+          <span class="step"><button>−</button><span class="sep"></span><button class="plus">+</button></span>
+        </div>
+        <div class="row">
+          <span class="glyph cat-mark" style="color:var(--sky)">工</span>
+          <div class="body2">
+            <div class="l1"><span class="name">Mine Ore</span><span class="chipfx money"><span class="glyph">銀</span><span class="mono">+165</span></span><span class="chipfx"><span class="glyph" style="color:var(--str)">力</span></span></div>
+            <div class="l2"><span class="lv">Lv 3</span><div class="xp"><i style="width:84%;background:var(--sky)"></i></div></div>
+          </div>
+          <span class="time">8h <span class="alloc">·8h</span></span>
+          <span class="step"><button>−</button><span class="sep"></span><button class="plus">+</button></span>
+        </div>
+      </div>
+
+      <p class="cat" style="color:var(--indigo);margin-top:16px"><span class="glyph">武</span>Training</p>
+      <div>
+        <div class="row">
+          <span class="glyph cat-mark" style="color:var(--indigo)">武</span>
+          <div class="body2">
+            <div class="l1"><span class="name">Lift Weights</span><span class="chipfx"><span class="glyph" style="color:var(--str)">力</span></span></div>
+            <div class="l2"><span class="lv">Lv 6</span><div class="xp"><i style="width:47%;background:var(--indigo)"></i></div></div>
+          </div>
+          <span class="time">4h <span class="alloc">·8h</span></span>
+          <span class="step"><button>−</button><span class="sep"></span><button class="plus">+</button></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 class="section">Queue bar — autres états</h2>
+<div class="strip">
+  <div class="card">
+    <h3>Resting (rien de planifié)</h3>
+    <p class="d">Le track vide reste la journée — l'invitation à agir est le vide lui-même.</p>
+    <div class="day-track">
+      <div class="ticks"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="free" style="margin:0 auto">24h free — plan the day</div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Journée pleine</h3>
+    <p class="d">24h planifiées : plus de zone libre, le + des rows se désactive (feedback au refus).</p>
+    <div class="day-track">
+      <div class="seg" style="width:calc(8/24*100%)"><div class="fill" style="width:100%;background:color-mix(in srgb,var(--sky) 80%,black 10%)"></div><span class="glyph">工</span></div>
+      <div class="seg" style="width:calc(8/24*100%)"><div class="fill" style="width:55%;background:color-mix(in srgb,var(--indigo) 80%,black 10%);box-shadow:0 0 10px color-mix(in srgb,var(--indigo) 55%,transparent)"></div><span class="glyph">武</span><span class="n">×2</span></div>
+      <div class="seg" style="width:calc(6/24*100%);background:color-mix(in srgb,var(--violet) 14%,transparent)"><span class="glyph" style="color:var(--violet)">學</span></div>
+      <div class="seg" style="width:calc(2/24*100%);background:color-mix(in srgb,var(--lotus) 14%,transparent)"><span class="glyph" style="color:var(--lotus)">交</span></div>
+    </div>
+  </div>
+</div>
+
+<h2 class="section">Glyphes — caractères en texte, zéro dessin</h2>
+<div class="gspec">
+  <div class="g"><span class="glyph" style="color:var(--str)">力</span><div class="gn">Strength</div><div class="gm">stat · crimson</div></div>
+  <div class="g"><span class="glyph" style="color:var(--dex)">敏</span><div class="gn">Dexterity</div><div class="gm">stat · green</div></div>
+  <div class="g"><span class="glyph" style="color:var(--silver)">銀</span><div class="gn">Money</div><div class="gm">« silver » · silver</div></div>
+  <div class="g"><span class="glyph" style="color:var(--sky)">工</span><div class="gn">Work</div><div class="gm">catégorie · sky</div></div>
+  <div class="g"><span class="glyph" style="color:var(--indigo)">武</span><div class="gn">Training</div><div class="gm">catégorie · indigo</div></div>
+  <div class="g"><span class="glyph" style="color:var(--violet)">學</span><div class="gn">Study</div><div class="gm">catégorie · violet</div></div>
+  <div class="g"><span class="glyph" style="color:var(--lotus)">交</span><div class="gn">Social</div><div class="gm">catégorie · lotus</div></div>
+  <div class="g"><span class="glyph" style="color:var(--jade)">凡</span><div class="gn">Mortal</div><div class="gm">rang · jade</div></div>
+  <div class="g"><span class="glyph" style="color:var(--ink-3)">己</span><div class="gn">Self</div><div class="gm">carte perso · neutre</div></div>
+</div>
+
+<h2 class="section">Neutres — slate (avant) vs pierre-à-encre (après)</h2>
+<div class="ramps">
+  <div class="ramp">
+    <div class="lab">Avant — slate bleu (le dark dashboard par défaut)</div>
+    <div class="cells">
+      <div style="background:#020617">020617</div>
+      <div style="background:#0f172a">0f172a</div>
+      <div style="background:#1e293b">1e293b</div>
+      <div style="background:#334155">334155</div>
+      <div style="background:#64748b">64748b</div>
+    </div>
+  </div>
+  <div class="ramp">
+    <div class="lab">Après — ink-stone (noir-vert chaud, matière xianxia)</div>
+    <div class="cells">
+      <div style="background:var(--bg)">0A0C0B</div>
+      <div style="background:var(--panel-0)">0D100E</div>
+      <div style="background:var(--panel)">121513</div>
+      <div style="background:var(--panel-2)">191D1A</div>
+      <div style="background:var(--line-2)">2E342F</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

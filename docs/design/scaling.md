@@ -15,6 +15,30 @@ related: [docs/design/core-loop.md]
 > ≈ one day of poor food"; simulate shows 87M copper at death under the income policy;
 > level scaling ×(1+0.1(L−1)) is unbounded; the only sink is a 5-copper food stall.
 
+> DECIDED (2026-07-19) — mastery model (intent; exact formula deferred to the scaling
+> session, fed by the reference-game audit in `prompts/claude-ai-scaling-audit.md`):
+> - Per-activity XP→level grants a **mastery multiplier `m(L)`** that rewards the grind but
+>   with **diminishing returns**: `m(L)` reaches roughly **×3 at a reasonable within-a-life
+>   level**, then keeps rising toward a **higher cap extremely slowly** — a long slow tail,
+>   NOT a hard plateau at ×3. That tail is what the cross-run XP-speed grind (core-loop.md)
+>   chews on over many lives without exploding. The exact softcap form (log tail / power
+>   softcap past the ×3 knee / layered) is the audit's job; Melvor Idle's Mastery is the
+>   precedent.
+> - **Tier-dominance rule**: a maxed lower activity stays below a novice higher one
+>   (`base(N)·(1+cap) < base(N+1)`), so unlocking the next tier is always the real lever
+>   while grinding still pays early.
+> - **Mastery has a per-activity character**: `beg` pays a **random** reward with a **flat
+>   mean at subsistence** (never a wealth engine) and mastery spends itself on **variance
+>   reduction** (fewer catastrophic days), not a higher mean; productive work (mine,
+>   merchant) raises the mean via mastery ("better veins", "close more"). Whether any
+>   reference game reduces reward variance with progression is an open audit question — this
+>   may be our own invention.
+
+> NOTE (2026-07-19): every scaling number currently in the code is **mock/demo**, not a
+> balance target. The raw activity amounts, the `×(1+0.1(L−1))` level scaling, the 87M /
+> 226k-STR simulate results — all placeholder. Do not treat the present curves as a starting
+> point to tune; the re-base defines the real model from the audit up.
+
 ## Key facts
 
 ### Core principle

@@ -1,12 +1,13 @@
 ---
 purpose: The mortal-phase survival loop — satiety, rest, lifestyle upkeep, and how they double as hidden progression boosts. Captures design intent ahead of implementation.
 status: planned (not yet implemented)
-last-verified: 2026-06-02
+last-verified: 2026-07-19
 related: [docs/design/core-loop.md, docs/design/ui-ux.md, docs/vision/identity.md]
 ---
 
 ## Key facts (intent)
 
+- DECIDED (2026-07-19): EATING IS A LIFESTYLE OPTION, NOT AN ACTION. The player picks a standing **diet tier** in Lifestyle. Each in-game period, if the diet's upkeep is affordable it is paid **automatically** and satiety holds; if it is not, satiety **drains**. Eating therefore costs coin but **zero time**, is never a place you travel to, and is never a manual click — it is a passive consequence of the chosen diet and available coin. (The current place-bound "food stall" is a throwaway placeholder; a real economy has diet upkeep against a simple merchant, not an Explore errand.)
 - SURVIVAL IS UPKEEP, NOT A CHORE. At gameSpeed 1, one day ≈ 1 real second, so anything "per day" cannot be a manual click. Satiety/rest drain slowly; the player offsets them by standing **lifestyle choices** (a diet tier, a sleep/lodging tier), not by repeated actions. Pressure is economic (income vs upkeep), not micro-management.
 - LIFESTYLE = UPKEEP + BOOST. Each diet/lodging tier costs recurring coin AND modifies run output. Examples (illustrative): "scraps" = cheap, minimal/with-penalty; "decent meal" = costs more, boosts activity xp gain. Sleep tier similar. The tiers are the first real coin **sink** in the game.
 - EFFECTS ARE HIDDEN AT FIRST. A mortal has no data on themselves. Tier effects are written nowhere in the UI initially; as the player progresses and unveils UI (cultivation perception), the numbers/effects become visible. Same progressive-revelation principle as the rest of the UI.

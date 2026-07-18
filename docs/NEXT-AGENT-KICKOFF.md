@@ -1,82 +1,94 @@
-# Kickoff — Next Agent
+# Kickoff — Next Agent (2026-07-18)
 
-> **Status note (2026-07-18):** several Part 3 threads have landed since this was written — the narrative event system exists (Thread drawer, pause, `defineEvent`), place verbs carry effects, the unlock pipeline/content authoring is typed end-to-end (`define*` helpers, `when` grammar, boot validator), a simulation test suite + `npm run simulate` exist, currency is copper, and the chrome was redesigned (tabs / Self card / Thread drawer). Still true: no meta-state — reincarnation wipes everything. Trust `docs/architecture/architecture.md` over Part 3's factual claims; the exploration mandate (Part 2) still applies.
+You are picking up an in-progress **passion project** — a solo dev's dream game. No deadline, no money pressure. The bar is **craft**: the goal is the perfection of the project, not development speed. The previous collaborators held a specific balance: invest heavily in foundations that pay for content, refuse architecture for its own sake. Match that balance.
 
-You are picking up an in-progress passion project. No deadline, no money pressure. The bar is **craft**: the previous collaborators cared about clean architecture, honest design, and not over-engineering. Match that.
+This document gives you a factual map and a mandate. It deliberately does **not** hand you the previous pair's design conclusions about the open work — that part is yours to form with fresh eyes. Where this doc states a *fact*, trust it but verify. Where it gestures at *what's next*, treat it as a question, not an answer.
 
-This document gives you a factual map and a mandate. It deliberately does **not** hand you the previous pair's design conclusions about the open work — that part is yours to form with fresh eyes. Where this doc states a *fact about the code*, trust it but verify. Where it gestures at *what's next*, treat it as a question, not an answer.
+One meta-fact that shapes everything: **this game has no assets — no art, no music, no physics. The code IS the game.** Adding content means writing typed data; the compiler is the level editor. Code quality is game quality, directly.
 
 ---
 
 ## Part 1 — What the project is (brief)
 
-An incremental / idle **xianxia cultivation life-sim**. One run = one life; death → reincarnation = prestige (intended; see caveats below). Currently only the **early "mortal" phase** is being built — one city, a poor kid, no qi yet.
+An incremental / idle **xianxia cultivation life-sim**. One run = one life; death → reincarnation = prestige. The deeper thesis (read `docs/vision/identity.md`): three nested games — a life-sim, a cultivation simulator, and **a game about understanding itself**, where every prestige grants comprehension rather than just multipliers, and the player continuously reinterprets earlier experiences. Currently only the **mortal phase** exists — one city (Ironveil), a poor kid, no qi yet. Endgame ambition is Antimatter-Dimensions-scale: billions of simulated years, absurd magnitudes (see the ENGINE CONSTRAINT in `docs/design/core-loop.md`).
 
-Stack: React 19 + Vite + Zustand + react-router 7 + Tailwind 4 + TypeScript (strict). No backend. Save = localStorage.
+Stack: React 19 + Vite + Zustand + react-router 7 + Tailwind 4 + TypeScript (strict) + vitest. No backend; save = localStorage.
 
-The repo has a real docs set under `docs/` — **read it before touching anything**:
-- `docs/vision/` — the soul / meta-design ambitions
-- `docs/design/` — core-loop, scaling, ui-ux, roadmap, **explore-and-places.md**, **survival-and-lifestyle.md**
-- `docs/architecture/` — architecture + conventions
-- `docs/meta-design/` — a parked fourth-wall layer (intentionally out of scope right now)
+The docs under `docs/` are a maintained, verified-against-code knowledge base — **read all of it before touching anything**:
 
-Docs use a `key-facts` block + narrative, and flag INTENDED vs CURRENT-REALITY. They were verified against code at write time but the code has moved since — **distrust any doc claim you can't confirm in the source.**
+- `docs/vision/` — the soul: identity, three layers, the reinterpretation pillar
+- `docs/design/` — core-loop (incl. all DECIDED pacing/event records), realms, events philosophy, explore-and-places, survival-and-lifestyle (unbuilt intent), scaling (unbuilt math), ui-ux (the full visual standard), roadmap (historical)
+- `docs/architecture/` — architecture (the WIRED truth) + conventions (incl. working-style rules)
+- `docs/meta-design/` — the parked fourth-wall layer + its 2026-07 refinements (Dao Observation, causes, soul temperaments)
+- `prompts/` — claude.ai generation prompts (event batch, first-run interview), kept in sync with the real schema
 
----
-
-## Part 2 — The exploration mandate (do this first, thoroughly)
-
-**Do not start building. Do not propose solutions yet.** Your first job is to understand this codebase more deeply than the people who wrote it, and to form your *own* independent read of its state and its tensions.
-
-This is the part where laziness shows. Resist it. Concretely:
-
-1. **Read the whole `src/` tree, not a sample.** Every store, every service, the engine, every page, the data files, the types. Trace at least three full flows end-to-end by reading actual code:
-   - a game tick → what systems run, in what order, what they mutate
-   - queuing an activity → through to its effects landing on state and the log
-   - load → boot → first render → what the player sees
-   Write down the call chains. If you can't draw the flow from memory after, you haven't read enough.
-
-2. **Separate intent from reality yourself.** For each system, answer: what does it *claim* to do (docs/naming), what does it *actually* do (code), and where do those diverge? Build your own list of gaps, dead code, half-wired systems, and inconsistencies. Don't inherit anyone else's list — make your own and compare later if you must.
-
-3. **Find the load-bearing walls.** What is the architecture's actual spine? What's the discipline the code is trying to hold (there is one — find it by observation, not by being told)? What would break it? A good sign you understand: you can predict where a given feature *should* live without being told.
-
-4. **Play it.** Run the app (`npm run dev`). Actually click through it as a player. Note what feels alive, what feels hollow, what's confusing, what's missing. The code-read and the play-through will disagree in useful ways.
-
-5. **Form hypotheses, hold them loosely.** As you explore, keep a running notes file with competing theories and confidence levels. Update it. Self-critique. The goal is calibrated understanding, not a fast answer.
-
-6. **Verify before you assert.** Never claim how something works from a filename or a memory. Open it. The previous pair got burned repeatedly by trusting stale assumptions — earn your claims.
-
-Output of this phase: a written, structured map of the system *as it actually is* — flows, state model, the engine/loop, the UI surfaces, what's real vs scaffold — plus your own honest list of tensions and open questions. Present it before proposing any work. Expect this to take real effort; if it felt quick, you skimmed.
+Docs flag INTENDED vs CURRENT-REALITY vs DECIDED. They were accurate on 2026-07-18; the code may have moved — **distrust any claim you can't confirm in source.**
 
 ---
 
-## Part 3 — The open threads (scope, as questions not directives)
+## Part 2 — Where things stand (facts, verify them)
 
-These are the directions the work was heading. They are **areas to explore and pressure-test**, not a backlog to execute. Come to them with your own judgment — some may be wrong-headed, mis-scoped, or out of order. Say so if you think so.
+Wired and verified as of this writing:
 
-- **Survival / the first lived day.** The mortal phase is meant to have *stakes* and a sense of a life being lived — hunger, rest, a day that isn't infinitely long, lifestyle choices that cost and reward. Almost none of this is wired. `docs/design/survival-and-lifestyle.md` records the *intent* (read it critically — it's design notes, not gospel). Open question: what is the smallest version of "this life has weight" that's worth building, and is the documented framing even the right one?
+- **Chrome**: horizontal tabs, Self card right rail, Thread drawer (bottom ticker; the stage for narrative events), 24h day-track queue bar, ink-stone neutral palette, calligraphic glyph iconography (文/工/武/…), copper wen currency.
+- **Unlock pipeline**: single `unlockStore`, `allUnlockables()` derived from content, idempotent `applyUnlock` with stream announcements, category gating live, conditions authored via the `when` grammar.
+- **Narrative events**: four kinds (interrupt/dialogue/ambient/activityOutcome), recurrence bookkeeping, clock pauses while an event holds the stage, plays in the Thread drawer. Content: ONE placeholder dialogue — the ~20-event generation batch (prompts ready) has not been run yet.
+- **Typed content foundations**: `define*` helpers with derived key unions (`ActivityKey`, `PlaceKey`…), self-referential `defineEvent` step graphs (entry/goto compile-checked), readonly content types, named unions, zero classes (one sanctioned exception: `ErrorBoundary`), seeded deterministic RNG, canonical time module, declarative persistence manifest (drives both SaveManager and reincarnation), dev-boot content validator.
+- **Tooling**: `npm test` (12 simulation tests that play whole lives headlessly in ~1s), `npm run simulate -- --days=N --policy=income|training` (balancing curves), `npm run check:content`. A puppeteer-core scratchpad pattern was used for browser e2e (scripts not committed).
+- **Decisions on record** (see DECIDED markers in core-loop.md): 1 day = 1s at ×1, no day/night cycle, 60-day abstract year, interactive events pause the clock, no routine-acceleration for now, copper currency.
 
-- **Events / interruption.** Right now nothing interrupts the player to demand a choice — the genre's "you are *played*, not just configuring" depends on it. There's a global narrative stream in the UI that's meant to host events/dialogue inline. No event system exists. Open question: what's the right primitive for an interrupting, choice-bearing, reward-gated event — and how does it avoid being exploitable?
-
-- **The scene's missing verbs.** Explore (the "live" tab) currently only lets you start activities and walk. The intent is richer: talk to people, enter shops, encounters. Those verbs don't exist as systems. Open question: what's the minimal model that makes a *place* feel inhabited rather than a menu?
-
-- **Prestige / what carries across lives.** The whole pitch is a reincarnation loop where the next life is shaped by the last. Currently a "reincarnate" exists but wipes everything — nothing carries over. The meta-state layer is unbuilt. Open question: is now the time, and what's the honest first version?
-
-- **Content volume.** There is very little actual content (a handful of activities, three places, no events). At some point the bottleneck stops being engine and becomes authoring. Open question: is the content-authoring path good enough, or does it need work before content can flow?
-
-Don't assume this list is complete or correctly prioritized. Part of your job is to challenge it.
+Known-open (also verify): **no meta-state — reincarnation wipes everything**; economy has no ceiling (simulate shows millions of copper by age 17) and no sink beyond a 5-copper food stall; survival/lifestyle runtime unbuilt; stats have no consumer; Quests/Lifestyle tabs are empty scaffolds; background is always "orphan" (the intro interview is parked); no offline progress.
 
 ---
 
-## Part 4 — Working agreement
+## Part 3 — The exploration mandate (do this first, thoroughly)
 
-- **Investigate before answering.** Read files before claiming things about them. No speculation.
-- **Don't over-engineer.** Minimum complexity for the actual task. No abstractions for one consumer, no designing for hypothetical futures. The previous pair killed a generic-library idea for exactly this reason.
-- **Keep it green.** `npm run typecheck` must pass; `npm run build` gates on it. Commit per milestone, working tree green.
-- **No code comments unless asked.** Match surrounding style.
-- **Ask when genuinely blocked on a *decision* that's the human's to make** — design direction, scope, taste. Don't ask to avoid thinking; do ask when the answer changes what you build.
-- **Surface disagreement.** If a documented intent or a listed thread seems wrong, say so plainly with reasons. Fresh eyes are the point.
+**Do not start building. Do not propose solutions yet.** Your first job is to understand this project — code AND design — more deeply than the people who wrote it, and to form your *own* independent read of its state and tensions. This is the part where laziness shows. Resist it.
 
-There are throwaway design prototypes under `src/ui/proto/` (routes `/proto/*`) and a `_parked/` area with a deliberately-shelved feature. Treat both as reference/archive, not active code.
+### Code exploration
 
-Start with Part 2. Go deep.
+1. **Read the whole `src/` tree, not a sample.** Every store, service, the engine, every page, data file, type. Trace at least four full flows end-to-end by reading actual code:
+   - a game tick → systems in order → what they mutate
+   - queuing an activity → completion → effects, income log, XP, level payout
+   - a narrative event → eligibility → fire → Thread stage → choice → resolution → clock resume
+   - save → load → boot (including the persistence manifest, v1 migration, RNG state)
+   If you can't draw the flows from memory after, you haven't read enough.
+2. **Find the load-bearing walls.** Stores never import each other; the engine/services orchestrate; content is data authored through typed helpers; everything run-scoped goes through the persistence manifest; all randomness goes through `rng`. Confirm these by observation. A good sign you understand: you can predict where a feature *should* live without being told.
+3. **Use the instruments.** Run `npm test`, `npm run simulate` under both policies, `npm run check:content`. Read the simulation suite — it encodes the invariants the previous pair considered load-bearing. Break something on purpose locally and watch what catches it.
+4. **Play it.** `npm run dev`, actually click through a life as a player. Speak to the elder. Buy from the food stall. Watch a day bar cycle. Die if you have the patience (48 min — or `npm run simulate` for the fast version). Note what feels alive, hollow, confusing, missing. The code-read and the play-through will disagree in useful ways.
+
+### Design exploration
+
+5. **Read the entire docs corpus critically, in this order**: `vision/identity.md` → `design/core-loop.md` → `design/events.md` + `design/realms.md` → `meta-design/meta-design.md` → the rest. These aren't documentation of code; they're the design's soul, including layers that won't be built for months. Understand the three-layers thesis and the reinterpretation pillar well enough to explain them in your own words.
+6. **Separate intent / decision / reality yourself.** For each system: what do the docs *intend*, what has been *decided* (DECIDED markers are settled — don't relitigate without new evidence), what does the code *do*? Build your own gap list. Don't inherit anyone's list — make yours, then compare.
+7. **Pressure-test the design against the ambition.** The endgame is billions of years and AD-scale numbers; the mortal phase must feel like a grounded wuxia life. Where do current systems fight either ambition? Where does the pacing (1s days) strain? What would the first meta-state layer honestly need to be?
+8. **Form hypotheses, hold them loosely.** Keep a running notes file with competing theories and confidence levels. Update it. Self-critique.
+
+**Output of this phase**: a written, structured map — flows, state model, design intent vs reality, your own honest list of tensions and open questions, with confidence levels. Present it BEFORE proposing any work. If it felt quick, you skimmed.
+
+---
+
+## Part 4 — The open threads (questions, not directives)
+
+Pressure-test these; some may be mis-scoped or out of order. Say so if you think so.
+
+- **The event content batch.** The generation prompt (`prompts/claude-ai-event-generation.md`) is ready and schema-synced; the human runs it on claude.ai. Your side: integrating the output, wiring whatever its Proposed Extensions Register asks for, and keeping the anti-farm laws honest. Open question: is the runtime missing anything the batch will need on day one?
+- **Survival / lifestyle runtime.** The designed next system (`design/survival-and-lifestyle.md`): satiety drain, upkeep tiers, the first real coin sink, first-night onboarding (which is an *event*, day-1 triggered — the systems meet here). Open question: smallest honest version, and does the doc's framing survive contact with the wired event system?
+- **Scaling / balance session.** `design/scaling.md` is pure intent; `npm run simulate` gives evidence (economy is uncapped). This is a *design dialogue with the human*, fed by simulation runs — not a solo tuning exercise.
+- **Meta-state.** The central promise (next life shaped by the last) is still unbuilt. The docs now contain rich intent (information prestige, causes, incarnation choice, calendar knowledge). Open question: what's the honest first slice, and does it want the event-sourcing direction the pair once discussed (see conversation-archaeology note below) or something simpler?
+- **Remaining frictions** (from an earlier audit, partially resolved): stats consume nothing, empty scaffold tabs, always-orphan background (the parked intro interview + `prompts/claude-ai-first-run-interview.md`), no offline progress, Recap/calendar oddities (a 2-month year).
+
+---
+
+## Part 5 — Working agreement
+
+- **The human dialogues in French**, decides fast, point-by-point, and enjoys the craft ("se faire plaisir" on code quality is explicitly welcome; string-parsing DSLs and speculative architecture are explicitly not). Design decisions are made in conversation sessions and recorded in docs with DECIDED markers.
+- **Investigate before answering.** Read files before claiming things about them.
+- **Keep it green.** `npm run typecheck`, `lint`, `build`, `test`, `check:content` all pass before claiming done. Verify UI changes in a real browser (the puppeteer-core scratchpad pattern works well). Commit per milestone; **no Co-Authored-By trailer**.
+- **Hold the code conventions** (`docs/architecture/conventions.md`): no classes, no `Math.random()` in game logic, full-word naming (no abbreviations), content through `define*` + `when`, new stores registered in the persistence manifest, comments only where they state a constraint the code can't show — match existing density.
+- **Docs move with the code.** Every refactor or decision lands in the relevant doc the same session. The docs' credibility is a feature of this project.
+- **Surface disagreement plainly.** Fresh eyes are the point. But distinguish "I found evidence this is wrong" from "I would have done it differently" — the first is gold, the second needs a strong case against a settled decision.
+
+`src/ui/proto/` (routes `/proto/*`) and `_parked/` are reference/archive, not active code. The raw vision notes that fed the current docs are archived at `../IdleCultivationFront-archive/`.
+
+Start with Part 3. Go deep.

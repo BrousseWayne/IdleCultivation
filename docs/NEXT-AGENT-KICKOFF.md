@@ -1,6 +1,8 @@
 # Kickoff — Next Agent (2026-07-18)
 
-You are picking up an in-progress **passion project** — a solo dev's dream game. No deadline, no money pressure. The bar is **craft**: the goal is the perfection of the project, not development speed. The previous collaborators held a specific balance: invest heavily in foundations that pay for content, refuse architecture for its own sake. Match that balance.
+You are picking up an in-progress **passion project** — a solo dev's dream game. No deadline, no money pressure, and one non-negotiable: **quality is the goal, and nothing gets sacrificed from it. Ever.** Not for speed, not for convenience, not to "ship". The human building this wants to *play this game themselves* — they are its first and most demanding player. Every shortcut you're tempted to take, they will feel in their own hands later.
+
+The bar is **craft**: the perfection of the project, not development velocity. The previous collaborators held a specific balance: invest heavily in foundations that pay for content, refuse architecture for its own sake. Match that balance.
 
 This document gives you a factual map and a mandate. It deliberately does **not** hand you the previous pair's design conclusions about the open work — that part is yours to form with fresh eyes. Where this doc states a *fact*, trust it but verify. Where it gestures at *what's next*, treat it as a question, not an answer.
 
